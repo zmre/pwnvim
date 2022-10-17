@@ -34,7 +34,7 @@
           luaformatter
         ];
         neovim-augmented = recursiveMerge [ pkgs.neovim-unwrapped {buildInputs = dependencies; } ];
-        packages.pwnvim = pkgs.wrapNeovimUnstable neovim-augmented {
+        packages.pwnvim = pkgs.wrapNeovim neovim-augmented {
         #packages.pwnvim = pkgs.neovim.override {
           viAlias = false;
           vimAlias = false;
@@ -42,7 +42,7 @@
           withPython3 = false;
           withRuby = false;
           extraPython3Packages = false;
-          wrapperArgs = ''--suffix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
+          extraMakeWrapperArgs = ''--suffix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
           configure = {
             customRC = ''
               lua << EOF
