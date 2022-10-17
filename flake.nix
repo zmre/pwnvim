@@ -22,18 +22,18 @@
           configure = {
             customRC = ''
               lua << EOF
-                package.path = package.path .. ";${self}"
-                require('zmre.options').defaults()
-                require('zmre.options').gui()
-                require('zmre.mappings')
-                require('zmre.abbreviations')
-                require('zmre.filetypes').config()
-                require('zmre.plugins').ui()
-                require('zmre.plugins').diagnostics()
-                require('zmre.plugins').telescope()
-                require('zmre.plugins').completions()
-                require('zmre.plugins').notes()
-                require('zmre.plugins').misc()
+                package.path = "${self}/?.lua;" .. package.path
+                require('pwnvim.options').defaults()
+                require('pwnvim.options').gui()
+                require('pwnvim.mappings')
+                require('pwnvim.abbreviations')
+                require('pwnvim.filetypes').config()
+                require('pwnvim.plugins').ui()
+                require('pwnvim.plugins').diagnostics()
+                require('pwnvim.plugins').telescope()
+                require('pwnvim.plugins').completions()
+                require('pwnvim.plugins').notes()
+                require('pwnvim.plugins').misc()
               EOF
             '';
             packages.myPlugins = with pkgs.vimPlugins; {
@@ -137,6 +137,20 @@
         };
         packages.default = packages.pwnvim;
         apps.default = apps.pwnvim;
+        devShell = pkgs.mkShell {
+          buildInputs = with pkgs; [ 
+            packages.pwnvim 
+            rnix-lsp
+            nixfmt
+            nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
+            luaformatter
+            nodePackages.svelte-language-server
+            nodePackages.diagnostic-languageserver
+            nodePackages.typescript-language-server
+            nodePackages."@tailwindcss/language-server"
+            rust-analyzer
+          ]; 
+        };
       }
     );
 
