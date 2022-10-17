@@ -11,7 +11,8 @@
         pkgs = nixpkgs.legacyPackages.${system}; 
         #pkgs = import nixpkgs { inherit system; };
       in rec {
-        packages.pwnvim = pkgs.wrapNeovim pkgs.neovim-unwrapped {
+        #packages.pwnvim = pkgs.wrapNeovim pkgs.neovim-unwrapped {
+        packages.pwnvim = pkgs.neovim.override {
           viAlias = false;
           vimAlias = false;
           withNodeJs = false;
@@ -21,7 +22,7 @@
           configure = {
             customRC = "";
           };
-          packages.myVimPackage = with pkgs.vimPlugins; {
+          packages.myPlugins = with pkgs.vimPlugins; {
             start = with pkgs.vimPlugins; [onedarkpro-nvim telescope-nvim vim-fugitive ];
             opt = with pkgs.vimPlugins; [trouble-nvim ];
           };
@@ -31,7 +32,7 @@
           exePath = "${pkgs.nvim}/bin/nvim";
         };
         defaultPackage = pkgs.neovim;
-        defaultApp = apps.pwnvim;
+        defaultApp."${system}" = apps.pwnvim;
         defaultPackages = packages;
       }
     );
