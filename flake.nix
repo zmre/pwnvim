@@ -61,13 +61,14 @@
           nixfmt
           luaformatter
           rnix-lsp
+          sumneko-lua-language-server
           #nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
           nodePackages.svelte-language-server
           nodePackages.diagnostic-languageserver
           nodePackages.typescript-language-server
           nodePackages."@tailwindcss/language-server"
           rust-analyzer
-        ];
+        ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ ueberzug ];
         neovim-augmented = recursiveMerge [ pkgs.neovim-unwrapped {buildInputs = dependencies; } ];
         packages.pwnvim = pkgs.wrapNeovim neovim-augmented {
         #packages.pwnvim = pkgs.neovim.override {
