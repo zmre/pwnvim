@@ -61,6 +61,7 @@
                 telescope-nvim # da best popup fuzzy finder
                 telescope-fzy-native-nvim # but fzy gives better results
                 telescope-frecency-nvim # and frecency comes in handy too
+                telescope-media-files # only works on linux, but image preview
                 dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope
                 nvim-colorizer-lua # color over CSS like #00ff00
                 nvim-web-devicons # makes things pretty; used by many plugins below
@@ -142,7 +143,7 @@
             packages.pwnvim 
             rnix-lsp
             nixfmt
-            nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
+            #nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
             luaformatter
             nodePackages.svelte-language-server
             nodePackages.diagnostic-languageserver
