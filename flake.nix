@@ -8,17 +8,41 @@
   outputs = inputs@{ self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system}; 
         #pkgs = import nixpkgs { inherit system; };
+        pkgs = nixpkgs.legacyPackages.${system};
+        recursiveMerge = attrList:
+        let f = attrPath:
+          pkgs.lib.zipAttrsWith (n: values:
+            if pkgs.lib.tail values == []
+              then pkgs.lib.head values
+            else if pkgs.lib.all pkgs.lib.isList values
+              then pkgs.lib.unique (pkgs.lib.concatLists values)
+            else if pkgs.lib.all pkgs.lib.isAttrs values
+              then f (attrPath ++ [n]) values
+            else pkgs.lib.last values
+          );
+        in f [] attrList;
+
       in rec {
-        #packages.pwnvim = pkgs.wrapNeovim pkgs.neovim-unwrapped {
-        packages.pwnvim = pkgs.neovim.override {
+        dependencies = with pkgs; [
+          fd
+          ripgrep
+          fzy
+          vale
+          proselint
+          nixfmt
+          luaformatter
+        ];
+        neovim-augmented = recursiveMerge [ pkgs.neovim-unwrapped {buildInputs = dependencies; } ];
+        packages.pwnvim = pkgs.wrapNeovimUnstable neovim-augmented {
+        #packages.pwnvim = pkgs.neovim.override {
           viAlias = false;
           vimAlias = false;
           withNodeJs = false;
           withPython3 = false;
           withRuby = false;
           extraPython3Packages = false;
+          wrapperArgs = ''--suffix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
           configure = {
             customRC = ''
               lua << EOF
@@ -140,17 +164,15 @@
         apps.default = apps.pwnvim;
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [ 
-            packages.pwnvim 
+            packages.pwnvim
             rnix-lsp
-            nixfmt
             #nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
-            luaformatter
             nodePackages.svelte-language-server
             nodePackages.diagnostic-languageserver
             nodePackages.typescript-language-server
             nodePackages."@tailwindcss/language-server"
             rust-analyzer
-          ]; 
+          ] ++ dependencies;
         };
       }
     );
