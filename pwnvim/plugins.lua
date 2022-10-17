@@ -827,10 +827,10 @@ M.telescope = function()
   }
   require 'telescope'.load_extension('fzy_native')
   require("telescope").load_extension("zk")
-  --if vim.fn.has('mac') ~= 1 then
+  if vim.fn.has('mac') ~= 1 then
     -- doesn't currently work on mac
-    --require 'telescope'.load_extension('media_files')
-  --end
+    require 'telescope'.load_extension('media_files')
+  end
 
 end -- telescope
 

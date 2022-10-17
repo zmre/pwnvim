@@ -4,34 +4,69 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     #nixpkgs-stable.url = "github:nixos/nixpkgs/nixpkgs-22.05";
     flake-utils.url = "github:numtide/flake-utils";
+    zk-nvim = {
+      url = "github:mickael-menu/zk-nvim";
+      flake = false;
+    };
+    telescope-media-files = {
+      url = "github:nvim-telescope/telescope-media-files.nvim";
+      flake = false;
+    };
   };
   outputs = inputs@{ self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        #pkgs = import nixpkgs { inherit system; };
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [
+            (self: super: {
+              vimPlugins = super.vimPlugins // {
+                zk-nvim = super.vimUtils.buildVimPlugin {
+                  name = "zk-nvim";
+                  pname = "zk-nvim";
+                  src = inputs.zk-nvim;
+                };
+                telescope-media-files = super.vimUtils.buildVimPlugin {
+                  name = "telescope-media-files";
+                  pname = "telescope-media-files";
+                  src = inputs.telescope-media-files;
+                };
+              };
+            })
+          ];
+        };
+        #pkgs = nixpkgs.legacyPackages.${system};
         recursiveMerge = attrList:
-        let f = attrPath:
-          pkgs.lib.zipAttrsWith (n: values:
-            if pkgs.lib.tail values == []
-              then pkgs.lib.head values
-            else if pkgs.lib.all pkgs.lib.isList values
-              then pkgs.lib.unique (pkgs.lib.concatLists values)
-            else if pkgs.lib.all pkgs.lib.isAttrs values
-              then f (attrPath ++ [n]) values
-            else pkgs.lib.last values
-          );
-        in f [] attrList;
+          let f = attrPath:
+            pkgs.lib.zipAttrsWith (n: values:
+              if pkgs.lib.tail values == []
+                then pkgs.lib.head values
+              else if pkgs.lib.all pkgs.lib.isList values
+                then pkgs.lib.unique (pkgs.lib.concatLists values)
+              else if pkgs.lib.all pkgs.lib.isAttrs values
+                then f (attrPath ++ [n]) values
+              else pkgs.lib.last values
+            );
+          in f [] attrList;
 
       in rec {
         dependencies = with pkgs; [
           fd
           ripgrep
           fzy
+          zoxide
+          zk
           vale
           proselint
           nixfmt
           luaformatter
+          rnix-lsp
+          #nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
+          nodePackages.svelte-language-server
+          nodePackages.diagnostic-languageserver
+          nodePackages.typescript-language-server
+          nodePackages."@tailwindcss/language-server"
+          rust-analyzer
         ];
         neovim-augmented = recursiveMerge [ pkgs.neovim-unwrapped {buildInputs = dependencies; } ];
         packages.pwnvim = pkgs.wrapNeovim neovim-augmented {
@@ -85,7 +120,7 @@
                 telescope-nvim # da best popup fuzzy finder
                 telescope-fzy-native-nvim # but fzy gives better results
                 telescope-frecency-nvim # and frecency comes in handy too
-                #telescope-media-files # only works on linux, but image preview
+                telescope-media-files # only works on linux, but image preview
                 dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope
                 nvim-colorizer-lua # color over CSS like #00ff00
                 nvim-web-devicons # makes things pretty; used by many plugins below
@@ -165,13 +200,6 @@
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [ 
             packages.pwnvim
-            rnix-lsp
-            #nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
-            nodePackages.svelte-language-server
-            nodePackages.diagnostic-languageserver
-            nodePackages.typescript-language-server
-            nodePackages."@tailwindcss/language-server"
-            rust-analyzer
           ] ++ dependencies;
         };
       }
