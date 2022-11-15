@@ -2,7 +2,6 @@
   description = "PW's Neovim (pwnvim) Configuration";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    #nixpkgs-stable.url = "github:nixos/nixpkgs/nixpkgs-22.05";
     flake-utils.url = "github:numtide/flake-utils";
     zk-nvim = {
       url = "github:mickael-menu/zk-nvim";
@@ -76,7 +75,6 @@
           { buildInputs = dependencies; }
         ];
         packages.pwnvim = pkgs.wrapNeovim neovim-augmented {
-          #packages.pwnvim = pkgs.neovim.override {
           viAlias = false;
           vimAlias = false;
           withNodeJs = false;
@@ -85,10 +83,13 @@
           extraPython3Packages = false;
           extraMakeWrapperArgs =
             ''--suffix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
+          # make sure impatient is loaded before everything else to speed things up
           configure = {
             customRC = ''
               lua << EOF
                 package.path = "${self}/?.lua;" .. package.path
+                require('impatient')
+                require('impatient').enable_profile()
                 require('pwnvim.options').defaults()
                 require('pwnvim.options').gui()
                 require('pwnvim.mappings')
