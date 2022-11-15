@@ -1035,7 +1035,7 @@ M.notes = function()
             "<Cmd>lua vim.lsp.buf.hover()<CR>",
             opts)
 
-          require('zmre.options').tabindent()
+          require('pwnvim.options').tabindent()
         end
       }
     }
@@ -1164,7 +1164,7 @@ M.notes = function()
   }
   -- Grammar stuff
   vim.cmd(
-    [[command StartGrammar2 lua require('zmre.plugins').grammar_check()]])
+    [[command StartGrammar2 lua require('pwnvim.plugins').grammar_check()]])
 end -- notes
 
 M.grammar_check = function()

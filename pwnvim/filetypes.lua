@@ -16,37 +16,37 @@ M.config = function()
       autocmd BufRead *.mc              setlocal filetype=mason
       autocmd BufRead *.fish            setlocal filetype=fish
 
-      autocmd FileType c lua require('zmre.options').programming()
-      autocmd FileType ruby lua require('zmre.options').programming()
-      autocmd FileType rust lua require('zmre.filetypes').rust()
-      autocmd FileType php lua require('zmre.options').programming()
-      autocmd FileType php3 lua require('zmre.options').programming()
-      autocmd FileType perl lua require('zmre.options').programming()
-      autocmd FileType python lua require('zmre.options').programming()
-      autocmd FileType mason lua require('zmre.options').programming()
-      autocmd FileType vim lua require('zmre.options').programming()
-      autocmd FileType lua lua require('zmre.options').programming()
-      autocmd FileType sh lua require('zmre.options').programming()
-      autocmd FileType zsh lua require('zmre.options').programming()
-      autocmd FileType scala lua require('zmre.options').programming()
-      autocmd FileType javascript lua require('zmre.options').programming()
-      autocmd FileType javascriptreact lua require('zmre.options').programming()
-      autocmd FileType typescript lua require('zmre.options').programming()
-      autocmd FileType typescriptreact lua require('zmre.options').programming()
-      autocmd FileType md lua require('zmre.filetypes').markdown()
-      autocmd FileType markdown lua require('zmre.filetypes').markdown()
-      autocmd FileType vimwiki lua require('zmre.filetypes').markdown()
-      autocmd FileType html lua require('zmre.options').programming()
-      autocmd FileType svelte lua require('zmre.options').programming()
-      autocmd FileType css lua require('zmre.options').programming()
-      autocmd FileType xml lua require('zmre.filetypes').lua()
+      autocmd FileType c lua require('pwnvim.options').programming()
+      autocmd FileType ruby lua require('pwnvim.options').programming()
+      autocmd FileType rust lua require('pwnvim.filetypes').rust()
+      autocmd FileType php lua require('pwnvim.options').programming()
+      autocmd FileType php3 lua require('pwnvim.options').programming()
+      autocmd FileType perl lua require('pwnvim.options').programming()
+      autocmd FileType python lua require('pwnvim.options').programming()
+      autocmd FileType mason lua require('pwnvim.options').programming()
+      autocmd FileType vim lua require('pwnvim.options').programming()
+      autocmd FileType lua lua require('pwnvim.options').programming()
+      autocmd FileType sh lua require('pwnvim.options').programming()
+      autocmd FileType zsh lua require('pwnvim.options').programming()
+      autocmd FileType scala lua require('pwnvim.options').programming()
+      autocmd FileType javascript lua require('pwnvim.options').programming()
+      autocmd FileType javascriptreact lua require('pwnvim.options').programming()
+      autocmd FileType typescript lua require('pwnvim.options').programming()
+      autocmd FileType typescriptreact lua require('pwnvim.options').programming()
+      autocmd FileType md lua require('pwnvim.filetypes').markdown()
+      autocmd FileType markdown lua require('pwnvim.filetypes').markdown()
+      autocmd FileType vimwiki lua require('pwnvim.filetypes').markdown()
+      autocmd FileType html lua require('pwnvim.options').programming()
+      autocmd FileType svelte lua require('pwnvim.options').programming()
+      autocmd FileType css lua require('pwnvim.options').programming()
+      autocmd FileType xml lua require('pwnvim.filetypes').lua()
     augroup END
   ]], false)
 end
 
 M.rust = function()
-  require('zmre.options').programming()
-  require('zmre.options').fourspaceindent()
+  require('pwnvim.options').programming()
+  require('pwnvim.options').fourspaceindent()
   vim.bo.makeprg = "cargo"
   vim.cmd("compiler cargo")
   vim.g.rustfmt_autosave = 1
@@ -63,14 +63,14 @@ M.rust = function()
 end
 
 M.c = function()
-  require('zmre.options').programming()
-  require('zmre.options').fourspaceindent()
+  require('pwnvim.options').programming()
+  require('pwnvim.options').fourspaceindent()
   vim.bo.makeprg = "make"
 end
 
 M.lua = function()
-  require('zmre.options').programming()
-  require('zmre.options').fourspaceindent()
+  require('pwnvim.options').programming()
+  require('pwnvim.options').fourspaceindent()
 end
 
 M.markdown = function()
@@ -78,7 +78,7 @@ M.markdown = function()
   -- Changing now to use tabs because NotePlan 3 can't figure out nested lists that are space
   -- indented and I go back and forth between that and nvim. So, for now, this is the compatibility
   -- compromise. 2022-09-27
-  require('zmre.options').tabindent()
+  require('pwnvim.options').tabindent()
   vim.g.joinspaces = true
   vim.wo.number = false
   vim.wo.relativenumber = false

@@ -148,12 +148,12 @@ local leader_mappings = {
   -- Quickly change indent defaults in a file
   i = {
     name = "Indent",
-    ["1"] = { "<cmd>lua require('zmre.options').tabindent()<CR>", "Tab" },
+    ["1"] = { "<cmd>lua require('pwnvim.options').tabindent()<CR>", "Tab" },
     ["2"] = {
-      "<cmd>lua require('zmre.options').twospaceindent()<CR>", "Two Space"
+      "<cmd>lua require('pwnvim.options').twospaceindent()<CR>", "Two Space"
     },
     ["4"] = {
-      "<cmd>lua require('zmre.options').fourspaceindent()<CR>",
+      "<cmd>lua require('pwnvim.options').fourspaceindent()<CR>",
       "Four Space"
     }
   },
@@ -174,7 +174,7 @@ local leader_mappings = {
   n = {
     name = "Notes",
     g = {
-      "<cmd>lua require('zmre.plugins').grammar_check()<cr>",
+      "<cmd>lua require('pwnvim.plugins').grammar_check()<cr>",
       "Check Grammar"
     },
     n = {
