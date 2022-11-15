@@ -35,50 +35,56 @@
             })
           ];
         };
-        #pkgs = nixpkgs.legacyPackages.${system};
+
         recursiveMerge = attrList:
-          let f = attrPath:
-            pkgs.lib.zipAttrsWith (n: values:
-              if pkgs.lib.tail values == []
-                then pkgs.lib.head values
-              else if pkgs.lib.all pkgs.lib.isList values
-                then pkgs.lib.unique (pkgs.lib.concatLists values)
-              else if pkgs.lib.all pkgs.lib.isAttrs values
-                then f (attrPath ++ [n]) values
-              else pkgs.lib.last values
-            );
-          in f [] attrList;
+          let
+            f = attrPath:
+              pkgs.lib.zipAttrsWith (n: values:
+                if pkgs.lib.tail values == [ ] then
+                  pkgs.lib.head values
+                else if pkgs.lib.all pkgs.lib.isList values then
+                  pkgs.lib.unique (pkgs.lib.concatLists values)
+                else if pkgs.lib.all pkgs.lib.isAttrs values then
+                  f (attrPath ++ [ n ]) values
+                else
+                  pkgs.lib.last values);
+          in f [ ] attrList;
 
       in rec {
-        dependencies = with pkgs; [
-          fd
-          ripgrep
-          fzy
-          zoxide
-          zk
-          vale
-          proselint
-          nixfmt
-          luaformatter
-          rnix-lsp
-          sumneko-lua-language-server
-          #nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
-          nodePackages.svelte-language-server
-          nodePackages.diagnostic-languageserver
-          nodePackages.typescript-language-server
-          nodePackages."@tailwindcss/language-server"
-          rust-analyzer
-        ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ ueberzug ];
-        neovim-augmented = recursiveMerge [ pkgs.neovim-unwrapped {buildInputs = dependencies; } ];
+        dependencies = with pkgs;
+          [
+            fd
+            ripgrep
+            fzy
+            zoxide
+            zk
+            vale
+            proselint
+            nixfmt
+            luaformatter
+            rnix-lsp
+            sumneko-lua-language-server
+            nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
+            nodePackages.svelte-language-server
+            nodePackages.diagnostic-languageserver
+            nodePackages.typescript-language-server
+            nodePackages."@tailwindcss/language-server"
+            rust-analyzer
+          ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ ueberzug ];
+        neovim-augmented = recursiveMerge [
+          pkgs.neovim-unwrapped
+          { buildInputs = dependencies; }
+        ];
         packages.pwnvim = pkgs.wrapNeovim neovim-augmented {
-        #packages.pwnvim = pkgs.neovim.override {
+          #packages.pwnvim = pkgs.neovim.override {
           viAlias = false;
           vimAlias = false;
           withNodeJs = false;
           withPython3 = false;
           withRuby = false;
           extraPython3Packages = false;
-          extraMakeWrapperArgs = ''--suffix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
+          extraMakeWrapperArgs =
+            ''--suffix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
           configure = {
             customRC = ''
               lua << EOF
@@ -111,12 +117,12 @@
                 null-ls-nvim # formatting and linting via lsp system
                 trouble-nvim # navigate all warnings and errors in quickfix-like window
                 lspsaga-nvim
+                lsp-format-nvim
                 todo-comments-nvim
                 #copilot-vim # github copilot
 
                 # UI #################################################
                 onedarkpro-nvim # colorscheme
-                #onedark-vim # colorscheme
                 zephyr-nvim # alternate colorscheme
                 telescope-nvim # da best popup fuzzy finder
                 telescope-fzy-native-nvim # but fzy gives better results
@@ -129,12 +135,11 @@
                 gitsigns-nvim # git status in gutter
                 symbols-outline-nvim # navigate the current file better
                 lualine-nvim # nice status bar at bottom
-                #barbar-nvim # nice buffers (tabs) bar at top
                 vim-bbye # fix bdelete buffer stuff needed with bufferline
                 bufferline-nvim
                 indent-blankline-nvim # visual indent
                 toggleterm-nvim # better terminal management
-                nvim-treesitter # better code coloring
+                nvim-treesitter.withAllGrammars # better code coloring
                 playground # treesitter playground
                 nvim-treesitter-textobjects
                 nvim-treesitter-context # keep current block header (func defn or whatever) on first line
@@ -184,10 +189,11 @@
                 which-key-nvim
                 direnv-vim # auto-execute nix direnv setups
               ];
-              opt = with pkgs.vimPlugins; [
-                # grammar check
-                vim-grammarous
-              ];
+              opt = with pkgs.vimPlugins;
+                [
+                  # grammar check
+                  vim-grammarous
+                ];
             };
           };
         };
@@ -199,11 +205,8 @@
         packages.default = packages.pwnvim;
         apps.default = apps.pwnvim;
         devShell = pkgs.mkShell {
-          buildInputs = with pkgs; [ 
-            packages.pwnvim
-          ] ++ dependencies;
+          buildInputs = with pkgs; [ packages.pwnvim ] ++ dependencies;
         };
-      }
-    );
+      });
 
 }

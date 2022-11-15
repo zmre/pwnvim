@@ -472,9 +472,15 @@ M.diagnostics = function()
 
     local opts = { noremap = true, silent = false }
     if client.name == "tsserver" or client.name == "jsonls" or client.name ==
-        "rnix" or client.name == "eslint" or client.name == "html" then
-      client.server_capabilities.document_formatting = false
-      client.server_capabilities.document_range_formatting = false
+        "rnix" or client.name == "eslint" or client.name == "html" or client.name == "cssls" or
+        client.name == "tailwindcss" then
+      -- Most of these are being turned off because prettier handles the use case better
+      client.server_capabilities.documentFormattingProvider = false
+      client.server_capabilities.documentRangeFormattingProvider = false
+    else
+      client.server_capabilities.documentFormattingProvider = true
+      client.server_capabilities.documentRangeFormattingProvider = true
+      require("lsp-format").on_attach(client)
     end
 
     print("LSP attached " .. client.name)
@@ -555,12 +561,12 @@ M.diagnostics = function()
           }
         }
       }, local_leader_opts)
-      vim.cmd([[
-            augroup LspFormatting
-                autocmd! * <buffer>
-                autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()
-            augroup END
-            ]])
+      -- vim.cmd([[
+      --       augroup LspFormatting
+      --           autocmd! * <buffer>
+      --           autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()
+      --       augroup END
+      --       ]])
     end
     if client.server_capabilities.implementation then
       which_key.register({
@@ -598,23 +604,32 @@ M.diagnostics = function()
   local diagnostics = null_ls.builtins.diagnostics
   local codeactions = null_ls.builtins.code_actions
 
+  require("lsp-format").setup {}
+
   null_ls.setup {
     debug = false,
     sources = {
       -- sumneko seems to also have formatting now
       -- formatting.lua_format,
-      formatting.nixfmt, formatting.prettier.with {
+      formatting.nixfmt,
+      formatting.prettier.with {
+
         -- extra_args = {
-        --     "--no-semi", "--single-quote", "--jsx-single-quote"
+        --     "--use-tabs", "--single-quote", "--jsx-single-quote"
         -- },
         -- Disable markdown because formatting on save conflicts in weird ways
         -- with the taskwiki (roam-task) stuff.
+        filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "scss", "less",
+          "html", "css", "json", "jsonc", "yaml", "graphql", "handlebars", "svelte" },
         disabled_filetypes = { "markdown" }
       }, diagnostics.eslint_d.with {
         args = {
           "-f", "json", "--stdin", "--stdin-filename", "$FILENAME"
         }
-      }, diagnostics.vale,
+      }, -- diagnostics.vale,
+      codeactions.eslint_d,
+      codeactions.gitsigns,
+      codeactions.statix,
       null_ls.builtins.hover.dictionary
       -- removed formatting.rustfmt since rust_analyzer seems to do the same thing
     },
@@ -713,13 +728,13 @@ M.diagnostics = function()
 
   require 'lspsaga'.init_lsp_saga({
     -- TODO: re-enable this at next update - getting error 2022-08-02
-    --code_action_lightbulb = {
-    --enable = false,
-    --sign = true,
-    --enable_in_insert = true,
-    --sign_priority = 20,
-    --virtual_text = false,
-    --},
+    -- code_action_lightbulb = {
+    -- enable = false,
+    -- sign = true,
+    -- enable_in_insert = true,
+    -- sign_priority = 20,
+    -- virtual_text = false,
+    -- },
   })
 
   require('rust-tools').setup({

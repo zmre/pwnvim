@@ -128,29 +128,59 @@ M.defaults = function()
     dark_theme = "onedark",
     light_theme = "onelight",
     highlights = {
-      mkdLink                = { fg = "${blue}", style = "underline" },
-      mkdURL                 = { fg = "${green}", style = "underline" },
-      mkdInlineURL           = { fg = "${blue}", style = "underline" },
-      TSURI                  = { fg = "${blue}", style = "underline" },
-      TSPunctSpecial         = { fg = "${red}" },
-      markdownTSTitle        = { fg = "${cyan}", style = "bold" },
-      markdownAutomaticLink  = { fg = "${blue}", style = "underline" },
-      markdownLink           = { fg = "${green}", style = "underline" },
-      markdownLinkText       = { fg = "${blue}", style = "underline" },
-      markdownUrl            = { fg = "${green}", style = "underline" },
-      markdownWikiLink       = { fg = "${blue}", style = "underline" },
-      markdownH1             = { fg = "${cyan}", style = "bold" },
-      markdownH2             = { fg = "${cyan}", style = "bold" },
-      markdownH3             = { fg = "${cyan}" },
-      markdownH4             = { fg = "${green}", style = "italic" },
-      markdownH5             = { fg = "${green}", style = "italic" },
-      markdownH6             = { fg = "${green}", style = "italic" },
-      htmlH1                 = { fg = "${cyan}", style = "bold" },
-      htmlH2                 = { fg = "${cyan}", style = "bold" },
-      htmlH3                 = { fg = "${cyan}" },
-      htmlH4                 = { fg = "${green}", style = "italic" },
-      htmlH5                 = { fg = "${green}", style = "italic" },
-      htmlH6                 = { fg = "${green}", style = "italic" },
+      mkdLink                                    = { fg = "${blue}", style = "underline" },
+      mkdURL                                     = { fg = "${green}", style = "underline" },
+      mkdInlineURL                               = { fg = "${blue}", style = "underline" },
+      -- mkdLinkTitle
+      -- mkdID
+      -- mkdDelimiter
+      -- mkdInlineURL
+      -- mkdCode
+      -- mkdFootnote
+      -- mkdMath
+      -- htmlLink
+      TSURI                                      = { fg = "${blue}", style = "underline" },
+      TSPunctSpecial                             = { fg = "${red}" },
+      markdownTSTitle                            = { fg = "${cyan}", style = "bold" },
+      markdownAutomaticLink                      = { fg = "${blue}", style = "underline" },
+      markdownLink                               = { fg = "${green}", style = "underline" },
+      markdownLinkText                           = { fg = "${blue}", style = "underline" },
+      markdownUrl                                = { fg = "${green}", style = "underline" },
+      markdownWikiLink                           = { fg = "${blue}", style = "underline" },
+      markdownH1                                 = { fg = "${cyan}", style = "bold" },
+      markdownH2                                 = { fg = "${cyan}", style = "bold" },
+      markdownH3                                 = { fg = "${cyan}" },
+      markdownH4                                 = { fg = "${green}", style = "italic" },
+      markdownH5                                 = { fg = "${green}", style = "italic" },
+      markdownH6                                 = { fg = "${green}", style = "italic" },
+      htmlH1                                     = { fg = "${yellow}", style = "bold" },
+      htmlH2                                     = { fg = "${yellow}", style = "bold" },
+      htmlH3                                     = { fg = "${yellow}" },
+      htmlH4                                     = { fg = "${green}", style = "italic" },
+      htmlH5                                     = { fg = "${green}", style = "italic" },
+      htmlH6                                     = { fg = "${green}", style = "italic" },
+      htmlBold                                   = { fg = "#ffffff", style = "bold" },
+      htmlItalic                                 = { fg = "#eeeeee", style = "italic" },
+      htmlBoldItalic                             = { style = "bold,italic" },
+      SpellBad                                   = { style = "undercurl", sp = "${red}" },
+      SpellCap                                   = { style = "undercurl", sp = "${cyan}" },
+      SpellRare                                  = { style = "undercurl", sp = "Magenta" },
+      SpellLocal                                 = { style = "undercurl", sp = "${cyan}" },
+      IndentBlanklineChar                        = { fg = "#444444" },
+      Todo                                       = { fg = "#282c34", bg = "${highlight}", style = "bold" },
+      VertSplit                                  = { fg = "#202020", bg = "#606060" },
+      Folded                                     = { fg = "#c0c8d0", bg = "#384058" },
+      ["@comment.markdown"]                      = { fg = "${comment}" },
+      ["@field.markdown"]                        = { fg = "${purple}" },
+      ["@text.literal.markdown_inline"]          = { fg = "${green}" },
+      ["@text.reference.markdown_inline"]        = { fg = "${blue}", style = "underline" },
+      ["@text.strong.markdown_inline"]           = { fg = "${white}", style = "bold" },
+      ["@text.title.markdown"]                   = { fg = "${yellow}", style = "bold" },
+      -- ["@parameter.markdown_inline"] = { fg = theme.palette.fg },
+      ["@punctuation.special.markdown"]          = { fg = "NONE" },
+      ["@punctuation.delimiter.markdown_inline"] = { fg = "${orange}" },
+      ["@text.uri.markdown_inline"]              = { fg = "${blue}" },
+
       TelescopeBorder        = {
         fg = "${telescope_results}",
         bg = "${telescope_results}",
@@ -186,6 +216,9 @@ M.defaults = function()
     styles = { -- Choose from "bold,italic,underline"
       virtual_text = "italic", -- Style that is applied to virtual text
     },
+    plugins = {
+      all = true
+    },
     options = {
       bold = true,
       italic = true,
@@ -193,7 +226,7 @@ M.defaults = function()
       undercurl = true,
       cursorline = true,
       transparency = false,
-      terminal_colors = true,
+      terminal_colors = false,
       window_unfocused_color = true
     },
     colors = {
