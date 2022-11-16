@@ -63,6 +63,8 @@
             luaformatter
             rnix-lsp
             sumneko-lua-language-server
+            eslint_d
+            prettier
             nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
             nodePackages.svelte-language-server
             nodePackages.diagnostic-languageserver
@@ -75,8 +77,8 @@
           { buildInputs = dependencies; }
         ];
         packages.pwnvim = pkgs.wrapNeovim neovim-augmented {
-          viAlias = false;
-          vimAlias = false;
+          viAlias = true;
+          vimAlias = true;
           withNodeJs = false;
           withPython3 = false;
           withRuby = false;
@@ -114,13 +116,11 @@
                 rust-tools-nvim # lsp stuff and more for rust
                 crates-nvim # inline intelligence for Cargo.toml
                 nvim-lspconfig # setup LSP for intelligent coding
-                # nvim-lsp-ts-utils for inlays
                 null-ls-nvim # formatting and linting via lsp system
                 trouble-nvim # navigate all warnings and errors in quickfix-like window
                 lspsaga-nvim
                 lsp-format-nvim
                 todo-comments-nvim
-                #copilot-vim # github copilot
 
                 # UI #################################################
                 onedarkpro-nvim # colorscheme
@@ -147,7 +147,6 @@
 
                 # Editor Features ####################################
                 vim-abolish # better abbreviations / spelling fixer
-                #vim-surround # most important plugin for quickly handling brackets
                 nvim-surround # .... updated lua-based alternative to tpope's surround
                 vim-unimpaired # bunch of convenient navigation key mappings
                 vim-repeat # supports all of the above so you can use .
