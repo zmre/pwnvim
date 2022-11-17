@@ -1,5 +1,42 @@
 {
   "nodes": {
+    "cargo-bundle": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1655204404,
+        "narHash": "sha256-hKCwIC9zKWgXovmKan9E2xcRIsGNrc1pLAOCtcc2M1k=",
+        "owner": "burtonageo",
+        "repo": "cargo-bundle",
+        "rev": "1b533243a18d8f10c1bb5481b3e87ffa8498a979",
+        "type": "github"
+      },
+      "original": {
+        "owner": "burtonageo",
+        "repo": "cargo-bundle",
+        "type": "github"
+      }
+    },
+    "fenix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-analyzer-src": "rust-analyzer-src"
+      },
+      "locked": {
+        "lastModified": 1668617169,
+        "narHash": "sha256-XaKT5vv6eFbccqKH+qGqedmuPl/Aer02wbKfp1oqfzE=",
+        "owner": "nix-community",
+        "repo": "fenix",
+        "rev": "70e658a26c8e5f739cae29c1276e8de0752524e1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "fenix",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "locked": {
         "lastModified": 1667395993,
@@ -33,10 +70,29 @@
     },
     "root": {
       "inputs": {
+        "cargo-bundle": "cargo-bundle",
+        "fenix": "fenix",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
         "telescope-media-files": "telescope-media-files",
         "zk-nvim": "zk-nvim"
+      }
+    },
+    "rust-analyzer-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1668513567,
+        "narHash": "sha256-13InfXUmulMYDa8wmQ2MRzqjuNcmjAqmpc2cnVCiRg8=",
+        "owner": "rust-lang",
+        "repo": "rust-analyzer",
+        "rev": "0dd0dfb7dfe723bbfa81197c23d73c9bdc4022c1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rust-lang",
+        "ref": "nightly",
+        "repo": "rust-analyzer",
+        "type": "github"
       }
     },
     "telescope-media-files": {
