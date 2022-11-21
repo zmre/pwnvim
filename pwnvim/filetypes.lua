@@ -14,6 +14,8 @@ M.config = function()
       group = filetypes })
   autocmd("FileType",
     { pattern = { "rust" }, callback = function() require('pwnvim.filetypes').rust() end, group = filetypes })
+  autocmd("FileType",
+    { pattern = { "Outline" }, command = "setlocal nospell", group = filetypes })
 
   autocmd("BufRead", { pattern = { "*.sbt" }, command = "setlocal filetype=scala", group = filetypes })
   autocmd("BufRead",
