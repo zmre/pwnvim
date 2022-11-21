@@ -1,47 +1,29 @@
 local M = {}
 
 M.config = function()
-  vim.api.nvim_exec([[
-    augroup filetypes
-      autocmd!
-      autocmd BufRead *.sbt             setlocal filetype=scala
-      autocmd BufRead ~/mail/*          setlocal filetype=mail
-      autocmd BufRead /tmp/mutt*        setlocal filetype=mail
-      autocmd BufRead ~/.signature*     setlocal filetype=mail
-      autocmd BufRead ~/.mutt/*         setlocal filetype=muttrc
-      autocmd BufRead ~/.sawfish/custom setlocal filetype=lisp
-      autocmd BufRead *.*html*          setlocal filetype=html
-      autocmd BufRead *.css*            setlocal filetype=css
-      autocmd BufRead *.rss             setlocal filetype=xml
-      autocmd BufRead *.mc              setlocal filetype=mason
-      autocmd BufRead *.fish            setlocal filetype=fish
+  local filetypes = vim.api.nvim_create_augroup("filetypes", { clear = true })
+  local autocmd = vim.api.nvim_create_autocmd
+  autocmd("FileType",
+    { pattern = { "c", "ruby", "php", "php3", "perl", "python", "mason", "vim", "sh", "zsh", "scala", "javascript",
+      "javascriptreact", "typescript", "typescriptreact", "html", "svelte", "css" },
+      callback = function() require('pwnvim.options').programming() end, group = filetypes })
+  autocmd("FileType",
+    { pattern = { "lua", "xml" }, callback = function() require('pwnvim.filetypes').lua() end, group = filetypes })
+  autocmd("FileType",
+    { pattern = { "md", "Markdown", "vimwiki" }, callback = function() require('pwnvim.filetypes').markdown() end,
+      group = filetypes })
+  autocmd("FileType",
+    { pattern = { "rust" }, callback = function() require('pwnvim.filetypes').rust() end, group = filetypes })
 
-      autocmd FileType c lua require('pwnvim.options').programming()
-      autocmd FileType ruby lua require('pwnvim.options').programming()
-      autocmd FileType rust lua require('pwnvim.filetypes').rust()
-      autocmd FileType php lua require('pwnvim.options').programming()
-      autocmd FileType php3 lua require('pwnvim.options').programming()
-      autocmd FileType perl lua require('pwnvim.options').programming()
-      autocmd FileType python lua require('pwnvim.options').programming()
-      autocmd FileType mason lua require('pwnvim.options').programming()
-      autocmd FileType vim lua require('pwnvim.options').programming()
-      autocmd FileType lua lua require('pwnvim.options').programming()
-      autocmd FileType sh lua require('pwnvim.options').programming()
-      autocmd FileType zsh lua require('pwnvim.options').programming()
-      autocmd FileType scala lua require('pwnvim.options').programming()
-      autocmd FileType javascript lua require('pwnvim.options').programming()
-      autocmd FileType javascriptreact lua require('pwnvim.options').programming()
-      autocmd FileType typescript lua require('pwnvim.options').programming()
-      autocmd FileType typescriptreact lua require('pwnvim.options').programming()
-      autocmd FileType md lua require('pwnvim.filetypes').markdown()
-      autocmd FileType markdown lua require('pwnvim.filetypes').markdown()
-      autocmd FileType vimwiki lua require('pwnvim.filetypes').markdown()
-      autocmd FileType html lua require('pwnvim.options').programming()
-      autocmd FileType svelte lua require('pwnvim.options').programming()
-      autocmd FileType css lua require('pwnvim.options').programming()
-      autocmd FileType xml lua require('pwnvim.filetypes').lua()
-    augroup END
-  ]], false)
+  autocmd("BufRead", { pattern = { "*.sbt" }, command = "setlocal filetype=scala", group = filetypes })
+  autocmd("BufRead",
+    { pattern = { "~/mail/*", "/tmp/mutt*", "~/.signature*" }, command = "setlocal filetype=mail", group = filetypes })
+  autocmd("BufRead", { pattern = { "~/.mutt/*" }, command = "setlocal filetype=muttrc", group = filetypes })
+  autocmd("BufRead", { pattern = { "*.*html*" }, command = "setlocal filetype=html", group = filetypes })
+  autocmd("BufRead", { pattern = { "*.css*" }, command = "setlocal filetype=css", group = filetypes })
+  autocmd("BufRead", { pattern = { "*.rss" }, command = "setlocal filetype=xml", group = filetypes })
+
+  autocmd("TermOpen", { pattern = { "*" }, command = "setlocal nospell", group = filetypes })
 end
 
 M.rust = function()
