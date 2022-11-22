@@ -779,8 +779,19 @@ M.telescope = function()
     file_ignore_patterns = { "*.bak", ".git/", "node_modules", ".zk/", "Caches/" },
     prompt_prefix = " ",
     selection_caret = " ",
-    path_display = { "smart" },
+    -- path_display = { "smart" },
     defaults = {
+      path_display = function(opts, path)
+        local tail = require("telescope.utils").path_tail(path)
+        return string.format("%s (%s)", tail,
+          require("telescope.utils").path_smart(
+            path:gsub("/Users/[^/]*/", "~/")
+            :gsub("/[^/]*$", "")
+            :gsub("/Library/Containers/co.noteplan.NotePlan3/Data/Library/Application Support/co.noteplan.NotePlan3",
+              "/NotePlan")
+          ))
+      end,
+      -- path_display = { "truncate" },
       mappings = {
         n = {
           --["<C-p>"] = paste_selected_entry,
@@ -811,7 +822,7 @@ M.telescope = function()
       layout_strategy = "flex",
       layout_config = {
         horizontal = {
-          prompt_position = "top",
+          prompt_position = "bottom",
           preview_width = 0.55,
         },
         vertical = {
