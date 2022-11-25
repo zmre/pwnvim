@@ -13,10 +13,6 @@
     };
     fenix.url = "github:nix-community/fenix";
     fenix.inputs.nixpkgs.follows = "nixpkgs";
-    cargo-bundle = {
-      url = "github:burtonageo/cargo-bundle";
-      flake = false;
-    };
   };
   outputs = inputs@{ self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
@@ -38,35 +34,6 @@
                 };
               };
             })
-            # (self: super: {
-            #   cargo-bundle = (self.makeRustPlatform {
-            #     inherit (inputs.fenix.packages.${self.system}.minimal)
-            #       cargo rustc;
-            #   }).buildRustPackage {
-            #     name = "cargo-bundle";
-            #     pname = "cargo-bundle";
-            #     cargoLock = { lockFile = inputs.cargo-build + /Cargo.lock; };
-            #     buildDependencies = [ self.glib ];
-            #     buildInputs = [ self.pkg-config self.libiconv ]
-            #       ++ self.lib.optionals self.stdenv.isDarwin
-            #       [ self.darwin.apple_sdk.frameworks.Security ];
-            #     src = inputs.cargo-build;
-            #   };
-
-            # })
-            # (self: super: {
-            #   neovide = super.neovide.overrideAttrs (old: {
-            #     postInstall = (if super.stdenv.isDarwin then ''
-            #       mkdir $out/Applications
-            #       cp -r bundle/osx/Neovide.app $out/Applications
-            #       ln -s $out/bin $out/Applications/Neovide.app/Contents/MacOS
-            #     '' else
-            #       old.postInstall);
-            #     nativeBuildInputs = old.nativeBuildInputs
-            #       ++ [ super.cargo-bundle ];
-            #     postBuild = "cargo bundle --release";
-            #   });
-            # })
           ];
         };
 
@@ -249,5 +216,4 @@
           buildInputs = with pkgs; [ packages.pwnvim ] ++ dependencies;
         };
       });
-
 }

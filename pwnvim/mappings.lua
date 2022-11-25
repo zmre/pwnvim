@@ -121,10 +121,6 @@ local global_leader_opts_visual = {
 
 local leader_mappings = {
   ["e"] = { "<cmd>NvimTreeToggle<cr>", "Explorer" },
-  ["b"] = {
-    "<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown{previewer = false})<cr>",
-    "Buffers"
-  },
   ["/"] = { "<cmd>nohlsearch<CR>", "No Highlight" },
   ["x"] = { "<cmd>Bdelete!<CR>", "Close Buffer" },
   ["q"] = {
@@ -155,7 +151,8 @@ local leader_mappings = {
     ["4"] = {
       "<cmd>lua require('pwnvim.options').fourspaceindent()<CR>",
       "Four Space"
-    }
+    },
+    r = { "<cmd>%retab!", "Change existing indent to current with retab" }
   },
   g = {
     name = "Git",
