@@ -58,6 +58,7 @@
             ripgrep
             fzy
             zoxide
+            bat # previewer for telescope for now
             zk # lsp for markdown notes
             # todo: research https://github.com/artempyanykh/marksman
             vale # linter for prose
