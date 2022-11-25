@@ -16,7 +16,7 @@ The only examples I could find of doing this in a flake was in [Jordan Isaacs](h
 
 ## What's Included
 
-As of the writing of this README, it will give nice syntax highlighting to almost anything, but full nice environments for rust, typescript, svelte, nix, lua, and markdown. I will probably add to these as I dust off old projects in scala or whatever. But this is sort of a warning that it might not work ideally for you if you're programming in python, java, or something else outside of my wheelhouse. 
+As of the writing of this README, it will give nice syntax highlighting to almost anything, but full nice environments for rust, typescript, svelte, nix, lua, and markdown. I will probably add to these as I dust off old projects or pick up new things. But this is sort of a warning that it might not work ideally for you if you're programming in perl, php, java, or something else outside of my wheelhouse. 
 
 It includes git symbols, fugitive, nice status lines and tab bars for buffers, file choosers via telescope, autocomplete, and much more. Take a look at the [flake.nix](./flake.nix) file to get a full picture.
 

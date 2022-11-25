@@ -665,6 +665,10 @@ M.diagnostics = function()
   }
   lspconfig.eslint.setup { on_attach = attached, capabilities = capabilities }
   lspconfig.html.setup { on_attach = attached, capabilities = capabilities }
+  lspconfig.bashls.setup { on_attach = attached, capabilities = capabilities }
+  -- TODO: investigate nvim-metals and remove line below
+  lspconfig.metals.setup { on_attach = attached, capabilities = capabilities } -- for scala
+  lspconfig.pylsp.setup { on_attach = attached, capabilities = capabilities } -- for scala
   lspconfig.jsonls.setup {
     on_attach = attached,
     settings = {

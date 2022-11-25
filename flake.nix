@@ -58,21 +58,25 @@
             ripgrep
             fzy
             zoxide
-            zk
-            vale
-            proselint
-            nixfmt
-            luaformatter
-            rnix-lsp
-            sumneko-lua-language-server
-            nodePackages.eslint_d
-            nodePackages.prettier
+            zk # lsp for markdown notes
+            # todo: research https://github.com/artempyanykh/marksman
+            vale # linter for prose
+            proselint # ditto
+            nixfmt # nix formatter used with null-ls
+            luaformatter # ditto for lua
+            rnix-lsp # nix lsp
+            sumneko-lua-language-server # lua lsp
+            nodePackages.eslint_d # js/ts code formatter and linter
+            nodePackages.prettier # ditto
             nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
             nodePackages.svelte-language-server
             nodePackages.diagnostic-languageserver
             nodePackages.typescript-language-server
+            nodePackages.bash-language-server
             nodePackages."@tailwindcss/language-server"
-            rust-analyzer
+            python310Packages.python-lsp-server # todo: is specifying 310 an issue?
+            rust-analyzer # lsp for rust
+            metals # lsp for scala
           ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ ueberzug ];
         neovim-augmented = recursiveMerge [
           pkgs.neovim-unwrapped
