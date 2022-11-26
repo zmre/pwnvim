@@ -24,6 +24,7 @@ M.config = function()
   autocmd("BufRead", { pattern = { "*.*html*" }, command = "setlocal filetype=html", group = filetypes })
   autocmd("BufRead", { pattern = { "*.css*" }, command = "setlocal filetype=css", group = filetypes })
   autocmd("BufRead", { pattern = { "*.rss" }, command = "setlocal filetype=xml", group = filetypes })
+  autocmd("BufRead", { pattern = { "flake.lock" }, command = "setlocal filetype=json", group = filetypes })
 
   autocmd("TermOpen", { pattern = { "*" }, command = "setlocal nospell", group = filetypes })
 end
