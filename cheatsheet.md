@@ -106,8 +106,17 @@ _This is a combination of built-in universal keys and things that are specific t
 * `,gb` browse git branches and switch to selected
 * `,gc` browse git commits
 * `,gh` show current line blame
+* `,tb` show current line blame
 * `,g-` reset (unstage) current hunk
 * `,g+` stage current hunk
+* `,hs` stage hunk
+* `,hr` reset hunk
+* `,hS` stage buffer
+* `,hR` reset buffer
+* `,hp` preview hunk
+* `,hb` hunk blame
+* `,hd` diff this file
+* `,hD` diff this to index
 * `]c`, `[c` next/prev change
 * `]n`, `[n` next/prev conflict
 * `:G`, `:GStatus`

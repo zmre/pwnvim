@@ -152,7 +152,7 @@ local leader_mappings = {
       "<cmd>lua require('pwnvim.options').fourspaceindent()<CR>",
       "Four Space"
     },
-    r = { "<cmd>%retab!", "Change existing indent to current with retab" }
+    r = { "<cmd>%retab!<cr>", "Change existing indent to current with retab" }
   },
   g = {
     name = "Git",
@@ -164,7 +164,7 @@ local leader_mappings = {
     c = {
       "<cmd>lua require('telescope.builtin').git_commits()<cr>", "Commits"
     },
-    h = { "<cmd>lua require 'gitsigns'.toggle_current_line_blame", "Toggle Blame" },
+    h = { "<cmd>lua require 'gitsigns'.toggle_current_line_blame<cr>", "Toggle Blame" },
     ["-"] = { "<cmd>lua require 'gitsigns'.reset_hunk()<cr>", "Reset Hunk" },
     ["+"] = { "<cmd>lua require 'gitsigns'.stage_hunk()<cr>", "Stage Hunk" }
   },

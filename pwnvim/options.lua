@@ -18,6 +18,8 @@ M.defaults = function()
   vim.g.markdown_folding = 1
   vim.g.vim_markdown_auto_insert_bullets = 1
   vim.g.vim_markdown_new_list_item_indent = 0
+  vim.g.do_filetype_lua = 1 -- Activate the Lua filetype detection mechanism
+  --vim.g.did_load_filetypes = 0 -- Disable filetype.vim detection mechanism
 
   opt.swapfile = false
   opt.spell = true
@@ -101,6 +103,7 @@ M.defaults = function()
   -- Globals
   vim.g.vimsyn_embed = 'l' -- Highlight Lua code inside .vim files
   -- vim.g.polyglot_disabled = {'markdown'}
+  vim.g.polyglot_disabled = { 'sensible', 'autoindent' }
   vim.g.foldlevelstart = 3
 
   -- map the leader key
@@ -241,7 +244,6 @@ M.defaults = function()
     },
   })
   vim.cmd('colorscheme onedarkpro')
-  vim.cmd('syntax on')
   -- Brief highlight on yank
   vim.api.nvim_exec([[
     augroup YankHighlight

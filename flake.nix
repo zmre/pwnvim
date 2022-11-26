@@ -101,17 +101,20 @@
                 package.path = "${self}/?.lua;" .. package.path
                 require('impatient')
                 require('impatient').enable_profile()
+                require('pwnvim.filetypes').config()
                 require('pwnvim.options').defaults()
                 require('pwnvim.options').gui()
                 require('pwnvim.mappings')
                 require('pwnvim.abbreviations')
-                require('pwnvim.filetypes').config()
                 require('pwnvim.plugins').ui()
                 require('pwnvim.plugins').diagnostics()
                 require('pwnvim.plugins').telescope()
                 require('pwnvim.plugins').completions()
                 require('pwnvim.plugins').notes()
                 require('pwnvim.plugins').misc()
+                vim.cmd('unlet did_load_filetypes')
+                vim.cmd('syntax on')
+                vim.cmd('filetype detect')
               EOF
             '';
             packages.myPlugins = with pkgs.vimPlugins; {
