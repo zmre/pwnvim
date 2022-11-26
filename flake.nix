@@ -60,6 +60,7 @@
             zoxide
             bat # previewer for telescope for now
             zk # lsp for markdown notes
+            git
             # todo: research https://github.com/artempyanykh/marksman
             vale # linter for prose
             proselint # ditto
