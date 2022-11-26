@@ -93,7 +93,7 @@
           withRuby = false;
           extraPython3Packages = false;
           extraMakeWrapperArgs =
-            ''--suffix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
+            ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
           # make sure impatient is loaded before everything else to speed things up
           configure = {
             customRC = ''
@@ -112,9 +112,6 @@
                 require('pwnvim.plugins').completions()
                 require('pwnvim.plugins').notes()
                 require('pwnvim.plugins').misc()
-                vim.cmd('unlet did_load_filetypes')
-                vim.cmd('syntax on')
-                vim.cmd('filetype detect')
               EOF
             '';
             packages.myPlugins = with pkgs.vimPlugins; {

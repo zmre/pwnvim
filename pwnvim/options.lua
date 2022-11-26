@@ -19,7 +19,7 @@ M.defaults = function()
   vim.g.vim_markdown_auto_insert_bullets = 1
   vim.g.vim_markdown_new_list_item_indent = 0
   vim.g.do_filetype_lua = 1 -- Activate the Lua filetype detection mechanism
-  --vim.g.did_load_filetypes = 0 -- Disable filetype.vim detection mechanism
+  vim.g.did_load_filetypes = 0 -- Disable filetype.vim detection mechanism
 
   opt.swapfile = false
   opt.spell = true
@@ -110,20 +110,18 @@ M.defaults = function()
   vim.api.nvim_set_keymap('n', ',', '', {})
   vim.g.mapleader = ',' -- Namespace for custom shortcuts
 
-  vim.cmd([[filetype plugin indent on]])
-  vim.cmd('syn sync minlines=5000')
   vim.o.termguicolors = true
   vim.o.background = "dark"
 
   -- Wiki syntax additions
   vim.api.nvim_exec([[
-      " markdownWikiLink is a new region
-      syn region markdownWikiLink matchgroup=markdownLinkDelimiter start="\[\[" end="\]\]" contains=markdownUrl keepend oneline concealends
-      " markdownLinkText is copied from runtime files with 'concealends' appended
-      syn region markdownLinkText matchgroup=markdownLinkTextDelimiter start="!\=\[\%(\%(\_[^][]\|\[\_[^][]*\]\)*]\%( \=[[(]\)\)\@=" end="\]\%( \=[[(]\)\@=" nextgroup=markdownLink,markdownId skipwhite contains=@markdownInline,markdownLineStart concealends
-      " markdownLink is copied from runtime files with 'conceal' appended
-      syn region markdownLink matchgroup=markdownLinkDelimiter start="(" end=")" contains=markdownUrl keepend contained conceal
-    ]], false)
+    " markdownWikiLink is a new region
+    syn region markdownWikiLink matchgroup=markdownLinkDelimiter start="\[\[" end="\]\]" contains=markdownUrl keepend oneline concealends
+    " markdownLinkText is copied from runtime files with 'concealends' appended
+    syn region markdownLinkText matchgroup=markdownLinkTextDelimiter start="!\=\[\%(\%(\_[^][]\|\[\_[^][]*\]\)*]\%( \=[[(]\)\)\@=" end="\]\%( \=[[(]\)\@=" nextgroup=markdownLink,markdownId skipwhite contains=@markdownInline,markdownLineStart concealends
+    " markdownLink is copied from runtime files with 'conceal' appended
+    syn region markdownLink matchgroup=markdownLinkDelimiter start="(" end=")" contains=markdownUrl keepend contained conceal
+  ]], false)
 
 
   --vim.cmd('runtime vim/colors.vim')
@@ -243,7 +241,15 @@ M.defaults = function()
       },
     },
   })
-  vim.cmd('colorscheme onedarkpro')
+  vim.api.nvim_exec([[
+    colorscheme onedarkpro
+    filetype plugin indent on
+    syntax on
+    syntax sync minlines=5000
+    unlet did_load_filetypes
+    filetype detect
+  ]], false)
+
   -- Brief highlight on yank
   vim.api.nvim_exec([[
     augroup YankHighlight
@@ -268,8 +274,6 @@ M.gui = function()
     vim.g.neovide_cursor_animation_length = 0.01
     vim.g.neovide_cursor_trail_length = 0.1
     vim.g.neovide_cursor_antialiasing = true
-    -- Needed so Neovide can find rustfmt and probably other rust tools
-    -- vim.env.PATH = vim.env.PATH .. ':/Users/pwalsh/.cargo/bin'
   end
   vim.opt.mouse = "nv" -- only use mouse in normal and visual modes (notably not insert and command)
   vim.opt.mousemodel = "popup_setpos"
