@@ -211,12 +211,6 @@
           name = "pwnvim";
           exePath = "/bin/nvim";
         };
-        packages.pwneovide = pkgs.neovide;
-        apps.pwneovide = flake-utils.lib.mkApp {
-          drv = packages.pwneovide;
-          name = "pwneovide";
-          exePath = "/bin/neovide";
-        };
         packages.default = packages.pwnvim;
         apps.default = apps.pwnvim;
         devShell = pkgs.mkShell {

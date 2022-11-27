@@ -198,7 +198,12 @@ local leader_mappings = {
   }
 }
 local leader_visual_mappings = {
-  n = { f = { ":'<,'>ZkMatch<CR>", "Find Selected" } }
+  n = { f = { ":'<,'>ZkMatch<CR>", "Find Selected" } },
+  i = leader_mappings.i,
+  f = leader_mappings.f,
+  e = leader_mappings.e,
+  q = leader_mappings.q,
+  x = leader_mappings.x
 }
 
 which_key.register(leader_mappings, global_leader_opts)

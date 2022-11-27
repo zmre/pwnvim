@@ -55,7 +55,7 @@ end
 
 M.lua = function()
   require('pwnvim.options').programming()
-  require('pwnvim.options').fourspaceindent()
+  require('pwnvim.options').twospaceindent()
 end
 
 M.markdown = function()

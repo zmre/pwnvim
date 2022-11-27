@@ -11,6 +11,11 @@ M.defaults = function()
   vim.g.loaded_2html_plugin = 0
   vim.g.loaded_netrw = 0
   vim.g.loaded_netrwPlugin = 0
+  -- we just use lua plugins here so disable others
+  vim.g.loaded_perl_provider = 0
+  vim.g.loaded_node_provider = 0
+  vim.g.loaded_python3_provider = 0
+  vim.g.loaded_ruby_provider = 0
   -- vim.g.loaded_matchit = 0
   -- vim.g.loaded_matchparen = 0
   vim.g.loaded_spec = 0
@@ -269,28 +274,22 @@ M.gui = function()
   else
     vim.opt.guifont = "Hasklug Nerd Font:h9"
   end
-  if vim.g.neovide ~= nil then
-    vim.g.neovide_transparency = 0.92
-    vim.g.neovide_cursor_animation_length = 0.01
-    vim.g.neovide_cursor_trail_length = 0.1
-    vim.g.neovide_cursor_antialiasing = true
-  end
+
+  vim.g.neovide_transparency = 0.92
+  vim.g.neovide_cursor_animation_length = 0.01
+  vim.g.neovide_cursor_trail_length = 0.1
+  vim.g.neovide_cursor_antialiasing = true
+  vim.g.neovide_refresh_rate = 60
+  vim.g.neovide_remember_window_size = true
+  vim.g.neovide_profiler = true
+  vim.g.neovide_input_macos_alt_is_meta = false
+  vim.g.neovide_hide_mouse_when_typing = false
+
   vim.opt.mouse = "nv" -- only use mouse in normal and visual modes (notably not insert and command)
   vim.opt.mousemodel = "popup_setpos"
   -- use the system clipboard for all unnamed yank operations
   vim.opt.clipboard = "unnamedplus"
-
-  -- 2021-07-18 something wacky with guioptions right now
-  -- print(vim.inspect(vim.api.nvim_get_option_info("guioptions")))
-  -- if vim.opt["guioptions"] ~= nil then
-  -- vim.api.nvim_set_option("guioptions", "gmrLae")
-  -- print(vim.inspect(vim.api.nvim_get_option("guioptions")))
-  -- end
-  vim.g.neovide_cursor_animation_length = 0.01
-  vim.g.neovide_cursor_trail_length = 0.1
-  vim.g.neovide_refresh_rate = 140
-  -- vim.g.neovide_transparency=0.8
-  vim.g.neovide_input_use_logo = true
+  vim.cmd([[set guioptions="gmrLae"]])
 
   -- nvim-qt options
   -- Disable GUI Tabline
