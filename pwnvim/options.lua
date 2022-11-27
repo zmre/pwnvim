@@ -281,7 +281,6 @@ M.gui = function()
   vim.g.neovide_cursor_antialiasing = true
   vim.g.neovide_refresh_rate = 60
   vim.g.neovide_remember_window_size = true
-  vim.g.neovide_profiler = true
   vim.g.neovide_input_macos_alt_is_meta = false
   vim.g.neovide_hide_mouse_when_typing = false
 
