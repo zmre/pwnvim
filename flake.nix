@@ -79,6 +79,7 @@
             nodePackages."@tailwindcss/language-server"
             python310Packages.python-lsp-server # todo: is specifying 310 an issue?
             rust-analyzer # lsp for rust
+            #vscode-extensions.vadimcn.vscode-lldb # for debugging rust
             metals # lsp for scala
           ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ ueberzug ];
         neovim-augmented = recursiveMerge [
@@ -127,6 +128,8 @@
                 nvim-lspconfig # setup LSP for intelligent coding
                 null-ls-nvim # formatting and linting via lsp system
                 trouble-nvim # navigate all warnings and errors in quickfix-like window
+                #nvim-dap # debugging functionality used by rust-tools-nvim
+                #nvim-dap-ui # ui for debugging
                 lspsaga-nvim
                 lsp-format-nvim
                 todo-comments-nvim

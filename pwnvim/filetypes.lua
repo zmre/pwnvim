@@ -84,8 +84,8 @@ M.markdown = function()
 
   buf_set_keymap('', '#7', ':Toc<CR>', opts)
   buf_set_keymap('!', '#7', '<ESC>:Toc<CR>', opts)
-  buf_set_keymap('', ']d', ':silent VimwikiDiaryNextDay<CR>', opts)
-  buf_set_keymap('', '[d', ':silent VimwikiDiaryPrevDay<CR>', opts)
+  -- buf_set_keymap('', ']d', ':silent VimwikiDiaryNextDay<CR>', opts)
+  -- buf_set_keymap('', '[d', ':silent VimwikiDiaryPrevDay<CR>', opts)
 
   buf_set_keymap('', ']]', '<Plug>Markdown_MoveToNextHeader', opts)
   buf_set_keymap('', '[[', '<Plug>Markdown_MoveToPreviousHeader', opts)
