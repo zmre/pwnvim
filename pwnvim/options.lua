@@ -21,8 +21,13 @@ M.defaults = function()
   vim.g.loaded_spec = 0
   vim.g.vim_markdown_no_default_key_mappings = 1
   vim.g.markdown_folding = 1
+  vim.g.vim_markdown_strikethrough = 1
   vim.g.vim_markdown_auto_insert_bullets = 1
   vim.g.vim_markdown_new_list_item_indent = 0
+  vim.g.vim_markdown_conceal = 1
+  vim.g.vim_markdown_math = 0
+  vim.g.vim_markdown_conceal_code_blocks = 0
+  vim.g.vim_markdown_frontmatter = 1
   vim.g.do_filetype_lua = 1 -- Activate the Lua filetype detection mechanism
   vim.g.did_load_filetypes = 0 -- Disable filetype.vim detection mechanism
 
@@ -107,8 +112,7 @@ M.defaults = function()
 
   -- Globals
   vim.g.vimsyn_embed = 'l' -- Highlight Lua code inside .vim files
-  -- vim.g.polyglot_disabled = {'markdown'}
-  vim.g.polyglot_disabled = { 'sensible', 'autoindent' }
+  -- vim.g.polyglot_disabled = { 'sensible', 'autoindent' } -- preserve in case I want to bring back polyglot
   vim.g.foldlevelstart = 3
 
   -- map the leader key
@@ -118,25 +122,23 @@ M.defaults = function()
   vim.o.termguicolors = true
   vim.o.background = "dark"
 
-  -- Wiki syntax additions
-  vim.api.nvim_exec([[
-    " markdownWikiLink is a new region
-    syn region markdownWikiLink matchgroup=markdownLinkDelimiter start="\[\[" end="\]\]" contains=markdownUrl keepend oneline concealends
-    " markdownLinkText is copied from runtime files with 'concealends' appended
-    syn region markdownLinkText matchgroup=markdownLinkTextDelimiter start="!\=\[\%(\%(\_[^][]\|\[\_[^][]*\]\)*]\%( \=[[(]\)\)\@=" end="\]\%( \=[[(]\)\@=" nextgroup=markdownLink,markdownId skipwhite contains=@markdownInline,markdownLineStart concealends
-    " markdownLink is copied from runtime files with 'conceal' appended
-    syn region markdownLink matchgroup=markdownLinkDelimiter start="(" end=")" contains=markdownUrl keepend contained conceal
-  ]], false)
-
-
   --vim.cmd('runtime vim/colors.vim')
   require("onedarkpro").setup({
+    -- Call :OnedarkproCache if you make changes below and to speed startups
+    caching = true,
     dark_theme = "onedark",
     light_theme = "onelight",
     highlights = {
       mkdLink                                    = { fg = "${blue}", style = "underline" },
       mkdURL                                     = { fg = "${green}", style = "underline" },
       mkdInlineURL                               = { fg = "${blue}", style = "underline" },
+      mkdListItem                                = { fg = "${cyan}" },
+      mkdListItemCheckbox                        = { fg = "${green}" },
+      -- markdownCheckbox                           = { fg = "${purple}" },
+      -- markdownCheckboxUnchecked                  = { fg = "${purple}" },
+      -- markdownCheckboxChecked                    = { fg = "${green}" },
+      -- markdownCheckboxCanceled                   = { fg = "#444444" },
+      -- markdownCheckboxPostponed                  = { fg = "#444444" },
       -- mkdLinkTitle
       -- mkdID
       -- mkdDelimiter
@@ -167,7 +169,7 @@ M.defaults = function()
       htmlH6                                     = { fg = "${green}", style = "italic" },
       htmlBold                                   = { fg = "#ffffff", style = "bold" },
       htmlItalic                                 = { fg = "#eeeeee", style = "italic" },
-      htmlBoldItalic                             = { style = "bold,italic" },
+      htmlBoldItalic                             = { fg = "#ffffff", style = "bold,italic" },
       SpellBad                                   = { style = "undercurl", sp = "${red}" },
       SpellCap                                   = { style = "undercurl", sp = "${cyan}" },
       SpellRare                                  = { style = "undercurl", sp = "Magenta" },
@@ -180,7 +182,8 @@ M.defaults = function()
       ["@field.markdown"]                        = { fg = "${purple}" },
       ["@text.literal.markdown_inline"]          = { fg = "${green}" },
       ["@text.reference.markdown_inline"]        = { fg = "${blue}", style = "underline" },
-      ["@text.strong.markdown_inline"]           = { fg = "${white}", style = "bold" },
+      ["@text.strong.markdown_inline"]           = { fg = "#ffffff", style = "bold" },
+      ["@text.emphasis.markdown_inline"]         = { fg = "#eeeeee", style = "italic" },
       ["@text.title.markdown"]                   = { fg = "${yellow}", style = "bold" },
       -- ["@parameter.markdown_inline"] = { fg = theme.palette.fg },
       ["@punctuation.special.markdown"]          = { fg = "NONE" },
@@ -252,7 +255,6 @@ M.defaults = function()
     syntax on
     syntax sync minlines=5000
     unlet did_load_filetypes
-    filetype detect
   ]], false)
 
   -- Brief highlight on yank

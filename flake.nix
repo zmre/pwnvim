@@ -122,7 +122,8 @@
                 plenary-nvim # Library for lua plugins; used by many plugins here
 
                 # Syntax / Language Support ##########################
-                vim-polyglot # lazy load all the syntax plugins for all the languages
+                # Removing 2022-11-30 as it is slow and treesitter generally does the same thing
+                # vim-polyglot # lazy load all the syntax plugins for all the languages
                 rust-tools-nvim # lsp stuff and more for rust
                 crates-nvim # inline intelligence for Cargo.toml
                 nvim-lspconfig # setup LSP for intelligent coding
@@ -196,16 +197,17 @@
                 vim-fugitive # git management
                 project-nvim
                 vim-tmux-navigator # navigate vim and tmux panes together
-                FixCursorHold-nvim # remove this when neovim #12587 is resolved
                 impatient-nvim # speeds startup times by caching lua bytecode
                 which-key-nvim
-                direnv-vim # auto-execute nix direnv setups
+                #direnv-vim # auto-execute nix direnv setups -- currently my slowest plugin
               ];
-              opt = with pkgs.vimPlugins;
-                [
-                  # grammar check
-                  vim-grammarous
-                ];
+              opt = with pkgs.vimPlugins; [
+                # grammar check
+                vim-grammarous
+                # markdown syntax (still better than treesitter)
+                vim-markdown # only thing I'm still using from polyglot
+                # TODO: try out mkdx as an alternative to vim-markdown or an augmentation to it
+              ];
             };
           };
         };

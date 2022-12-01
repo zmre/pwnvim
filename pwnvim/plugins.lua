@@ -130,7 +130,7 @@ M.ui = function()
       FIX = {
         icon = " ", -- icon used for the sign, and in search results
         color = "error", -- can be a hex color, or a named color (see below)
-        alt = { "FIXME", "BUG", "FIXIT", "ISSUE" }, -- a set of other keywords that all map to this FIX keywords
+        alt = { "FIXME", "BUG", "FIXIT", "ISSUE", "!!!" }, -- a set of other keywords that all map to this FIX keywords
         -- signs = false, -- configure signs for some keywords individually
       },
       TODO = { icon = " ", color = "info", alt = { "PWTODO", "TK" } },
@@ -138,6 +138,7 @@ M.ui = function()
       WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },
       PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },
       NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
+      TEST = { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },
     },
     merge_keywords = true, -- when true, custom keywords will be merged with the defaults
     -- highlighting of the line containing the todo comment
@@ -145,10 +146,11 @@ M.ui = function()
     -- * keyword: highlights of the keyword
     -- * after: highlights after the keyword (todo text)
     highlight = {
+      multiline = false,
       before = "", -- "fg" or "bg" or empty
       keyword = "wide", -- "fg", "bg", "wide" or empty. (wide is the same as bg, but will also highlight surrounding characters)
       after = "fg", -- "fg" or "bg" or empty
-      pattern = [[.*<(KEYWORDS)\s*:*]], -- pattern or table of patterns, used for highlightng (vim regex)
+      pattern = [[<(KEYWORDS)]], -- pattern or table of patterns, used for highlightng (vim regex)
       comments_only = false, -- uses treesitter to match keywords in comments only
       max_line_len = 400, -- ignore lines longer than this
       exclude = {}, -- list of file types to exclude highlighting
@@ -173,7 +175,7 @@ M.ui = function()
       },
       -- regex that will be used to match keywords.
       -- don't replace the (KEYWORDS) placeholder
-      pattern = [[\b(KEYWORDS)\b]], -- match without the extra colon. You'll likely get false positives
+      pattern = [[\b(KEYWORDS)]], -- match without the extra colon. You'll likely get false positives
     },
   }
 
@@ -301,7 +303,12 @@ M.ui = function()
     }
   }
   require 'nvim-treesitter.configs'.setup {
-    highlight = { enable = true, additional_vim_regex_highlighting = { "markdown" } },
+    auto_install = false,
+    highlight = {
+      enable = true,
+      disable = { "markdown", "markdown_inline" }, -- 2022-11-30 conflicts with markdown plugin, which detects more things like bold+italic and strikethrough
+      additional_vim_regex_highlighting = { "markdown" } -- leaving in case we bring back markdown
+    },
     indent = { enable = true, disable = { "yaml" } },
     context_commentstring = {
       enable = true,
