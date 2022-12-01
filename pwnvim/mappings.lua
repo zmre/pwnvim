@@ -139,7 +139,9 @@ local leader_mappings = {
     q = { "<cmd>lua require('telescope.builtin').quickfix()<cr>", "Quickfix" },
     l = { "<cmd>lua require('telescope.builtin').loclist()<cr>", "Loclist" },
     p = { "<cmd>Telescope projects<cr>", "Projects" },
-    k = { "<cmd>Telescope keymaps<cr>", "Keymaps" }
+    k = { "<cmd>Telescope keymaps<cr>", "Keymaps" },
+    t = { "<cmd>lua require('telescope.builtin').grep_string{search = \"^\\\\s*[*-] \\\\[ \\\\]\", previewer = false, glob_pattern = \"*.md\", use_regex = true, disable_coordinates=true}<cr>",
+      "Todos" }
   },
   -- Quickly change indent defaults in a file
   i = {
