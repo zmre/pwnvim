@@ -168,6 +168,7 @@
                 kommentary # code commenter
                 nvim-ts-context-commentstring # makes kommentary contextual for embedded languages
                 vim-eunuch # brings cp/mv type commands. :Rename and :Move are particularly handy
+                vim-speeddating # allows ctrl-x and ctrl-a to increment/decrement dates
 
                 # Autocompletion
                 nvim-cmp # generic autocompleter
