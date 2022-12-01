@@ -510,7 +510,9 @@ M.diagnostics = function()
       nowait = true -- use `nowait` when creating keymaps
     }
 
-    require("symbols-outline").setup()
+    require("symbols-outline").setup({
+      keymaps = { close = { "<Esc>", "q", "#7" } }
+    })
 
     local leader_mappings = {
       ["q"] = { "<cmd>TroubleToggle<CR>", "Show Trouble list" },
