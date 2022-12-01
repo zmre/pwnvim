@@ -28,8 +28,8 @@ M.defaults = function()
   vim.g.vim_markdown_math = 0
   vim.g.vim_markdown_conceal_code_blocks = 0
   vim.g.vim_markdown_frontmatter = 1
-  vim.g.do_filetype_lua = 1 -- Activate the Lua filetype detection mechanism
-  vim.g.did_load_filetypes = 0 -- Disable filetype.vim detection mechanism
+  -- vim.g.do_filetype_lua = 1 -- Activate the Lua filetype detection mechanism
+  -- vim.g.did_load_filetypes = 0 -- Disable filetype.vim detection mechanism
 
   opt.swapfile = false
   opt.spell = true
@@ -254,7 +254,7 @@ M.defaults = function()
     filetype plugin indent on
     syntax on
     syntax sync minlines=5000
-    unlet did_load_filetypes
+    "unlet did_load_filetypes
   ]], false)
 
   -- Brief highlight on yank
