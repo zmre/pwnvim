@@ -119,7 +119,11 @@ M.ui = function()
       { texthl = sign.name, text = sign.text, numhl = "" })
   end
 
-  require("nvim-surround").setup({})
+  require("nvim-surround").setup({
+    aliases = {
+      ["e"] = "**"
+    }
+  })
 
   require("todo-comments").setup {
     -- your configuration comes here
@@ -306,13 +310,49 @@ M.ui = function()
     auto_install = false,
     highlight = {
       enable = true,
-      disable = { "markdown", "markdown_inline" }, -- 2022-11-30 conflicts with markdown plugin, which detects more things like bold+italic and strikethrough
-      additional_vim_regex_highlighting = { "markdown" } -- leaving in case we bring back markdown
+      --disable = { "markdown", "markdown_inline" }, -- 2022-11-30 conflicts with markdown plugin, which detects more things like bold+italic and strikethrough
+      --additional_vim_regex_highlighting = { "markdown" } -- leaving in case we bring back markdown plugin
     },
     indent = { enable = true, disable = { "yaml" } },
     context_commentstring = {
       enable = true,
       enable_autocmd = false -- per directions for kommentary integration https://github.com/joosepalviste/nvim-ts-context-commentstring/
+    },
+    textobjects = {
+      select = {
+        enable = true,
+        lookahead = true,
+        keymaps = {
+          -- You can use the capture groups defined in textobjects.scm
+          ["af"] = "@function.outer",
+          ["if"] = "@function.inner",
+          ["ac"] = "@class.outer",
+          -- You can optionally set descriptions to the mappings (used in the desc parameter of
+          -- nvim_buf_set_keymap) which plugins like which-key display
+          ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
+        },
+      },
+      move = {
+        enable = true,
+        set_jumps = true, -- whether to set jumps in the jumplist
+        goto_next_start = {
+          ["]m"] = "@function.outer",
+          ["]]"] = { query = "@class.outer", desc = "Next class start" },
+        },
+        goto_next_end = {
+          ["]M"] = "@function.outer",
+          ["]["] = "@class.outer",
+        },
+        goto_previous_start = {
+          ["[m"] = "@function.outer",
+          ["[["] = "@class.outer",
+        },
+        goto_previous_end = {
+          ["[M"] = "@function.outer",
+          ["[]"] = "@class.outer",
+        },
+      },
+
     }
   }
   require 'treesitter-context'.setup {
@@ -905,7 +945,7 @@ M.completions = function()
       ['<C-e>'] = cmp.mapping.close(),
       ['<CR>'] = cmp.mapping.confirm {
         behavior = cmp.ConfirmBehavior.Replace,
-        select = true
+        select = false
       },
       ["<Tab>"] = cmp.mapping(function(fallback)
         if cmp.visible() then
@@ -932,9 +972,9 @@ M.completions = function()
     },
     window = { documentation = cmp.config.window.bordered() },
     sources = {
-      { name = 'nvim_lsp' }, { name = 'buffer' }, { name = 'emoji' },
+      { name = 'nvim_lsp' }, { name = "buffer", keyword_length = 3 }, { name = 'emoji' },
       { name = 'nvim_lua' }, { name = 'path' }, { name = "crates" },
-      { name = 'luasnip' }
+      { name = 'luasnip' }, { name = 'nvim_lsp_signature_help' }
     },
     formatting = {
       fields = { "kind", "abbr", "menu" },

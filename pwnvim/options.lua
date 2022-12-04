@@ -2,6 +2,7 @@ local M = {}
 
 M.defaults = function()
   local opt = vim.opt
+  local simpleUI = os.getenv("SIMPLEUI")
 
   -- disable builtin vim plugins
   vim.g.loaded_gzip = 0
@@ -30,6 +31,17 @@ M.defaults = function()
   vim.g.vim_markdown_frontmatter = 1
   -- vim.g.do_filetype_lua = 1 -- Activate the Lua filetype detection mechanism
   -- vim.g.did_load_filetypes = 0 -- Disable filetype.vim detection mechanism
+  -- vim.cmd([[
+  -- let g:mkdx#settings     = { 'highlight': { 'enable': 1 },
+  --                       \ 'enter': { 'enable': 1, 'shift': 1, 'o': 1, 'shifto': 1 },
+  --                       \ 'tokens': { 'strike': '~~', 'list': '*' },
+  --                       \ 'map': { 'enable': 0 },
+  --                       \ 'gf_on_steroids': 1,
+  --                       \ 'conceal': 1,
+  --                       \ 'links': { 'external': { 'enable': 0 }, 'fragment': { 'complete': 1 } },
+  --                       \ 'toc': { 'text': 'Table of Contents', 'update_on_write': 0 },
+  --                       \ 'fold': { 'enable': 1 } }
+  -- ]])
 
   opt.swapfile = false
   opt.spell = true
@@ -119,7 +131,11 @@ M.defaults = function()
   vim.api.nvim_set_keymap('n', ',', '', {})
   vim.g.mapleader = ',' -- Namespace for custom shortcuts
 
-  vim.o.termguicolors = true
+  if simpleUI ~= "1" then
+    vim.o.termguicolors = true
+  else
+    vim.o.termguicolors = false
+  end
   vim.o.background = "dark"
 
   --vim.cmd('runtime vim/colors.vim')
@@ -130,15 +146,19 @@ M.defaults = function()
     light_theme = "onelight",
     highlights = {
       mkdLink                                    = { fg = "${blue}", style = "underline" },
+      bareLink                                   = { fg = "${blue}", style = "underline" },
       mkdURL                                     = { fg = "${green}", style = "underline" },
       mkdInlineURL                               = { fg = "${blue}", style = "underline" },
       mkdListItem                                = { fg = "${cyan}" },
+      markdownListMarker                         = { fg = "${cyan}" },
       mkdListItemCheckbox                        = { fg = "${green}" },
       -- markdownCheckbox                           = { fg = "${purple}" },
-      -- markdownCheckboxUnchecked                  = { fg = "${purple}" },
-      -- markdownCheckboxChecked                    = { fg = "${green}" },
-      -- markdownCheckboxCanceled                   = { fg = "#444444" },
-      -- markdownCheckboxPostponed                  = { fg = "#444444" },
+      --markdownCheckboxUnchecked                  = { fg = "${purple}" },
+      markdownCheckboxChecked                    = { fg = "${green}" },
+      markdownCheckboxCanceled                   = { fg = "${comment}", style = "strikethrough" },
+      markdownCheckboxPostponed                  = { fg = "${comment}" },
+      markdownStrikethrough                      = { fg = "${comment}", style = "strikethrough" },
+      markdownTag                                = { fg = "${comment}" },
       -- mkdLinkTitle
       -- mkdID
       -- mkdDelimiter
@@ -155,9 +175,9 @@ M.defaults = function()
       markdownLinkText                           = { fg = "${blue}", style = "underline" },
       markdownUrl                                = { fg = "${green}", style = "underline" },
       markdownWikiLink                           = { fg = "${blue}", style = "underline" },
-      markdownH1                                 = { fg = "${cyan}", style = "bold" },
-      markdownH2                                 = { fg = "${cyan}", style = "bold" },
-      markdownH3                                 = { fg = "${cyan}" },
+      markdownH1                                 = { fg = "${yellow}", style = "bold" },
+      markdownH2                                 = { fg = "${yellow}", style = "bold" },
+      markdownH3                                 = { fg = "${yellow}" },
       markdownH4                                 = { fg = "${green}", style = "italic" },
       markdownH5                                 = { fg = "${green}", style = "italic" },
       markdownH6                                 = { fg = "${green}", style = "italic" },
@@ -167,8 +187,11 @@ M.defaults = function()
       htmlH4                                     = { fg = "${green}", style = "italic" },
       htmlH5                                     = { fg = "${green}", style = "italic" },
       htmlH6                                     = { fg = "${green}", style = "italic" },
+      markdownBold                               = { fg = "#ffffff", style = "bold" },
       htmlBold                                   = { fg = "#ffffff", style = "bold" },
+      markdownItalic                             = { fg = "#eeeeee", style = "italic" },
       htmlItalic                                 = { fg = "#eeeeee", style = "italic" },
+      markdownBoldItalic                         = { fg = "#ffffff", style = "bold,italic" },
       htmlBoldItalic                             = { fg = "#ffffff", style = "bold,italic" },
       SpellBad                                   = { style = "undercurl", sp = "${red}" },
       SpellCap                                   = { style = "undercurl", sp = "${cyan}" },
@@ -179,14 +202,18 @@ M.defaults = function()
       VertSplit                                  = { fg = "#202020", bg = "#606060" },
       Folded                                     = { fg = "#c0c8d0", bg = "#384058" },
       ["@comment.markdown"]                      = { fg = "${comment}" },
-      ["@field.markdown"]                        = { fg = "${purple}" },
+      ["@field.markdown_inline"]                 = { fg = "${purple}" },
       ["@text.literal.markdown_inline"]          = { fg = "${green}" },
       ["@text.reference.markdown_inline"]        = { fg = "${blue}", style = "underline" },
+      ["@text.underline"]                        = { style = "underline" },
       ["@text.strong.markdown_inline"]           = { fg = "#ffffff", style = "bold" },
       ["@text.emphasis.markdown_inline"]         = { fg = "#eeeeee", style = "italic" },
+      ["@strikethrough.markdown_inline"]         = { fg = "${comment}", style = "strikethrough" },
+      ["@tag"]                                   = { fg = "${comment}" },
+      ["@block_quote.markdown"]                  = { fg = "${purple}", style = "italic" },
       ["@text.title.markdown"]                   = { fg = "${yellow}", style = "bold" },
       -- ["@parameter.markdown_inline"] = { fg = theme.palette.fg },
-      ["@punctuation.special.markdown"]          = { fg = "NONE" },
+      ["@punctuation.special.markdown"]          = { fg = "${cyan}" },
       ["@punctuation.delimiter.markdown_inline"] = { fg = "${orange}" },
       ["@text.uri.markdown_inline"]              = { fg = "${blue}" },
 
@@ -229,10 +256,10 @@ M.defaults = function()
       all = true
     },
     options = {
-      bold = true,
-      italic = true,
-      underline = true,
-      undercurl = true,
+      bold = simpleUI ~= "1",
+      italic = simpleUI ~= "1",
+      underline = simpleUI ~= "1",
+      undercurl = simpleUI ~= "1",
       cursorline = true,
       transparency = false,
       terminal_colors = false,

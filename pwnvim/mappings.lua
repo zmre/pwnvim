@@ -197,6 +197,10 @@ local leader_mappings = {
     -- l: show outbound links
     -- r: show outbound links
     -- i: info preview
+  },
+  t = {
+    name = "Tasks",
+    d = { "<cmd>lua require('pwnvim.filetypes').completeTask()<cr>", "Done" }
   }
 }
 local leader_visual_mappings = {
@@ -326,6 +330,10 @@ vim.api.nvim_set_keymap('', '<D-o>', ':Telescope file_browser cmd=%:h<CR>',
   options)
 vim.api.nvim_set_keymap('!', '<D-o>',
   '<ESC>:Telescope file_browser cmd=%:h<CR>', options)
+
+-- emacs bindings to jump around in lines
+vim.api.nvim_set_keymap("i", "<C-e>", "<C-o>A", options)
+vim.api.nvim_set_keymap("i", "<C-a>", "<C-o>I", options)
 
 -- TODO:
 -- Use ctrl-x, ctrl-u to complete :emoji: symbols, then use

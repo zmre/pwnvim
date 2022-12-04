@@ -178,6 +178,7 @@
                 cmp-path # complete paths
                 cmp-cmdline # completing in :commands
                 cmp-emoji # complete :emojis:
+                cmp-nvim-lsp-signature-help # help complete function call by showing args
                 nvim-autopairs # balances parens as you type
                 vim-emoji # TODO: redundant now?
                 luasnip # snippets driver
@@ -185,7 +186,7 @@
                 friendly-snippets # actual library of snippets used by luasnip
 
                 # Notes
-                # 2022-08-30 I have quite liked taskwiki and vim-roam-task, but both use a #ab12ff
+                # 2022-08-30 I have quite liked taskwiki and vim-roam-task, but both use a #ab12ff3
                 # style of tagging tasks that confuses the hell out of markdown editors
                 # that are tag aware. As I'm using NotePlan now to collect tasks, I'm
                 # removing this. 
@@ -202,13 +203,14 @@
                 which-key-nvim
                 #direnv-vim # auto-execute nix direnv setups -- currently my slowest plugin
               ];
-              opt = with pkgs.vimPlugins; [
-                # grammar check
-                vim-grammarous
-                # markdown syntax (still better than treesitter)
-                vim-markdown # only thing I'm still using from polyglot
-                # TODO: try out mkdx as an alternative to vim-markdown or an augmentation to it
-              ];
+              opt = with pkgs.vimPlugins;
+                [
+                  # grammar check
+                  vim-grammarous
+                  # markdown syntax (still better than treesitter)
+                  #vim-markdown # only thing I'm still using from polyglot
+                  #mkdx
+                ];
             };
           };
         };

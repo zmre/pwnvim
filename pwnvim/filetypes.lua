@@ -69,18 +69,17 @@ M.markdownsyntax = function()
     "syn region markdownLinkText matchgroup=markdownLinkTextDelimiter start="!\=\[\%(\%(\_[^][]\|\[\_[^][]*\]\)*]\%( \=[[(]\)\)\@=" end="\]\%( \=[[(]\)\@=" nextgroup=markdownLink,markdownId skipwhite contains=@markdownInline,markdownLineStart concealends
     " markdownLink is copied from runtime files with 'conceal' appended
     "syn region markdownLink matchgroup=markdownLinkDelimiter start="(" end=")" contains=markdownUrl keepend contained conceal
-     "syn match inProgress "\[ \] .\+" contains=inProgressMark
-     "syn match inProgressMark "\[ \]" conceal cchar=☐
-     "syn match itemComplete "\[x\] .\+" contains=itemCompleteMark
-     "syn match itemCompleteMark "\[x\]" conceal cchar=☑
-
-    " Cool as it may be, I can't customize the color of the concealed characters (just all conceals, not specific ones)
-    " so ditching this for now but leaving for reference
-    " syn match markdownCheckbox "^\s*[-\*] \[[ >x-]\] " contains=markdownCheckboxChecked,markdownCheckboxUnchecked
-    " syn match markdownCheckboxUnchecked "[-\*] \[ \]" contained conceal cchar=﫟
-    " syn match markdownCheckboxChecked "[-\*] \[x\]" contained conceal cchar=
-    " syn match markdownCheckboxCanceled "[-\*] \[-\]" contained conceal cchar=
-    " syn match markdownCheckboxPostponed "[-\*] \[\>\]" contained conceal cchar=
+    " syn match markdownTag '#\w\+'
+    " syn cluster markdownInline add=markdownTag
+    " Edit htmlTag to ignore tags starting with a number like <2022
+    " syn region htmlTag start=+<[^/0-9]+ end=+>+ fold contains=htmlTagN,htmlString,htmlArg,htmlValue,htmlTagError,htmlEvent,htmlCssDefinition,@htmlPreproc,@htmlArgCluster
+    " syn match mkdListItemCheckbox /\[[xXoO\> -]\]\ze\s\+/ contained contains=mkdListItem
+    let m = matchadd("bareLink", "https:\\S*")
+    let m = matchadd("markdownCheckboxChecked", "[*-] \\[x\\] ")
+    let m = matchadd("markdownCheckboxCanceled", "[*-] \\[-\\] .\\+")
+    let m = matchadd("markdownCheckboxPostponed", "[*-] \\[>\\] .\\+")
+    let m = matchadd("markdownTag", '#\w\+')
+    let m = matchadd("markdownStrikethrough", "\\~\\~[^~]*\\~\\~")
   ]], false)
 end
 
@@ -89,8 +88,9 @@ M.markdown = function()
   -- Changing now to use tabs because NotePlan 3 can't figure out nested lists that are space
   -- indented and I go back and forth between that and nvim. So, for now, this is the compatibility
   -- compromise. 2022-09-27
-  vim.cmd('packadd vim-markdown')
+  -- vim.cmd('packadd mkdx')
   require('pwnvim.options').tabindent()
+
   vim.g.joinspaces = true
   vim.wo.number = false
   vim.wo.relativenumber = false
@@ -98,49 +98,53 @@ M.markdown = function()
   vim.wo.list = false
   -- vim.bo.formatoptions = "jcroqln"
   vim.wo.foldmethod = "expr"
+  vim.wo.foldexpr = "nvim_treesitter#foldexpr()"
   vim.wo.foldlevel = 3
   vim.wo.foldenable = true
+  vim.bo.formatoptions = 'jtqlnr' -- no c (insert comment char on wrap), with r (indent)
+  vim.bo.comments = 'b:>,b:*,b:+,b:-'
 
-  vim.cmd [[syn on]]
+  vim.cmd [[syn off]] -- we use treesitter exclusively on markdown now
 
   require('pwnvim.filetypes').markdownsyntax()
 
   local opts = { noremap = false, silent = true }
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(0, ...) end
 
-  buf_set_keymap('', '<leader>M', '<Plug>MarkdownPreview', opts)
-  -- buf_set_keymap('', '<leader>M', '<Plug>MarkdownPreviewStop', opts)
   buf_set_keymap('', '<leader>m', ':silent !open -a Marked\\ 2.app "%:p"<cr>',
     opts)
 
-  buf_set_keymap('', '#7', ':Toc<CR>', opts)
-  buf_set_keymap('!', '#7', '<ESC>:Toc<CR>', opts)
-  -- buf_set_keymap('', ']d', ':silent VimwikiDiaryNextDay<CR>', opts)
-  -- buf_set_keymap('', '[d', ':silent VimwikiDiaryPrevDay<CR>', opts)
+  --Leave F7 at SymbolOutline which happens when zk LSP attaches
+  --buf_set_keymap('', '#7', ':Toc<CR>', opts)
+  --buf_set_keymap('!', '#7', '<ESC>:Toc<CR>', opts)
+  buf_set_keymap('n', 'gl*', [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], opts)
+  buf_set_keymap('v', 'gl*', [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], opts)
+  buf_set_keymap('n', 'gl>', [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], opts)
+  buf_set_keymap('v', 'gl>', [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], opts)
+  --buf_set_keymap('i', '#', '<plug>(mkdx-link-compl)', opts)
 
-  buf_set_keymap('', ']]', '<Plug>Markdown_MoveToNextHeader', opts)
-  buf_set_keymap('', '[[', '<Plug>Markdown_MoveToPreviousHeader', opts)
-  buf_set_keymap('', '][', '<Plug>Markdown_MoveToNextSiblingHeader', opts)
-  buf_set_keymap('', '[]', '<Plug>Markdown_MoveToPreviousSiblingHeader', opts)
-  buf_set_keymap('', ']u', '<Plug>Markdown_MoveToParentHeader', opts)
-  buf_set_keymap('', ']c', '<Plug>Markdown_MoveToCurHeader', opts)
-  buf_set_keymap('', 'ge', '<Plug>Markdown_EditUrlUnderCursor', opts)
+  --buf_set_keymap('', '][', '<Plug>Markdown_MoveToNextSiblingHeader', opts)
+  --buf_set_keymap('', '[]', '<Plug>Markdown_MoveToPreviousSiblingHeader', opts)
+  --buf_set_keymap('', ']u', '<Plug>Markdown_MoveToParentHeader', opts)
+  --buf_set_keymap('', ']c', '<Plug>Markdown_MoveToCurHeader', opts)
+  --buf_set_keymap('', 'ge', '<Plug>Markdown_EditUrlUnderCursor', opts)
   -- Handle cmd-b for bold
   buf_set_keymap('!', '<D-b>', '****<C-O>h', opts)
-  buf_set_keymap('v', '<D-b>', 'S*gvS*', opts)
-  buf_set_keymap('v', '<leader>b', 'S*gvS*', opts)
-  buf_set_keymap('n', '<D-b>', 'ysiw*lysiw*h', opts)
-  buf_set_keymap('n', '<leader>b', 'ysiw*lysiw*h', opts)
+  buf_set_keymap('v', '<D-b>', 'Se', opts)
+  --buf_set_keymap('v', '<leader>b', 'S*gvS*', opts)
+  buf_set_keymap('v', '<leader>b', 'Se', opts) -- e is an alias configured at surround setup and equal to **
+  buf_set_keymap('n', '<D-b>', 'ysiwe', opts)
+  buf_set_keymap('n', '<leader>b', 'ysiwe', opts)
 
   -- Handle cmd-i for italic
-  buf_set_keymap('!', '<D-i>', [[__<C-\><C-O>h]], opts)
+  buf_set_keymap('!', '<D-i>', [[__<C-O>h]], opts)
   buf_set_keymap('v', '<D-i>', 'S_', opts)
   buf_set_keymap('v', '<leader>i', 'S_', opts)
   buf_set_keymap('n', '<D-i>', 'ysiw_', opts)
   buf_set_keymap('n', '<leader>i', 'ysiw_', opts)
 
   -- Handle cmd-1 for inline code blocks (since cmd-` has special meaning already)
-  buf_set_keymap('!', '<D-1>', [[``<C-\><C-O>h]], opts)
+  buf_set_keymap('!', '<D-1>', [[``<C-O>h]], opts)
   buf_set_keymap('v', '<D-1>', 'S`', opts)
   buf_set_keymap('v', '<leader>`', 'S`', opts)
   buf_set_keymap('n', '<D-1>', 'ysiw`', opts)
@@ -152,8 +156,20 @@ M.markdown = function()
   buf_set_keymap('n', '<D-l>', 'ysiW]%a(', opts)
   buf_set_keymap('n', '<leader>l', 'ysiW]%a(', opts)
 
-  buf_set_keymap('', '#7', ':Toc<CR>', opts)
-  buf_set_keymap('!', '#7', '<ESC>:Toc<CR>', opts)
+end
+
+M.completeTask = function()
+  -- local pos = vim.api.nvim_win_get_cursor(0)[2]
+  local line = vim.api.nvim_get_current_line()
+  -- local nline = line:sub(0, pos) .. 'hello' .. line:sub(pos + 1)
+  local nline = line:gsub("%[ %]", "[x]", 1)
+  if line ~= nline then
+    vim.api.nvim_set_current_line(nline .. ' @done(' .. os.date("%Y-%m-%d %-I:%M %p") .. ")")
+  end
+end
+
+M.deferTask = function()
+
 end
 
 return M
