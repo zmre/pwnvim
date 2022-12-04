@@ -155,7 +155,7 @@
                 toggleterm-nvim # better terminal management
                 nvim-treesitter.withAllGrammars # better code coloring
                 playground # treesitter playground
-                nvim-treesitter-textobjects
+                nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
                 nvim-treesitter-context # keep current block header (func defn or whatever) on first line
 
                 # Editor Features ####################################

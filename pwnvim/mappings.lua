@@ -11,9 +11,9 @@ which_key.setup({
     -- the presets plugin, adds help for a bunch of default keybindings in Neovim
     -- No actual key bindings are created
     presets = {
-      operators = false, -- adds help for operators like d, y, ... and registers them for motion / text object completion
+      operators = true, -- adds help for operators like d, y, ... and registers them for motion / text object completion
       motions = false, -- adds help for motions
-      text_objects = false, -- help for text objects triggered after entering an operator
+      text_objects = true, -- help for text objects triggered after entering an operator
       windows = true, -- default bindings on <c-w>
       nav = true, -- misc bindings to work with windows
       z = true, -- bindings for folds, spelling and others prefixed with z
@@ -141,7 +141,8 @@ local leader_mappings = {
     p = { "<cmd>Telescope projects<cr>", "Projects" },
     k = { "<cmd>Telescope keymaps<cr>", "Keymaps" },
     t = { "<cmd>lua require('telescope.builtin').grep_string{search = \"^\\\\s*[*-] \\\\[ \\\\]\", previewer = false, glob_pattern = \"*.md\", use_regex = true, disable_coordinates=true}<cr>",
-      "Todos" }
+      "Todos" },
+    n = { "<Cmd>ZkNotes { match = vim.fn.input('Search: ') }<CR>", "Find" },
   },
   -- Quickly change indent defaults in a file
   i = {
@@ -188,10 +189,17 @@ local leader_mappings = {
       "New meeting"
     },
     d = {
-      "<cmd>ZkNew { dir = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar', title = os.date('%Y-%m-%d') }<CR>",
+      "<cmd>ZkNew { dir = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar', title = os.date('%Y%m%d') }<CR>",
       "New diary"
     },
-    h = { "<cmd>edit ~/Notes/Notes/HotSheet.md<CR>", "Open HotSheet" }
+    h = { "<cmd>edit ~/Notes/Notes/HotSheet.md<CR>", "Open HotSheet" },
+    i = {
+      c = { "<cmd>r!/opt/homebrew/bin/icalBuddy --bullet '* ' --timeFormat '\\%H:\\%M' --dateFormat '' --noPropNames --noCalendarNames --excludeAllDayEvents --includeCals 'IC - Work' --includeEventProps datetime,title,attendees,location --propertyOrder datetime,title,attendees,location --propertySeparators '| |\\n    * |\\n    * | |' eventsToday<cr>",
+        "Insert today's calendar" },
+      o = { "<cmd>r!gtm-okr goals<cr>", "Insert OKRs" },
+      j = { "<cmd>r!( (curl -s https://icanhazdadjoke.com/ | grep '\\\"subtitle\\\"') || curl -s https://icanhazdadjoke.com/ ) | sed 's/<[^>]*>//g' | sed -z 's/\\n/ /'<cr>",
+        "Insert joke" },
+    }
     -- in open note (defined in plugins.lua as local-only shortcuts):
     -- p: new peer note
     -- l: show outbound links
@@ -200,7 +208,10 @@ local leader_mappings = {
   },
   t = {
     name = "Tasks",
-    d = { "<cmd>lua require('pwnvim.filetypes').completeTask()<cr>", "Done" }
+    d = { "<cmd>lua require('pwnvim.tasks').completeTask()<cr>", "Done" },
+    c = { "<cmd>lua require('pwnvim.tasks').createTask()<cr>", "Create" },
+    s = { "<cmd>lua require('pwnvim.tasks').scheduleTaskPrompt()<cr>", "Schedule" },
+    t = { "<cmd>lua require('pwnvim.tasks').scheduleTaskToday()<cr>", "Today" },
   }
 }
 local leader_visual_mappings = {

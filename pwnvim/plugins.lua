@@ -324,12 +324,16 @@ M.ui = function()
         lookahead = true,
         keymaps = {
           -- You can use the capture groups defined in textobjects.scm
-          ["af"] = "@function.outer",
-          ["if"] = "@function.inner",
-          ["ac"] = "@class.outer",
-          -- You can optionally set descriptions to the mappings (used in the desc parameter of
-          -- nvim_buf_set_keymap) which plugins like which-key display
-          ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
+          ["af"] = { query = "@function.outer", desc = "Select outer function" },
+          ["if"] = { query = "@function.inner", desc = "Select inner function" },
+          ["ac"] = { query = "@class.outer", desc = "Select outer class" },
+          ["ic"] = { query = "@class.inner", desc = "Select inner class" },
+          ["im"] = { query = "@block.inner", desc = "Select inner block" },
+          ["am"] = { query = "@block.outer", desc = "Select outer block" },
+          -- ["il"] = { query = "@list.inner", desc = "Select inner list" },
+          -- ["al"] = { query = "@list.outer", desc = "Select outer list" },
+          -- ["ih"] = { query = "@section.inner", desc = "Select inner section" },
+          -- ["ah"] = { query = "@section.outer", desc = "Select outer section" },
         },
       },
       move = {
@@ -1034,6 +1038,10 @@ M.notes = function()
           }
 
           local leader_mappings = {
+            K = {
+              "<Cmd>lua vim.lsp.buf.hover()<CR>",
+              "Info preview"
+            },
             n = {
               -- Create the note in the same directory as the current buffer after asking for title
               p = {
@@ -1046,10 +1054,6 @@ M.notes = function()
                 "<cmd>Telescope lsp_references<CR>",
                 "References to this note"
               },
-              i = {
-                "<Cmd>lua vim.lsp.buf.hover()<CR>",
-                "Info preview"
-              }
             },
             l = {
               name = "Local LSP",

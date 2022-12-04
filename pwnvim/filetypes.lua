@@ -74,7 +74,7 @@ M.markdownsyntax = function()
     " Edit htmlTag to ignore tags starting with a number like <2022
     " syn region htmlTag start=+<[^/0-9]+ end=+>+ fold contains=htmlTagN,htmlString,htmlArg,htmlValue,htmlTagError,htmlEvent,htmlCssDefinition,@htmlPreproc,@htmlArgCluster
     " syn match mkdListItemCheckbox /\[[xXoO\> -]\]\ze\s\+/ contained contains=mkdListItem
-    let m = matchadd("bareLink", "https:\\S*")
+    let m = matchadd("bareLink", "\\<https:[a-zA-Z?&,;=$+%#/.!~':@0-9_-]*")
     let m = matchadd("markdownCheckboxChecked", "[*-] \\[x\\] ")
     let m = matchadd("markdownCheckboxCanceled", "[*-] \\[-\\] .\\+")
     let m = matchadd("markdownCheckboxPostponed", "[*-] \\[>\\] .\\+")
@@ -121,6 +121,10 @@ M.markdown = function()
   buf_set_keymap('v', 'gl*', [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], opts)
   buf_set_keymap('n', 'gl>', [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], opts)
   buf_set_keymap('v', 'gl>', [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], opts)
+  buf_set_keymap('n', 'gl[', [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>5l]],
+    opts)
+  buf_set_keymap('v', 'gl[', [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
+    opts)
   --buf_set_keymap('i', '#', '<plug>(mkdx-link-compl)', opts)
 
   --buf_set_keymap('', '][', '<Plug>Markdown_MoveToNextSiblingHeader', opts)
@@ -157,19 +161,4 @@ M.markdown = function()
   buf_set_keymap('n', '<leader>l', 'ysiW]%a(', opts)
 
 end
-
-M.completeTask = function()
-  -- local pos = vim.api.nvim_win_get_cursor(0)[2]
-  local line = vim.api.nvim_get_current_line()
-  -- local nline = line:sub(0, pos) .. 'hello' .. line:sub(pos + 1)
-  local nline = line:gsub("%[ %]", "[x]", 1)
-  if line ~= nline then
-    vim.api.nvim_set_current_line(nline .. ' @done(' .. os.date("%Y-%m-%d %-I:%M %p") .. ")")
-  end
-end
-
-M.deferTask = function()
-
-end
-
 return M
