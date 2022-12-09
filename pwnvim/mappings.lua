@@ -208,13 +208,23 @@ local leader_mappings = {
   },
   t = {
     name = "Tasks",
-    d = { "<cmd>lua require('pwnvim.tasks').completeTask()<cr>", "Done" },
-    c = { "<cmd>lua require('pwnvim.tasks').createTask()<cr>", "Create" },
-    s = { "<cmd>lua require('pwnvim.tasks').scheduleTaskPrompt()<cr>", "Schedule" },
-    t = { "<cmd>lua require('pwnvim.tasks').scheduleTaskToday()<cr>", "Today" },
+    --d = { "<cmd>lua require('pwnvim.tasks').completeTask()<cr>", "Done" },
+    d = { function() require('pwnvim.tasks').completeTaskDirect() end, "Done" },
+    c = { function() require('pwnvim.tasks').createTaskDirect() end, "Create" },
+    s = { function() require('pwnvim.tasks').scheduleTaskPrompt() end, "Schedule" },
+    t = { function() require('pwnvim.tasks').scheduleTaskTodayDirect() end, "Today" },
   }
 }
 local leader_visual_mappings = {
+  t = {
+    name = "Tasks",
+    --d = { function() require("pwnvim.tasks").eachSelectedLine(require("pwnvim.tasks").completeTask) end, "Done" },
+    d = { ":luado return require('pwnvim.tasks').completeTask(line)<cr>", "Done" },
+    s = { require("pwnvim.tasks").scheduleTaskBulk, "Schedule" },
+    -- s needs a way to call the prompt then reuse the value
+    --t = { function() require("pwnvim.tasks").eachSelectedLine(require("pwnvim.tasks").scheduleTaskToday) end, "Today" },
+    t = { ":luado return require('pwnvim.tasks').scheduleTaskToday(line)<cr>", "Today" },
+  },
   n = { f = { ":'<,'>ZkMatch<CR>", "Find Selected" } },
   i = leader_mappings.i,
   f = leader_mappings.f,
