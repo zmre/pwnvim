@@ -382,17 +382,23 @@ M.ui = function()
       modified_icon = "●",
       close_icon = "",
       -- close_icon = '',
+      -- hover doesn't work in tmux
+      -- hover = {
+      --   enabled = true,
+      --   delay = 200,
+      --   reveal = { 'close' }
+      -- },
       left_trunc_marker = "",
       right_trunc_marker = "",
       max_name_length = 40,
       max_prefix_length = 30, -- prefix used when a buffer is de-duplicated
       tab_size = 20,
-      name_formatter = function(buf) -- buf contains a "name", "path" and "bufnr"
-        -- remove extension from markdown files for example
-        if buf.name:match('%.md') then
-          return vim.fn.fnamemodify(buf.name, ':t:r')
-        end
-      end,
+      -- name_formatter = function(buf) -- buf contains a "name", "path" and "bufnr"
+      --   -- remove extension from markdown files for example
+      --   if buf.name:match('%.md') then
+      --     return vim.fn.fnamemodify(buf.name, ':t:r')
+      --   end
+      -- end,
       diagnostics = false, -- | "nvim_lsp" | "coc",
       diagnostics_update_in_insert = false,
       offsets = { { filetype = "NvimTree", text = "", padding = 1 } },
@@ -403,84 +409,11 @@ M.ui = function()
       persist_buffer_sort = false, -- whether or not custom sorted buffers should persist
       -- can also be a table containing 2 custom separators
       -- [focused and unfocused]. eg: { '|', '|' }
-      separator_style = "thin", -- | "thick" | "thin" | { 'any', 'any' },
+      separator_style = "thick", -- | "thick" | "thin" | { 'any', 'any' },
       enforce_regular_tabs = false, -- if true, all tabs same width
       always_show_bufferline = true
     },
     highlights = {
-      fill = {
-        fg = { attribute = "fg", highlight = "#ff0000" },
-        bg = { attribute = "bg", highlight = "TabLine" }
-      },
-      background = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" }
-      },
-
-      buffer_visible = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" }
-      },
-
-      close_button = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" }
-      },
-      close_button_visible = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" }
-      },
-      tab_selected = {
-        fg = { attribute = "fg", highlight = "Normal" },
-        bg = { attribute = "bg", highlight = "Normal" }
-      },
-      tab = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" }
-      },
-      tab_close = {
-        -- fg = {attribute='fg',highlight='LspDiagnosticsDefaultError'},
-        fg = { attribute = "fg", highlight = "TabLineSel" },
-        bg = { attribute = "bg", highlight = "Normal" }
-      },
-
-      duplicate_selected = {
-        fg = { attribute = "fg", highlight = "TabLineSel" },
-        bg = { attribute = "bg", highlight = "TabLineSel" },
-        italic = true
-      },
-      duplicate_visible = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-        italic = true
-      },
-      duplicate = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" },
-        italic = true
-      },
-
-      modified = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" }
-      },
-      modified_selected = {
-        fg = { attribute = "fg", highlight = "Normal" },
-        bg = { attribute = "bg", highlight = "Normal" }
-      },
-      modified_visible = {
-        fg = { attribute = "fg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" }
-      },
-
-      separator = {
-        fg = { attribute = "bg", highlight = "TabLine" },
-        bg = { attribute = "bg", highlight = "TabLine" }
-      },
-      separator_selected = {
-        fg = { attribute = "bg", highlight = "Normal" },
-        bg = { attribute = "bg", highlight = "Normal" }
-      },
       indicator_selected = {
         fg = {
           attribute = "fg",
