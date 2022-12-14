@@ -134,7 +134,7 @@ M.ui = function()
       FIX = {
         icon = " ", -- icon used for the sign, and in search results
         color = "error", -- can be a hex color, or a named color (see below)
-        alt = { "FIXME", "BUG", "FIXIT", "ISSUE", "!!!" }, -- a set of other keywords that all map to this FIX keywords
+        alt = { "ERROR", "FIXME", "BUG", "FIXIT", "ISSUE", "!!!" }, -- a set of other keywords that all map to this FIX keywords
         -- signs = false, -- configure signs for some keywords individually
       },
       TODO = { icon = " ", color = "info", alt = { "PWTODO", "TK" } },
@@ -623,14 +623,21 @@ M.diagnostics = function()
   }
   local lspconfig = require("lspconfig")
   local cmp_nvim_lsp = require("cmp_nvim_lsp")
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
+  --local capabilities = vim.lsp.protocol.make_client_capabilities()
+  local capabilities = cmp_nvim_lsp.default_capabilities()
+
   capabilities.textDocument.completion.completionItem.snippetSupport = true
   cmp_nvim_lsp.default_capabilities(capabilities)
 
-  lspconfig.rust_analyzer.setup {
-    on_attach = attached,
-    capabilities = capabilities
-  }
+  -- lspconfig.rust_analyzer.setup {
+  --   on_attach = attached,
+  --   capabilities = capabilities
+  -- }
+  require('rust-tools').setup({
+    server = { on_attach = attached, capabilities = capabilities },
+    tools = { autoSetHints = true, inlay_hints = { auto = true, only_current_line = true } }
+  })
+  require('crates').setup()
   lspconfig.tsserver.setup { capabilities = capabilities, on_attach = attached }
   lspconfig.sumneko_lua.setup {
     settings = { Lua = { diagnostics = { globals = { "vim" } } } },
@@ -654,7 +661,7 @@ M.diagnostics = function()
   lspconfig.bashls.setup { on_attach = attached, capabilities = capabilities }
   -- TODO: investigate nvim-metals and remove line below
   lspconfig.metals.setup { on_attach = attached, capabilities = capabilities } -- for scala
-  lspconfig.pylsp.setup { on_attach = attached, capabilities = capabilities } -- for scala
+  lspconfig.pylsp.setup { on_attach = attached, capabilities = capabilities } -- for python
   lspconfig.jsonls.setup {
     on_attach = attached,
     settings = {
@@ -727,11 +734,6 @@ M.diagnostics = function()
     -- },
   })
 
-  require('rust-tools').setup({
-    server = { on_attach = attached },
-    tools = { autoSetHints = true, inlay_hints = { only_current_line = true } }
-  })
-  require('crates').setup()
 
 end -- Diagnostics setup
 

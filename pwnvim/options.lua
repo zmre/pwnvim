@@ -138,12 +138,9 @@ M.defaults = function()
   end
   vim.o.background = "dark"
 
-  --vim.cmd('runtime vim/colors.vim')
   require("onedarkpro").setup({
     -- Call :OnedarkproCache if you make changes below and to speed startups
     caching = true,
-    dark_theme = "onedark",
-    light_theme = "onelight",
     highlights = {
       mkdLink                                    = { fg = "${blue}", style = "underline" },
       bareLink                                   = { fg = "${blue}", style = "underline" },
@@ -263,7 +260,7 @@ M.defaults = function()
       cursorline = true,
       transparency = false,
       terminal_colors = false,
-      window_unfocused_color = true
+      highlight_inactive_windows = true
     },
     colors = {
       onedark = {
@@ -277,7 +274,7 @@ M.defaults = function()
     },
   })
   vim.api.nvim_exec([[
-    colorscheme onedarkpro
+    colorscheme onedark
     filetype plugin indent on
     syntax on
     syntax sync minlines=5000
