@@ -104,7 +104,7 @@ M.markdown = function()
   vim.bo.formatoptions = 'jtqlnr' -- no c (insert comment char on wrap), with r (indent)
   vim.bo.comments = 'b:>,b:*,b:+,b:-'
 
-  vim.cmd [[syn off]] -- we use treesitter exclusively on markdown now
+  vim.bo.syntax = "off" -- we use treesitter exclusively on markdown now
 
   require('pwnvim.filetypes').markdownsyntax()
 

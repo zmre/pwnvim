@@ -428,6 +428,15 @@ end -- UI setup
 
 ----------------------- DIAGNOSTICS --------------------------------
 M.diagnostics = function()
+  -- IMPORTANT: make sure to setup neodev BEFORE lspconfig
+  require("neodev").setup({
+    override = function(root_dir, library)
+      if string.match(root_dir, "neovim") or string.match(root_dir, "pwnvim") then
+        library.enabled = true
+        library.plugins = true
+      end
+    end,
+  })
   vim.diagnostic.config({
     virtual_text = false,
     signs = { active = { M.signs } },
@@ -468,6 +477,10 @@ M.diagnostics = function()
     end
 
     print("LSP attached " .. client.name)
+
+    vim.api.nvim_buf_set_option(bufnr, "formatexpr", "v:lua.vim.lsp.formatexpr()")
+    vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+    vim.api.nvim_buf_set_option(bufnr, "tagfunc", "v:lua.vim.lsp.tagfunc")
 
     local which_key = require("which-key")
     local local_leader_opts = {
@@ -623,11 +636,11 @@ M.diagnostics = function()
   }
   local lspconfig = require("lspconfig")
   local cmp_nvim_lsp = require("cmp_nvim_lsp")
-  --local capabilities = vim.lsp.protocol.make_client_capabilities()
-  local capabilities = cmp_nvim_lsp.default_capabilities()
-
-  capabilities.textDocument.completion.completionItem.snippetSupport = true
-  cmp_nvim_lsp.default_capabilities(capabilities)
+  --local capabilities = cmp_nvim_lsp.default_capabilities()
+  --local capabilities = cmp_nvim_lsp.default_capabilities(vim.lsp.protocol.make_client_capabilities())
+  local completion_capabilities = cmp_nvim_lsp.default_capabilities()
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
+  capabilities.textDocument.completion = completion_capabilities.textDocument.completion
 
   -- lspconfig.rust_analyzer.setup {
   --   on_attach = attached,
@@ -640,7 +653,8 @@ M.diagnostics = function()
   require('crates').setup()
   lspconfig.tsserver.setup { capabilities = capabilities, on_attach = attached }
   lspconfig.sumneko_lua.setup {
-    settings = { Lua = { diagnostics = { globals = { "vim" } } } },
+    settings = { Lua = { workspace = { checkThirdParty = false }, completion = { callSnippet = "Replace" },
+      diagnostics = { globals = { "vim" } } } },
     on_attach = attached,
     capabilities = capabilities
   }
@@ -666,48 +680,8 @@ M.diagnostics = function()
     on_attach = attached,
     settings = {
       json = {
-        schemas = {
-          -- Find more schemas here: https://www.schemastore.org/json/
-          {
-            description = "TypeScript compiler configuration file",
-            fileMatch = { "tsconfig.json", "tsconfig.*.json" },
-            url = "https://json.schemastore.org/tsconfig.json"
-          }, {
-            description = "Babel configuration",
-            fileMatch = {
-              ".babelrc.json", ".babelrc", "babel.config.json"
-            },
-            url = "https://json.schemastore.org/babelrc.json"
-          }, {
-            description = "ESLint config",
-            fileMatch = { ".eslintrc.json", ".eslintrc" },
-            url = "https://json.schemastore.org/eslintrc.json"
-          }, {
-            description = "Prettier config",
-            fileMatch = {
-              ".prettierrc", ".prettierrc.json",
-              "prettier.config.json"
-            },
-            url = "https://json.schemastore.org/prettierrc"
-          }, {
-            description = "Stylelint config",
-            fileMatch = {
-              ".stylelintrc", ".stylelintrc.json",
-              "stylelint.config.json"
-            },
-            url = "https://json.schemastore.org/stylelintrc"
-          }, {
-            description = "Json schema for properties json file for a GitHub Workflow template",
-            fileMatch = {
-              ".github/workflow-templates/**.properties.json"
-            },
-            url = "https://json.schemastore.org/github-workflow-template-properties.json"
-          }, {
-            description = "NPM configuration file",
-            fileMatch = { "package.json" },
-            url = "https://json.schemastore.org/package.json"
-          }
-        }
+        schemas = require('schemastore').json.schemas(),
+        validate = { enable = true },
       }
     },
     setup = {
@@ -911,9 +885,10 @@ M.completions = function()
     },
     window = { documentation = cmp.config.window.bordered() },
     sources = {
-      { name = 'nvim_lsp' }, { name = "buffer", keyword_length = 3 }, { name = 'emoji' },
-      { name = 'nvim_lua' }, { name = 'path' }, { name = "crates" },
-      { name = 'luasnip' }, { name = 'nvim_lsp_signature_help' }
+      { name = 'nvim_lsp' }, { name = 'nvim_lsp_signature_help' }, { name = 'nvim_lua' }, { name = 'emoji' },
+      { name = 'luasnip' },
+      { name = 'path' }, { name = "crates" }, { name = "buffer", keyword_length = 3 },
+
     },
     formatting = {
       fields = { "kind", "abbr", "menu" },
@@ -922,6 +897,7 @@ M.completions = function()
         vim_item.kind = string.format("%s", M.kind_icons[vim_item.kind])
         vim_item.menu = ({
           nvim_lsp = "[LSP]",
+          nvim_lsp_signature_help = "[LSPS]",
           luasnip = "[Snippet]",
           buffer = "[Buffer]",
           path = "[Path]"

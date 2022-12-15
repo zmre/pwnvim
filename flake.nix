@@ -134,6 +134,8 @@
                 lspsaga-nvim
                 lsp-format-nvim
                 todo-comments-nvim
+                neodev-nvim # help for neovim lua api
+                SchemaStore-nvim # json schemas
 
                 # UI #################################################
                 onedarkpro-nvim # colorscheme

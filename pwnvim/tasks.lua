@@ -19,14 +19,15 @@ end
 M.scheduleTaskDirect = function(newyear, newmonth, newday)
   local line = vim.api.nvim_get_current_line()
   local nline = require("pwnvim.tasks").scheduleTask(line, newyear, newmonth, newday)
-  return nline
+  vim.api.nvim_set_current_line(nline)
 end
 
 M.scheduleTask = function(line, newyear, newmonth, newday)
   newmonth = string.format("%02d", newmonth)
   newday = string.format("%02d", newday)
-  -- local buf = vim.api.nvim_get_current_buf()
-  -- local win = vim.api.nvim_get_current_win()
+  local buf = vim.api.nvim_get_current_buf()
+  local win = vim.api.nvim_get_current_win()
+
   -- Step 1: change current task to [>]
   local nline = line:gsub("%[[ oO>-]%] ", "[>] ", 1)
   if line == nline then
@@ -56,16 +57,21 @@ M.scheduleTask = function(line, newyear, newmonth, newday)
   if vim.fn.filereadable(target) == 1 then
     vim.api.nvim_command('edit ' .. target)
     vim.api.nvim_buf_set_lines(0, -1, -1, false, { line })
+    vim.api.nvim_set_current_win(win)
+    vim.api.nvim_set_current_buf(buf)
   else
+    print("zk.new target", target, title)
     require("zk.api").new(target, { dir = dir, title = title, template = "daily.md", edit = true },
       function(err, res)
+        print("zk.new callback start")
         vim.api.nvim_command('edit ' .. target)
         vim.api.nvim_buf_set_lines(0, -1, -1, false, { line })
+        vim.api.nvim_set_current_win(win)
+        vim.api.nvim_set_current_buf(buf)
+        print("zk.new callback end")
       end)
   end
 
-  -- vim.api.nvim_set_current_win(win)
-  -- vim.api.nvim_set_current_buf(buf)
   return nline
 end
 
@@ -80,18 +86,46 @@ M.scheduleTaskPrompt = function()
   require("pwnvim.tasks").datePromptThen(require("pwnvim.tasks").scheduleTaskDirect)
 end
 
+-- M.datePromptThen = function(myfunc)
+--   local defaultyear = os.date("%Y")
+--   local defaultmonth = os.date("%m")
+--   local defaultday = os.date("%d")
+--   vim.ui.input({ prompt = "Enter year: ", default = defaultyear }, function(year)
+--     vim.ui.input({ prompt = "Enter month: ", default = defaultmonth }, function(month)
+--       vim.ui.input({ prompt = "Enter day: ", default = defaultday }, function(day)
+--         month = string.format("%02d", month)
+--         day = string.format("%02d", day)
+--         myfunc(year, month, day)
+--       end)
+--     end)
+--   end)
+-- end
+
 M.datePromptThen = function(myfunc)
-  local defaultyear = os.date("%Y")
-  local defaultmonth = os.date("%m")
-  local defaultday = os.date("%d")
-  vim.ui.input({ prompt = "Enter year: ", default = defaultyear }, function(year)
-    vim.ui.input({ prompt = "Enter month: ", default = defaultmonth }, function(month)
-      vim.ui.input({ prompt = "Enter day: ", default = defaultday }, function(day)
-        month = string.format("%02d", month)
-        day = string.format("%02d", day)
-        myfunc(year, month, day)
-      end)
-    end)
+  local days = {}
+  for i = 0, 14, 1 do
+    local day
+    if i == 0 then
+      day = os.date("%Y-%m-%d (today)", os.time() + 86400 * i)
+    elseif i == 1 then
+      day = os.date("%Y-%m-%d (tomorrow)", os.time() + 86400 * i)
+    elseif i > 7 then
+      day = os.date("%Y-%m-%d (next %a)", os.time() + 86400 * i)
+    else
+      day = os.date("%Y-%m-%d (%a)", os.time() + 86400 * i)
+    end
+    table.insert(days, day)
+  end
+  vim.ui.select(days, { prompt = 'Pick a date:' }, function(choice)
+    if choice then
+      local t = {}
+      for w in string.gmatch(choice, "(%d+)") do
+        table.insert(t, w)
+      end
+      if #t == 3 then
+        myfunc(t[1], t[2], t[3])
+      end
+    end
   end)
 end
 
@@ -112,6 +146,7 @@ end
 M.getDateFromCurrentFile = function()
   local srcfilename = vim.api.nvim_buf_get_name(0)
   local date = srcfilename:match("%d+-%d+-%d+")
+  -- TODO: also check for filenames that are "YYYYmmdd.md"
   if date == nil then
     local srcheader = vim.api.nvim_buf_get_lines(0, 0, 10, false)
     for _, l in ipairs(srcheader) do
