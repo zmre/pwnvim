@@ -277,7 +277,14 @@ M.ui = function()
   }
   -- HACK: work-around for https://github.com/lukas-reineke/indent-blankline.nvim/issues/59
   vim.wo.colorcolumn = "99999"
-  require('indent_blankline').setup({ show_current_context = true })
+  require('indent_blankline').setup({
+    show_current_context = true,
+    use_treesitter = true,
+    buftype_exclude = { 'terminal' },
+    filetype_exclude = { 'help', 'markdown' },
+
+
+  })
 
   require("colorizer").setup()
   require('lualine').setup {
@@ -314,6 +321,7 @@ M.ui = function()
       --additional_vim_regex_highlighting = { "markdown" } -- leaving in case we bring back markdown plugin
     },
     indent = { enable = true, disable = { "yaml" } },
+    incremental_selection = { enable = true },
     context_commentstring = {
       enable = true,
       enable_autocmd = false -- per directions for kommentary integration https://github.com/joosepalviste/nvim-ts-context-commentstring/
@@ -429,7 +437,7 @@ end -- UI setup
 ----------------------- DIAGNOSTICS --------------------------------
 M.diagnostics = function()
   -- IMPORTANT: make sure to setup neodev BEFORE lspconfig
-  require("neodev").setup({
+  require("neodev").setup({ -- help for neovim lua api
     override = function(root_dir, library)
       if string.match(root_dir, "neovim") or string.match(root_dir, "pwnvim") then
         library.enabled = true
@@ -457,6 +465,20 @@ M.diagnostics = function()
     { border = "rounded" })
 
   vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
+
+  require("trouble").setup {
+    group = true, -- group results by file
+    icons = true,
+    auto_preview = true,
+    signs = {
+      error = "",
+      warning = "",
+      hint = "",
+      information = "",
+      other = "﫠"
+    }
+  }
+
 
   local function attached(client, bufnr)
     local function buf_set_keymap(...)
@@ -629,7 +651,10 @@ M.diagnostics = function()
       codeactions.eslint_d,
       codeactions.gitsigns,
       codeactions.statix,
-      null_ls.builtins.hover.dictionary
+      diagnostics.statix,
+      null_ls.builtins.hover.dictionary,
+      codeactions.shellcheck,
+      diagnostics.shellcheck,
       -- removed formatting.rustfmt since rust_analyzer seems to do the same thing
     },
     on_attach = attached
@@ -647,7 +672,7 @@ M.diagnostics = function()
   --   capabilities = capabilities
   -- }
   require('rust-tools').setup({
-    server = { on_attach = attached, capabilities = capabilities },
+    server = { on_attach = attached, capabilities = capabilities, standalone = true },
     tools = { autoSetHints = true, inlay_hints = { auto = true, only_current_line = true } }
   })
   require('crates').setup()
@@ -698,6 +723,15 @@ M.diagnostics = function()
   }
 
   require 'lspsaga'.init_lsp_saga({
+    use_saga_diagnostic_sign = true,
+    use_diagnostic_virtual_text = false,
+    code_action_prompt = {
+      enable = true,
+      sign = false,
+      sign_priority = 20,
+      virtual_text = true,
+    },
+
     -- TODO: re-enable this at next update - getting error 2022-08-02
     -- code_action_lightbulb = {
     -- enable = false,
@@ -912,15 +946,6 @@ end -- completions
 ----------------------- NOTES --------------------------------
 -- zk (zettelkasten lsp), taskwiki, focus mode, grammar
 M.notes = function()
-  vim.g.taskwiki_disable_concealcursor = 'yes'
-  vim.g.taskwiki_markdown_syntax = 'markdown'
-  vim.g.taskwiki_markup_syntax = 'markdown'
-  vim.g.taskwiki_dont_fold = 1
-  vim.g.taskwiki_task_path = '~/Notes/t'
-  vim.g.taskwiki_data_location = '~/.task'
-  vim.g.taskwiki_task_note_root = 't'
-  vim.g.wiki_root = '~/Notes'
-
   require("zk").setup({
     picker = "telescope",
     -- automatically attach buffers in a zk notebook that match the given filetypes
@@ -1175,7 +1200,8 @@ M.misc = function()
     detection_methods = { "pattern", "lsp" },
     patterns = {
       ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json",
-      ".zk", "Cargo.toml", "build.sbt", "Package.swift", "Makefile.in"
+      ".zk", "build.sbt", "Package.swift", "Makefile.in", "README.md",
+      "flake.nix"
     },
     show_hidden = false,
     silent_chdir = true,

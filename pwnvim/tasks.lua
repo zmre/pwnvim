@@ -51,26 +51,12 @@ M.scheduleTask = function(line, newyear, newmonth, newday)
   end
 
   -- Step 5: take current task and copy it to Calendar/YYYYmmdd.md
-  local dir = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar/'
-  local target = dir .. newyear .. newmonth .. newday .. '.md'
-  local title = newyear .. newmonth .. newday
-  if vim.fn.filereadable(target) == 1 then
-    vim.api.nvim_command('edit ' .. target)
-    vim.api.nvim_buf_set_lines(0, -1, -1, false, { line })
-    vim.api.nvim_set_current_win(win)
-    vim.api.nvim_set_current_buf(buf)
-  else
-    print("zk.new target", target, title)
-    require("zk.api").new(target, { dir = dir, title = title, template = "daily.md", edit = true },
-      function(err, res)
-        print("zk.new callback start")
-        vim.api.nvim_command('edit ' .. target)
-        vim.api.nvim_buf_set_lines(0, -1, -1, false, { line })
-        vim.api.nvim_set_current_win(win)
-        vim.api.nvim_set_current_buf(buf)
-        print("zk.new callback end")
-      end)
-  end
+  local target = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar/' .. newyear .. newmonth .. newday .. '.md'
+  vim.api.nvim_command('edit ' .. target)
+  vim.api.nvim_buf_set_lines(0, -1, -1, false, { line })
+
+  vim.api.nvim_set_current_win(win)
+  vim.api.nvim_set_current_buf(buf)
 
   return nline
 end
@@ -86,23 +72,9 @@ M.scheduleTaskPrompt = function()
   require("pwnvim.tasks").datePromptThen(require("pwnvim.tasks").scheduleTaskDirect)
 end
 
--- M.datePromptThen = function(myfunc)
---   local defaultyear = os.date("%Y")
---   local defaultmonth = os.date("%m")
---   local defaultday = os.date("%d")
---   vim.ui.input({ prompt = "Enter year: ", default = defaultyear }, function(year)
---     vim.ui.input({ prompt = "Enter month: ", default = defaultmonth }, function(month)
---       vim.ui.input({ prompt = "Enter day: ", default = defaultday }, function(day)
---         month = string.format("%02d", month)
---         day = string.format("%02d", day)
---         myfunc(year, month, day)
---       end)
---     end)
---   end)
--- end
-
 M.datePromptThen = function(myfunc)
   local days = {}
+  -- Generate dates for next two weeks with handy shortcut labels
   for i = 0, 14, 1 do
     local day
     if i == 0 then
@@ -116,6 +88,7 @@ M.datePromptThen = function(myfunc)
     end
     table.insert(days, day)
   end
+  -- These will pop up in telescope for quick filtering
   vim.ui.select(days, { prompt = 'Pick a date:' }, function(choice)
     if choice then
       local t = {}
@@ -125,7 +98,26 @@ M.datePromptThen = function(myfunc)
       if #t == 3 then
         myfunc(t[1], t[2], t[3])
       end
+    else
+      -- if no choice was made, assume a desire to specify something outside the 14 days
+      M.datePromptRawThen(myfunc)
     end
+  end)
+end
+
+-- Just give three prompts for year/month/day
+M.datePromptRawThen = function(myfunc)
+  local defaultyear = os.date("%Y")
+  local defaultmonth = os.date("%m")
+  local defaultday = os.date("%d")
+  vim.ui.input({ prompt = "Enter year: ", default = defaultyear }, function(year)
+    vim.ui.input({ prompt = "Enter month: ", default = defaultmonth }, function(month)
+      vim.ui.input({ prompt = "Enter day: ", default = defaultday }, function(day)
+        month = string.format("%02d", month)
+        day = string.format("%02d", day)
+        myfunc(year, month, day)
+      end)
+    end)
   end)
 end
 

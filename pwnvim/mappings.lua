@@ -61,9 +61,6 @@ vim.api.nvim_set_keymap('!', '#1', '<Esc>', options)
 -- TODO: try using the WinNew and WinClosed autocmd events with CHADtree filetype
 -- to remap #2 to either open or close commands. Or BufDelete, BufAdd, BufWinLeave, BufWinEnter
 -- Make F2 bring up a file browser
--- vim.api.nvim_set_keymap('', '#2', ':NvimTreeToggle<CR>', options)
--- vim.api.nvim_set_keymap('!', '#2', '<ESC>:NvimTreeToggle<CR>', options)
--- vim.api.nvim_set_keymap('', '-', ':NvimTreeFindFile<CR>', options)
 vim.api.nvim_set_keymap('', '#2', '<cmd>NvimTreeToggle<CR>', options)
 vim.api.nvim_set_keymap('!', '#2', '<cmd>NvimTreeToggle<CR>', options)
 vim.api.nvim_set_keymap('', '-', '<cmd>NvimTreeFindFile<CR>', options)
@@ -218,6 +215,7 @@ local leader_mappings = {
 local leader_visual_mappings = {
   t = {
     name = "Tasks",
+    a = { ':grep "^\\s*[*-] \\[ \\] "<cr>:Trouble quickfix<cr>', "All tasks quickfix" },
     --d = { function() require("pwnvim.tasks").eachSelectedLine(require("pwnvim.tasks").completeTask) end, "Done" },
     d = { ":luado return require('pwnvim.tasks').completeTask(line)<cr>", "Done" },
     s = { require("pwnvim.tasks").scheduleTaskBulk, "Schedule" },

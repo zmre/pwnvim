@@ -3,10 +3,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    zk-nvim = {
-      url = "github:mickael-menu/zk-nvim";
-      flake = false;
-    };
+    /* zk-nvim = {
+         url = "github:mickael-menu/zk-nvim";
+         flake = false;
+       };
+    */
     telescope-media-files = {
       url = "github:nvim-telescope/telescope-media-files.nvim";
       flake = false;
@@ -22,11 +23,6 @@
           overlays = [
             (self: super: {
               vimPlugins = super.vimPlugins // {
-                zk-nvim = super.vimUtils.buildVimPlugin {
-                  name = "zk-nvim";
-                  pname = "zk-nvim";
-                  src = inputs.zk-nvim;
-                };
                 telescope-media-files = super.vimUtils.buildVimPlugin {
                   name = "telescope-media-files";
                   pname = "telescope-media-files";
@@ -68,6 +64,7 @@
             nixfmt # nix formatter used with null-ls
             luaformatter # ditto for lua
             rnix-lsp # nix lsp
+            shellcheck
             sumneko-lua-language-server # lua lsp
             nodePackages.eslint_d # js/ts code formatter and linter
             nodePackages.prettier # ditto
@@ -79,6 +76,9 @@
             nodePackages."@tailwindcss/language-server"
             python310Packages.python-lsp-server # todo: is specifying 310 an issue?
             rust-analyzer # lsp for rust
+            # TODO: add back the following when https://github.com/NixOS/nixpkgs/issues/202507 hits
+            #llvm # for debugging rust
+            #lldb # for debugging rust
             #vscode-extensions.vadimcn.vscode-lldb # for debugging rust
             metals # lsp for scala
           ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ ueberzug ];
@@ -100,19 +100,7 @@
             customRC = ''
               lua << EOF
                 package.path = "${self}/?.lua;" .. package.path
-                require('impatient')
-                require('impatient').enable_profile()
-                require('pwnvim.filetypes').config()
-                require('pwnvim.options').defaults()
-                require('pwnvim.options').gui()
-                require('pwnvim.mappings')
-                require('pwnvim.abbreviations')
-                require('pwnvim.plugins').ui()
-                require('pwnvim.plugins').diagnostics()
-                require('pwnvim.plugins').telescope()
-                require('pwnvim.plugins').completions()
-                require('pwnvim.plugins').notes()
-                require('pwnvim.plugins').misc()
+            '' + pkgs.lib.readFile (./init.lua) + ''
               EOF
             '';
             packages.myPlugins = with pkgs.vimPlugins; {
@@ -187,12 +175,7 @@
                 cmp_luasnip # snippets completion
                 friendly-snippets # actual library of snippets used by luasnip
 
-                # Notes
-                # 2022-08-30 I have quite liked taskwiki and vim-roam-task, but both use a #ab12ff3
-                # style of tagging tasks that confuses the hell out of markdown editors
-                # that are tag aware. As I'm using NotePlan now to collect tasks, I'm
-                # removing this. 
-                #vim-roam-task # a clone of taskwiki that doesn't require vimwiki
+                # writing
                 zk-nvim # lsp for a folder of notes for searching/linking/etc.
                 true-zen-nvim # distraction free, width constrained writing mode
                 twilight-nvim # dim text outside of current scope
@@ -209,9 +192,6 @@
                 [
                   # grammar check
                   vim-grammarous
-                  # markdown syntax (still better than treesitter)
-                  #vim-markdown # only thing I'm still using from polyglot
-                  #mkdx
                 ];
             };
           };

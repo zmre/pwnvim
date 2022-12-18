@@ -1,7 +1,6 @@
 local M = {}
 
 M.defaults = function()
-  local opt = vim.opt
   local simpleUI = os.getenv("SIMPLEUI")
 
   -- disable builtin vim plugins
@@ -29,98 +28,93 @@ M.defaults = function()
   vim.g.vim_markdown_math = 0
   vim.g.vim_markdown_conceal_code_blocks = 0
   vim.g.vim_markdown_frontmatter = 1
-  -- vim.g.do_filetype_lua = 1 -- Activate the Lua filetype detection mechanism
-  -- vim.g.did_load_filetypes = 0 -- Disable filetype.vim detection mechanism
-  -- vim.cmd([[
-  -- let g:mkdx#settings     = { 'highlight': { 'enable': 1 },
-  --                       \ 'enter': { 'enable': 1, 'shift': 1, 'o': 1, 'shifto': 1 },
-  --                       \ 'tokens': { 'strike': '~~', 'list': '*' },
-  --                       \ 'map': { 'enable': 0 },
-  --                       \ 'gf_on_steroids': 1,
-  --                       \ 'conceal': 1,
-  --                       \ 'links': { 'external': { 'enable': 0 }, 'fragment': { 'complete': 1 } },
-  --                       \ 'toc': { 'text': 'Table of Contents', 'update_on_write': 0 },
-  --                       \ 'fold': { 'enable': 1 } }
-  -- ]])
 
-  opt.swapfile = false
-  opt.spell = true
-  opt.spelllang = "en_us"
-  opt.ruler = true -- show the cursor position all the time
-  opt.cursorline = true -- add indicator for current line
-  opt.secure = true -- don't execute shell cmds in .vimrc not owned by me
-  opt.history = 50 -- keep 50 lines of command line history
-  opt.shell = "zsh"
-  opt.modelines = 0 -- Don't allow vim settings embedded in text files for security reasons
-  opt.showcmd = true -- display incomplete commands
-  opt.showmode = true -- display current mode
-  opt.backup = false
-  opt.writebackup = true
-  opt.backupcopy = "auto"
-  opt.hidden = true
-  opt.cf = true -- jump to errors based on error files
-  opt.listchars = "tab:⇥ ,trail:␣,extends:⇉,precedes:⇇,nbsp:·"
-  opt.list = true -- render special chars (tabs, trails, ...)
-  opt.ttyfast = true
-  opt.expandtab = true
-  opt.splitbelow = true -- allow splits below
-  opt.splitright = true -- and to the right
-  opt.dictionary = opt.dictionary +
+  vim.opt.grepprg = "rg\\ --vimgrep\\ --no-heading\\ --smart-case\\ --color\\ never"
+  vim.opt.grepformat = "%f:%l:%c:%m,%f:%l:%m,%f"
+
+  -- ignore completions and menus for the below
+  vim.opt.wildignore = "*/node_modules/*,_site,*/__pycache__/,*/venv/*,*/target/*,*/.vim$,\\~$,*/.log,*/.aux,*/.cls,*/.aux,*/.bbl,*/.blg,*/.fls,*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk,*.bak,*.o,*.a,*.sw?,.git/,*.class,.direnv/,.DS_Store"
+  vim.opt.wildmenu = true -- cmd line completion a-la zsh
+  vim.opt.wildmode = "list:longest" -- matches mimic that of bash or zsh
+
+  vim.opt.swapfile = false
+  vim.opt.spell = true
+  vim.opt.spelllang = "en_us"
+  vim.opt.ruler = true -- show the cursor position all the time
+  vim.opt.cursorline = true -- add indicator for current line
+  vim.opt.secure = true -- don't execute shell cmds in .vimrc not owned by me
+  vim.opt.history = 50 -- keep 50 lines of command line history
+  vim.opt.shell = "zsh"
+  vim.opt.modelines = 0 -- Don't allow vim settings embedded in text files for security reasons
+  vim.opt.showcmd = true -- display incomplete commands
+  vim.opt.showmode = true -- display current mode
+  vim.opt.backup = false
+  vim.opt.writebackup = true
+  vim.opt.backupcopy = "auto"
+  vim.opt.hidden = true
+  vim.opt.cf = true -- jump to errors based on error files
+  vim.opt.listchars = "tab:⇥ ,trail:␣,extends:⇉,precedes:⇇,nbsp:·"
+  vim.opt.list = true -- render special chars (tabs, trails, ...)
+  vim.opt.ttyfast = true
+  vim.opt.expandtab = true
+  vim.opt.splitbelow = true -- allow splits below
+  vim.opt.splitright = true -- and to the right
+  vim.opt.dictionary = vim.opt.dictionary +
       { '/usr/share/dict/words', '~/.aspell.english.pws' }
-  opt.complete = opt.complete + { 'k', ']' }
-  opt.complete = opt.complete - { 'i' }
-  opt.encoding = "utf-8"
-  opt.backspace = "indent,eol,start" -- allow backspacing over everything in insert mode
-  opt.joinspaces = false -- don't insert two spaces after sentences on joins
-  opt.binary = false
-  opt.display = "lastline"
-  opt.viewoptions = "folds,cursor,unix,slash" -- better unix / windows compatibility
-  opt.shortmess = "filnxtToSAcOF"
-  opt.foldnestmax = 5
+  vim.opt.complete = vim.opt.complete + { 'k', ']' }
+  vim.opt.complete = vim.opt.complete - { 'i' }
+  vim.opt.encoding = "utf-8"
+  vim.opt.backspace = "indent,eol,start" -- allow backspacing over everything in insert mode
+  vim.opt.joinspaces = false -- don't insert two spaces after sentences on joins
+  vim.opt.binary = false
+  vim.opt.display = "lastline"
+  vim.opt.viewoptions = "folds,cursor,unix,slash" -- better unix / windows compatibility
+  vim.opt.shortmess = "filnxtToSAcOF"
+  vim.opt.foldnestmax = 5
 
   -- wrapping
-  opt.wrap = true
-  opt.sidescroll = 2 -- min number of columns to scroll from edge
-  opt.scrolloff = 8 -- when 4 away from edge start scrolling
-  opt.sidescrolloff = 8 -- keep cursor one col from end of line
-  opt.textwidth = 0
-  opt.breakindent = true
-  opt.showbreak = "» "
-  opt.breakat = opt.breakat - { '/', '*', '_', '`' }
-  opt.linebreak = true -- wraps on word boundaries but only if nolist is set
+  vim.opt.wrap = true
+  vim.opt.sidescroll = 2 -- min number of columns to scroll from edge
+  vim.opt.scrolloff = 8 -- when 4 away from edge start scrolling
+  vim.opt.sidescrolloff = 8 -- keep cursor one col from end of line
+  vim.opt.textwidth = 0
+  vim.opt.breakindent = true
+  vim.opt.showbreak = "» "
+  vim.opt.breakat = vim.opt.breakat - { '/', '*', '_', '`' }
+  vim.opt.linebreak = true -- wraps on word boundaries but only if nolist is set
 
   -- Make tabs be spaces of 4 characters by default
-  opt.tabstop = 4
-  opt.shiftwidth = 4
-  opt.softtabstop = 4
-  opt.expandtab = true -- turn tabs to spaces by default
+  vim.opt.tabstop = 4
+  vim.opt.shiftwidth = 4
+  vim.opt.softtabstop = 4
+  vim.opt.expandtab = true -- turn tabs to spaces by default
 
-  opt.autoindent = true -- autoindent to same level as previous line
-  opt.smartindent = true -- indent after { and cinwords words
-  opt.smartcase = true -- intelligently ignore case in searches
-  opt.ignorecase = true -- default to not being case sensitive
-  opt.smarttab = true
-  opt.icm = "nosplit" -- show substitutions as you type
-  opt.hlsearch = true
-  opt.updatetime = 250 -- Decrease update time
+  vim.opt.autoindent = true -- autoindent to same level as previous line
+  vim.opt.smartindent = true -- indent after { and cinwords words
+  vim.opt.smartcase = true -- intelligently ignore case in searches
+  vim.opt.ignorecase = true -- default to not being case sensitive
+  vim.opt.smarttab = true
+  vim.opt.icm = "nosplit" -- show substitutions as you type
+  vim.opt.hlsearch = true
+  vim.opt.updatetime = 250 -- Decrease update time
   vim.wo.signcolumn = 'yes'
-  opt.visualbell = true
-  opt.autoread = true -- auto reload files changed on disk if not changed in buffer
-  opt.cursorline = false
-  opt.ttyfast = true
-  opt.formatoptions = 'jcroqlt' -- t=text, c=comments, q=format with "gq"
-  opt.showmatch = true -- auto hilights matching bracket or paren
-  opt.nrformats = opt.nrformats - { 'octal' }
-  opt.shiftround = true
-  opt.ttimeout = true
-  opt.ttimeoutlen = 50
-  opt.fileformats = "unix,dos,mac"
-  opt.matchpairs = "(:),{:},[:],<:>"
-  opt.number = false
-  opt.relativenumber = false
-  opt.completeopt = "menu,menuone,noselect" -- needed for autocompletion stuff
-  opt.conceallevel = 2
-  opt.fileencoding = "utf-8"
+  vim.opt.visualbell = true
+  vim.opt.autoread = true -- auto reload files changed on disk if not changed in buffer
+  vim.opt.cursorline = false
+  vim.opt.ttyfast = true
+  vim.opt.formatoptions = 'jcroqlt' -- t=text, c=comments, q=format with "gq"
+  vim.opt.showmatch = true -- auto hilights matching bracket or paren
+  vim.opt.nrformats = vim.opt.nrformats - { 'octal' }
+  vim.opt.shiftround = true
+  vim.opt.ttimeout = true
+  vim.opt.ttimeoutlen = 50
+  vim.opt.fileformats = "unix,dos,mac"
+  vim.opt.matchpairs = "(:),{:},[:],<:>"
+  vim.opt.number = false
+  vim.opt.relativenumber = false
+  vim.opt.completeopt = "menu,menuone,noselect" -- needed for autocompletion stuff
+  vim.opt.conceallevel = 2
+  vim.opt.fileencoding = "utf-8"
 
   -- Globals
   vim.g.vimsyn_embed = 'l' -- Highlight Lua code inside .vim files
