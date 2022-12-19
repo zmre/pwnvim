@@ -286,7 +286,7 @@ M.ui = function()
 
   })
 
-  require("colorizer").setup()
+  require("colorizer").setup({})
   require('lualine').setup {
     options = {
       theme = 'papercolor_light',
@@ -673,7 +673,8 @@ M.diagnostics = function()
   -- }
   require('rust-tools').setup({
     server = { on_attach = attached, capabilities = capabilities, standalone = true },
-    tools = { autoSetHints = true, inlay_hints = { auto = true, only_current_line = true } }
+    tools = { autoSetHints = true, inlay_hints = { auto = true, only_current_line = true },
+      runnables = { use_telescope = true } }
   })
   require('crates').setup()
   lspconfig.tsserver.setup { capabilities = capabilities, on_attach = attached }
@@ -751,7 +752,7 @@ M.telescope = function()
   local action_state = require('telescope.actions.state')
 
   local function paste_selected_entry(prompt_bufnr)
-    local entry = action_state.get_selected_entry(prompt_bufnr)
+    local entry = action_state.get_selected_entry()
     actions.close(prompt_bufnr)
     -- ensure that the buffer can be written to
     if vim.api.nvim_buf_get_option(vim.api.nvim_get_current_buf(),
@@ -762,7 +763,7 @@ M.telescope = function()
   end
 
   local function yank_selected_entry(prompt_bufnr)
-    local entry = action_state.get_selected_entry(prompt_bufnr)
+    local entry = action_state.get_selected_entry()
     actions.close(prompt_bufnr)
     -- Put it in the unnamed buffer and the system clipboard both
     vim.api.nvim_call_function("setreg", { '"', entry.value })
@@ -770,7 +771,7 @@ M.telescope = function()
   end
 
   local function system_open_selected_entry(prompt_bufnr)
-    local entry = action_state.get_selected_entry(prompt_bufnr)
+    local entry = action_state.get_selected_entry()
     actions.close(prompt_bufnr)
     os.execute("open '" .. entry.value .. "'")
   end
@@ -888,7 +889,7 @@ M.completions = function()
       ['<C-n>'] = cmp.mapping.select_next_item(),
       ['<C-d>'] = cmp.mapping.scroll_docs(-4),
       ['<C-f>'] = cmp.mapping.scroll_docs(4),
-      ['<C-Space>'] = cmp.mapping.complete(),
+      ['<C-Space>'] = cmp.mapping.complete({}),
       ['<C-e>'] = cmp.mapping.close(),
       ['<CR>'] = cmp.mapping.confirm {
         behavior = cmp.ConfirmBehavior.Replace,
@@ -898,7 +899,7 @@ M.completions = function()
         if cmp.visible() then
           cmp.select_next_item()
         elseif luasnip.expandable() then
-          luasnip.expand()
+          luasnip.expand({})
         elseif luasnip.expand_or_jumpable() then
           luasnip.expand_or_jump()
         elseif check_backspace() then

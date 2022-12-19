@@ -139,7 +139,7 @@ local leader_mappings = {
     k = { "<cmd>Telescope keymaps<cr>", "Keymaps" },
     t = { "<cmd>lua require('telescope.builtin').grep_string{search = \"^\\\\s*[*-] \\\\[ \\\\]\", previewer = false, glob_pattern = \"*.md\", use_regex = true, disable_coordinates=true}<cr>",
       "Todos" },
-    n = { "<Cmd>ZkNotes { match = vim.fn.input('Search: ') }<CR>", "Find" },
+    n = { "<Cmd>ZkNotes { match = {vim.fn.input('Search: ')} }<CR>", "Find" },
   },
   -- Quickly change indent defaults in a file
   i = {
@@ -180,7 +180,7 @@ local leader_mappings = {
     },
     o = { "<cmd>ZkNotes<CR>", "Open" },
     t = { "<cmd>ZkTags<CR>", "Open by tag" },
-    f = { "<Cmd>ZkNotes { match = vim.fn.input('Search: ') }<CR>", "Find" },
+    f = { "<Cmd>ZkNotes { match = {vim.fn.input('Search: ') }}<CR>", "Find" },
     m = {
       "<cmd>lua require('zk.commands').get('ZkNew')({ dir = vim.fn.input('Folder: ',vim.env.ZK_NOTEBOOK_DIR .. '/Notes/meetings','dir'), title = vim.fn.input('Title: ') })<CR>",
       "New meeting"
