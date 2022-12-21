@@ -42,9 +42,6 @@ M.kind_icons = {
 ----------------------- UI --------------------------------
 -- Tree, GitSigns, Indent markers, Colorizer, bufferline, lualine, treesitter
 M.ui = function()
-  require('hologram').setup {
-    auto_display = true -- WIP automatic markdown image display, may be prone to breaking
-  }
   -- following options are the default
   -- each of these are documented in `:help nvim-tree.OPTION_NAME`
   local nvim_tree_config = require("nvim-tree.config")

@@ -193,7 +193,6 @@
                   zk-nvim # lsp for a folder of notes for searching/linking/etc.
                   true-zen-nvim # distraction free, width constrained writing mode
                   twilight-nvim # dim text outside of current scope
-                  hologram-nvim # images inline for markdown
 
                   # Misc
                   vim-fugitive # git management
@@ -205,11 +204,11 @@
                 ] ++ pkgs.lib.optionals (!pkgs.stdenv.isDarwin) [
                   telescope-media-files # only works on linux, requires ueberzug, but gives image preview
                 ];
-              opt = with pkgs.vimPlugins;
-                [
-                  # grammar check
-                  vim-grammarous
-                ];
+              opt = with pkgs.vimPlugins; [
+                # grammar check
+                vim-grammarous
+                hologram-nvim # images inline for markdown (only in terminal)
+              ];
             };
           };
         };

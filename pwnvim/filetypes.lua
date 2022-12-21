@@ -171,5 +171,12 @@ M.markdown = function()
   buf_set_keymap('n', '<D-l>', 'ysiW]%a(', opts)
   buf_set_keymap('n', '<leader>l', 'ysiW]%a(', opts)
 
+  if vim.env.KITTY_INSTALLATION_DIR and not vim.g.neovide then
+    vim.cmd('packadd hologram.nvim')
+    require('hologram').setup {
+      auto_display = true -- WIP automatic markdown image display, may be prone to breaking
+    }
+  end
+
 end
 return M
