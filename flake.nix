@@ -200,7 +200,6 @@
                   vim-tmux-navigator # navigate vim and tmux panes together
                   impatient-nvim # speeds startup times by caching lua bytecode
                   which-key-nvim
-                  direnv-vim # auto-execute nix direnv setups -- currently my slowest plugin
                 ] ++ pkgs.lib.optionals (!pkgs.stdenv.isDarwin) [
                   telescope-media-files # only works on linux, requires ueberzug, but gives image preview
                 ];
@@ -208,6 +207,7 @@
                 # grammar check
                 vim-grammarous
                 hologram-nvim # images inline for markdown (only in terminal)
+                direnv-vim # auto-execute nix direnv setups -- currently my slowest plugin; enabled by programming filetype
               ];
             };
           };

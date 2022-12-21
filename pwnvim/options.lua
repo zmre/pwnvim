@@ -9,8 +9,8 @@ M.defaults = function()
   vim.g.loaded_tarPlugin = 0
   vim.g.loaded_zipPlugin = 0
   vim.g.loaded_2html_plugin = 0
-  vim.g.loaded_netrw = 0
-  vim.g.loaded_netrwPlugin = 0
+  vim.g.loaded_netrw = 1 -- disable netrw
+  vim.g.loaded_netrwPlugin = 1 -- disable netrw
   -- we just use lua plugins here so disable others
   vim.g.loaded_perl_provider = 0
   vim.g.loaded_node_provider = 0
@@ -379,6 +379,11 @@ M.programming = function()
     augroup END
   ]], false)
 
+  -- Load direnv when we're in a programming file as we may want
+  -- the nix environment provided. Run explicitly since the autocmds
+  -- might not otherwise fire.
+  vim.cmd('packadd direnv.vim')
+  vim.cmd('DirenvExport')
 end
 
 return M
