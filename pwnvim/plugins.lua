@@ -42,6 +42,9 @@ M.kind_icons = {
 ----------------------- UI --------------------------------
 -- Tree, GitSigns, Indent markers, Colorizer, bufferline, lualine, treesitter
 M.ui = function()
+  require('hologram').setup {
+    auto_display = true -- WIP automatic markdown image display, may be prone to breaking
+  }
   -- following options are the default
   -- each of these are documented in `:help nvim-tree.OPTION_NAME`
   local nvim_tree_config = require("nvim-tree.config")
@@ -544,7 +547,7 @@ M.diagnostics = function()
         },
         r = { "<cmd>Telescope lsp_references<CR>", "References" },
         f = {
-          "<cmd>Telescope lsp_code_actions theme=cursor<CR>",
+          "<cmd>Lspsaga code_action<CR>",
           "Fix Code Actions"
         },
         t = { "<cmd>lua vim.lsp.buf.signature_help()<CR>", "Signature" },
@@ -672,9 +675,11 @@ M.diagnostics = function()
   --   capabilities = capabilities
   -- }
   require('rust-tools').setup({
-    server = { on_attach = attached, capabilities = capabilities, standalone = true },
-    tools = { autoSetHints = true, inlay_hints = { auto = true, only_current_line = true },
-      runnables = { use_telescope = true } }
+    server = { on_attach = attached, capabilities = capabilities, standalone = false },
+    tools = {
+      autoSetHints = true, inlay_hints = { auto = true, only_current_line = true },
+      runnables = { use_telescope = true }
+    }
   })
   require('crates').setup()
   lspconfig.tsserver.setup { capabilities = capabilities, on_attach = attached }
@@ -1004,7 +1009,7 @@ M.notes = function()
                 "Info preview"
               },
               f = {
-                "<cmd>Telescope lsp_code_actions theme=cursor<CR>",
+                "<cmd>Lspsaga code_action<CR>",
                 "Fix Code Actions"
               },
               e = {
@@ -1187,6 +1192,8 @@ end
 ----------------------- MISC --------------------------------
 -- rooter, kommentary, autopairs, tmux, toggleterm
 M.misc = function()
+  vim.g.lf_map_keys = 0 -- lf.vim disable default keymapping
+
   -- Change project directory using local cd only
   -- vim.g.rooter_cd_cmd = 'lcd'
   -- Look for these files/dirs as hints

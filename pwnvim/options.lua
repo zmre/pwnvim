@@ -112,7 +112,8 @@ M.defaults = function()
   vim.opt.matchpairs = "(:),{:},[:],<:>"
   vim.opt.number = false
   vim.opt.relativenumber = false
-  vim.opt.completeopt = "menu,menuone,noselect" -- needed for autocompletion stuff
+  -- noinsert: don't insert until selection made, noselect: don't select automatically
+  vim.opt.completeopt = "menu,menuone,noinsert,noselect" -- needed for autocompletion stuff
   vim.opt.conceallevel = 2
   vim.opt.fileencoding = "utf-8"
 

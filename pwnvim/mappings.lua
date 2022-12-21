@@ -99,6 +99,18 @@ vim.api.nvim_set_keymap('', '<C-l>', ':<C-u>nohlsearch<CR><C-l>',
 -- Yank to end of line using more familiar method
 vim.api.nvim_set_keymap('', 'Y', 'y$', options)
 
+-- Center screen vertically when navigating by half screens
+vim.keymap.set("n","<C-d>","<C-d>zz")
+vim.keymap.set("n","<C-u>","<C-u>zz")
+
+-- Center search hits vertically on screen
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
+
+-- Move visually selected lines up and down
+vim.keymap.set("v","J",":m '>+1<CR>gv=gv")
+vim.keymap.set("v","K",":m '<-2<CR>gv=gv")
+
 local global_leader_opts = {
   mode = "n", -- NORMAL mode
   prefix = "<leader>",
