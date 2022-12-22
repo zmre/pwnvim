@@ -81,8 +81,8 @@
           # https://github.com/rust-lang/rust-analyzer/issues/13393
           # https://github.com/mozilla/nixpkgs-mozilla/issues/238
           rustfmt
-          # cargo
-          # rustc
+          cargo # have this as a fallback when a flake isn't in place
+          rustc # have this as a fallback when a flake isn't in place
           # TODO: add back the following when https://github.com/NixOS/nixpkgs/issues/202507 hits
           #llvm # for debugging rust
           #lldb # for debugging rust
