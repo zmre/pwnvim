@@ -29,6 +29,10 @@ M.defaults = function()
   vim.g.vim_markdown_conceal_code_blocks = 0
   vim.g.vim_markdown_frontmatter = 1
 
+  -- this would allow spaces in filenames for commands like `gf` but results are really mixed.
+  -- commenting for now 2022-12-22
+  --vim.opt.isfname:append { "32" }
+
   vim.opt.grepprg = "rg\\ --vimgrep\\ --no-heading\\ --smart-case\\ --color\\ never"
   vim.opt.grepformat = "%f:%l:%c:%m,%f:%l:%m,%f"
 
@@ -53,14 +57,13 @@ M.defaults = function()
   vim.opt.backupcopy = "auto"
   vim.opt.hidden = true
   vim.opt.cf = true -- jump to errors based on error files
-  vim.opt.listchars = "tab:⇥ ,trail:␣,extends:⇉,precedes:⇇,nbsp:·"
+  vim.o.listchars = "tab:⇥ ,trail:␣,extends:⇉,precedes:⇇,nbsp:·"
   vim.opt.list = true -- render special chars (tabs, trails, ...)
   vim.opt.ttyfast = true
   vim.opt.expandtab = true
   vim.opt.splitbelow = true -- allow splits below
   vim.opt.splitright = true -- and to the right
-  vim.opt.dictionary = vim.opt.dictionary +
-      { '/usr/share/dict/words', '~/.aspell.english.pws' }
+  vim.opt.dictionary:append { '/usr/share/dict/words', '~/.aspell.english.pws' }
   vim.opt.complete = vim.opt.complete + { 'k', ']' }
   vim.opt.complete = vim.opt.complete - { 'i' }
   vim.opt.encoding = "utf-8"
@@ -69,7 +72,7 @@ M.defaults = function()
   vim.opt.binary = false
   vim.opt.display = "lastline"
   vim.opt.viewoptions = "folds,cursor,unix,slash" -- better unix / windows compatibility
-  vim.opt.shortmess = "filnxtToSAcOF"
+  vim.o.shortmess = "filnxtToSAcOF"
   vim.opt.foldnestmax = 5
 
   -- wrapping
@@ -80,7 +83,7 @@ M.defaults = function()
   vim.opt.textwidth = 0
   vim.opt.breakindent = true
   vim.opt.showbreak = "» "
-  vim.opt.breakat = vim.opt.breakat - { '/', '*', '_', '`' }
+  vim.opt.breakat:remove { '/', '*', '_', '`' }
   vim.opt.linebreak = true -- wraps on word boundaries but only if nolist is set
 
   -- Make tabs be spaces of 4 characters by default
@@ -109,7 +112,7 @@ M.defaults = function()
   vim.opt.ttimeout = true
   vim.opt.ttimeoutlen = 50
   vim.opt.fileformats = "unix,dos,mac"
-  vim.opt.matchpairs = "(:),{:},[:],<:>"
+  vim.o.matchpairs = "(:),{:},[:],<:>"
   vim.opt.number = false
   vim.opt.relativenumber = false
   -- noinsert: don't insert until selection made, noselect: don't select automatically

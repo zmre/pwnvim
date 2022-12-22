@@ -100,16 +100,16 @@ vim.api.nvim_set_keymap('', '<C-l>', ':<C-u>nohlsearch<CR><C-l>',
 vim.api.nvim_set_keymap('', 'Y', 'y$', options)
 
 -- Center screen vertically when navigating by half screens
-vim.keymap.set("n","<C-d>","<C-d>zz")
-vim.keymap.set("n","<C-u>","<C-u>zz")
+vim.keymap.set("n", "<C-d>", "<C-d>zz")
+vim.keymap.set("n", "<C-u>", "<C-u>zz")
 
 -- Center search hits vertically on screen
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
 -- Move visually selected lines up and down
-vim.keymap.set("v","J",":m '>+1<CR>gv=gv")
-vim.keymap.set("v","K",":m '<-2<CR>gv=gv")
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
 local global_leader_opts = {
   mode = "n", -- NORMAL mode
@@ -182,24 +182,15 @@ local leader_mappings = {
   },
   n = {
     name = "Notes",
-    g = {
-      "<cmd>lua require('pwnvim.plugins').grammar_check()<cr>",
-      "Check Grammar"
-    },
-    n = {
-      "<Cmd>ZkNew { dir = vim.fn.input('Folder: ',vim.env.ZK_NOTEBOOK_DIR .. '/Notes','dir'), title = vim.fn.input('Title: ') }<CR>",
-      "New"
-    },
-    o = { "<cmd>ZkNotes<CR>", "Open" },
-    t = { "<cmd>ZkTags<CR>", "Open by tag" },
-    f = { "<Cmd>ZkNotes { match = {vim.fn.input('Search: ') }}<CR>", "Find" },
-    m = {
-      "<cmd>lua require('zk.commands').get('ZkNew')({ dir = vim.fn.input('Folder: ',vim.env.ZK_NOTEBOOK_DIR .. '/Notes/meetings','dir'), title = vim.fn.input('Title: ') })<CR>",
-      "New meeting"
-    },
     d = {
       "<cmd>ZkNew { dir = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar', title = os.date('%Y%m%d') }<CR>",
       "New diary"
+    },
+    e = { "<cmd>!mv \"<cfile>\" \"<c-r>=expand('%:p:h')<cr>/\"<cr>", "Embed file moving to current file's folder" },
+    f = { "<Cmd>ZkNotes { match = {vim.fn.input('Search: ') }}<CR>", "Find" },
+    g = {
+      "<cmd>lua require('pwnvim.plugins').grammar_check()<cr>",
+      "Check Grammar"
     },
     h = { "<cmd>edit ~/Notes/Notes/HotSheet.md<CR>", "Open HotSheet" },
     i = {
@@ -208,7 +199,17 @@ local leader_mappings = {
       o = { "<cmd>r!gtm-okr goals<cr>", "Insert OKRs" },
       j = { "<cmd>r!( (curl -s https://icanhazdadjoke.com/ | grep '\\\"subtitle\\\"') || curl -s https://icanhazdadjoke.com/ ) | sed 's/<[^>]*>//g' | sed -z 's/\\n/ /'<cr>",
         "Insert joke" },
-    }
+    },
+    m = {
+      "<cmd>lua require('zk.commands').get('ZkNew')({ dir = vim.fn.input('Folder: ',vim.env.ZK_NOTEBOOK_DIR .. '/Notes/meetings','dir'), title = vim.fn.input('Title: ') })<CR>",
+      "New meeting"
+    },
+    n = {
+      "<Cmd>ZkNew { dir = vim.fn.input('Folder: ',vim.env.ZK_NOTEBOOK_DIR .. '/Notes','dir'), title = vim.fn.input('Title: ') }<CR>",
+      "New"
+    },
+    o = { "<cmd>ZkNotes<CR>", "Open" },
+    t = { "<cmd>ZkTags<CR>", "Open by tag" },
     -- in open note (defined in plugins.lua as local-only shortcuts):
     -- p: new peer note
     -- l: show outbound links
@@ -235,7 +236,10 @@ local leader_visual_mappings = {
     --t = { function() require("pwnvim.tasks").eachSelectedLine(require("pwnvim.tasks").scheduleTaskToday) end, "Today" },
     t = { ":luado return require('pwnvim.tasks').scheduleTaskToday(line)<cr>", "Today" },
   },
-  n = { f = { ":'<,'>ZkMatch<CR>", "Find Selected" } },
+  n = {
+    e = { "\"0y:!mv \"<c-r>0\" \"<c-r>=expand('%:p:h')<cr>/\"<cr>", "Embed file moving to current file's folder" },
+    f = { ":'<,'>ZkMatch<CR>", "Find Selected" }
+  },
   i = leader_mappings.i,
   f = leader_mappings.f,
   e = leader_mappings.e,
@@ -295,16 +299,27 @@ vim.api.nvim_set_keymap('v', ">", ">gv", options)
 -- imap <D-b> <C-o>:make<CR>
 
 -- easy expansion of the active directory with %% on cmd
-vim.api.nvim_set_keymap('c', '%%', "expand('%:h').'/'", options)
+local options_nosilent = { noremap = true, silent = false }
+vim.api.nvim_set_keymap('c', '%%', "<c-r>=expand('%:p:h')<cr>/", options_nosilent)
 
 -- gx is a built-in to open URLs under the cursor, but when
 -- not using netrw, it doesn't work right. Or maybe it's just me
 -- but anyway this command works great.
+-- /Users/pwalsh/Documents/md2rtf-style.html
+-- ../README.md
+-- ~/Desktop/Screen Shot 2018-04-06 at 5.19.32 PM.png
+-- [abc](https://github.com/adsr/mle/commit/e4dc4314b02a324701d9ae9873461d34cce041e5.patch)
 vim.api.nvim_set_keymap('', 'gx',
-  ":!open \"<c-r><c-a><cr>\" || xdg-open \"<c-r><c-a><cr>\"",
+  ":!open \"<c-r><c-f>\" || xdg-open \"<c-r><c-f>\"<cr>",
+  options)
+vim.api.nvim_set_keymap('v', 'gx',
+  "\"0y:!open \"<c-r>0\" || xdg-open \"<c-r>0\"<cr>gv",
   options)
 vim.api.nvim_set_keymap('', '<CR>',
-  ":!open \"<c-r><c-a><cr>\" || xdg-open \"<c-r><c-a><cr>\"",
+  ":!open \"<c-r><c-f>\" || xdg-open \"<c-r><c-f>\"<cr>",
+  options)
+vim.api.nvim_set_keymap('v', '<CR>',
+  "\"0y:!open \"<c-r>0\" || xdg-open \"<c-r>0\"<cr>gv",
   options)
 
 -- open/close folds with space bar

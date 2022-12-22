@@ -837,14 +837,9 @@ M.telescope = function()
       },
       color_devicons = true,
       set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
-      -- following are better choices, but currently detecting some text files as binary and not
-      -- syntax highlighting markdown files, so going with external previewers (bat) for now. 2022-08-03
-      --file_previewer = require("telescope.previewers").vim_buffer_cat.new,
-      --grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
-      --qflist_previewer = require("telescope.previewers").vim_buffer_qflist.new,
-      file_previewer = require("telescope.previewers").cat.new,
-      grep_previewer = require("telescope.previewers").vimgrep.new,
-      qflist_previewer = require("telescope.previewers").qflist.new,
+      file_previewer = require("telescope.previewers").vim_buffer_cat.new,
+      grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
+      qflist_previewer = require("telescope.previewers").vim_buffer_qflist.new,
     },
 
     extensions = {
