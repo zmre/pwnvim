@@ -315,6 +315,7 @@ M.ui = function()
   }
   require 'nvim-treesitter.configs'.setup {
     auto_install = false,
+    autotag = { enable = true },
     highlight = {
       enable = true,
       --disable = { "markdown", "markdown_inline" }, -- 2022-11-30 conflicts with markdown plugin, which detects more things like bold+italic and strikethrough
@@ -939,6 +940,25 @@ M.completions = function()
     },
     snippet = { expand = function(args) luasnip.lsp_expand(args.body) end }
   }
+  cmp.setup.cmdline('/', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+      { name = 'buffer' }
+    }
+  })
+  cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+      { name = 'path' }
+    }, {
+      {
+        name = 'cmdline',
+        option = {
+          ignore_cmds = { 'Man', '!' }
+        }
+      }
+    })
+  })
 end -- completions
 
 ----------------------- NOTES --------------------------------

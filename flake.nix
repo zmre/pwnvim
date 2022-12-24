@@ -140,11 +140,11 @@
 
                   # UI #################################################
                   onedarkpro-nvim # colorscheme
-                  zephyr-nvim # alternate colorscheme
+                  #zephyr-nvim # alternate colorscheme
                   telescope-nvim # da best popup fuzzy finder
-                  telescope-fzy-native-nvim # but fzy gives better results
+                  telescope-fzy-native-nvim # with fzy gives better results
                   telescope-frecency-nvim # and frecency comes in handy too
-                  dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope
+                  #dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope
                   nvim-colorizer-lua # color over CSS like #00ff00
                   nvim-web-devicons # makes things pretty; used by many plugins below
                   nvim-tree-lua # file navigator
@@ -160,7 +160,6 @@
                   nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
                   nvim-treesitter-context # keep current block header (func defn or whatever) on first line
                   lf-vim
-                  vim-floaterm
 
                   # Editor Features ####################################
                   vim-abolish # better abbreviations / spelling fixer
@@ -184,6 +183,7 @@
                   cmp-emoji # complete :emojis:
                   cmp-nvim-lsp-signature-help # help complete function call by showing args
                   nvim-autopairs # balances parens as you type
+                  nvim-ts-autotag # balance or rename html
                   vim-emoji # TODO: redundant now?
                   luasnip # snippets driver
                   cmp_luasnip # snippets completion
