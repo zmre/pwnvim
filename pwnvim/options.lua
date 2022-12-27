@@ -149,11 +149,13 @@ M.defaults = function()
       mkdListItemCheckbox                        = { fg = "${green}" },
       -- markdownCheckbox                           = { fg = "${purple}" },
       --markdownCheckboxUnchecked                  = { fg = "${purple}" },
-      markdownCheckboxChecked                    = { fg = "${green}" },
+      -- markdownCheckboxChecked                    = { fg = "${green}" },
       markdownCheckboxCanceled                   = { fg = "${comment}", style = "strikethrough" },
       markdownCheckboxPostponed                  = { fg = "${comment}" },
       markdownStrikethrough                      = { fg = "${comment}", style = "strikethrough" },
       markdownTag                                = { fg = "${comment}" },
+      doneTag                                    = { fg = "${comment}", style = "italic" },
+      highPrioTask                               = { fg = "${red}", style = "bold" },
       -- mkdLinkTitle
       -- mkdID
       -- mkdDelimiter
@@ -193,7 +195,7 @@ M.defaults = function()
       SpellRare                                  = { style = "undercurl", sp = "Magenta" },
       SpellLocal                                 = { style = "undercurl", sp = "${cyan}" },
       IndentBlanklineChar                        = { fg = "#444444" },
-      Todo                                       = { fg = "#282c34", bg = "${highlight}", style = "bold" },
+      -- Todo                                       = { fg = "#282c34", bg = "${highlight}", style = "bold" },
       VertSplit                                  = { fg = "#202020", bg = "#606060" },
       Folded                                     = { fg = "#c0c8d0", bg = "#384058" },
       ["@comment.markdown"]                      = { fg = "${comment}" },
@@ -211,6 +213,8 @@ M.defaults = function()
       ["@punctuation.special.markdown"]          = { fg = "${cyan}" },
       ["@punctuation.delimiter.markdown_inline"] = { fg = "${orange}" },
       ["@text.uri.markdown_inline"]              = { fg = "${blue}" },
+      ["@text.todo.unchecked"]                   = { fg = "#ffffff", bg = "", style = "bold" },
+      ["@text.todo.checked"]                     = { fg = "${green}", style = "bold" },
 
       TelescopeBorder        = {
         fg = "${telescope_results}",

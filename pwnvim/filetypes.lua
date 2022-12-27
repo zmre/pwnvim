@@ -37,9 +37,6 @@ M.config = function()
   autocmd("FileType",
     { pattern = { "Outline" }, command = "setlocal nospell", group = filetypes })
 
-  -- autocmd("Syntax",
-  --   { pattern = { "markdown" }, callback = function() require('pwnvim.filetypes').markdownsyntax() end, group = filetypes })
-
   autocmd("TermOpen", { pattern = { "*" }, command = "setlocal nospell", group = filetypes })
 end
 
@@ -86,11 +83,13 @@ M.markdownsyntax = function()
     " syn region htmlTag start=+<[^/0-9]+ end=+>+ fold contains=htmlTagN,htmlString,htmlArg,htmlValue,htmlTagError,htmlEvent,htmlCssDefinition,@htmlPreproc,@htmlArgCluster
     " syn match mkdListItemCheckbox /\[[xXoO\> -]\]\ze\s\+/ contained contains=mkdListItem
     let m = matchadd("bareLink", "\\<https:[a-zA-Z?&,;=$+%#/.!~':@0-9_-]*")
-    let m = matchadd("markdownCheckboxChecked", "[*-] \\[x\\] ")
+    " let m = matchadd("markdownCheckboxChecked", "[*-] \\[x\\] ")
     let m = matchadd("markdownCheckboxCanceled", "[*-] \\[-\\] .\\+")
     let m = matchadd("markdownCheckboxPostponed", "[*-] \\[>\\] .\\+")
     let m = matchadd("markdownTag", '#\w\+')
     let m = matchadd("markdownStrikethrough", "\\~\\~[^~]*\\~\\~")
+    let m = matchadd("doneTag", '@done(20[^)]*)')
+    let m = matchadd("highPrioTask", "[*-] \\[ \\] .\\+!!!")
   ]], false)
 end
 
