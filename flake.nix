@@ -63,6 +63,7 @@
           nixfmt # nix formatter used with null-ls
           luaformatter # ditto for lua
           rnix-lsp # nix lsp
+          statix # linter for nix
           shellcheck
           sumneko-lua-language-server # lua lsp
           nodePackages.eslint_d # js/ts code formatter and linter
@@ -140,6 +141,7 @@
 
                   # UI #################################################
                   onedarkpro-nvim # colorscheme
+                  ir_black # colorscheme for basic terminals
                   #zephyr-nvim # alternate colorscheme
                   telescope-nvim # da best popup fuzzy finder
                   telescope-fzy-native-nvim # with fzy gives better results
