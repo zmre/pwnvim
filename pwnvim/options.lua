@@ -1,7 +1,8 @@
 local M = {}
 
+SimpleUI = os.getenv("SIMPLEUI") == "1" or os.getenv("TERM_PROGRAM") == "Apple_Terminal" or os.getenv("TERM") == "linux"
+
 M.defaults = function()
-  local simpleUI = os.getenv("SIMPLEUI")
 
   -- disable builtin vim plugins
   vim.g.loaded_gzip = 0
@@ -129,158 +130,168 @@ M.defaults = function()
   vim.api.nvim_set_keymap('n', ',', '', {})
   vim.g.mapleader = ',' -- Namespace for custom shortcuts
 
-  if simpleUI ~= "1" then
+  if not SimpleUI then
+    vim.g.termguicolors = true
     vim.o.termguicolors = true
   else
+    vim.g.termguicolors = false
     vim.o.termguicolors = false
   end
   vim.o.background = "dark"
 
-  require("onedarkpro").setup({
-    -- Call :OnedarkproCache if you make changes below and to speed startups
-    caching = true,
-    highlights = {
-      mkdLink                                    = { fg = "${blue}", style = "underline" },
-      bareLink                                   = { fg = "${blue}", style = "underline" },
-      mkdURL                                     = { fg = "${green}", style = "underline" },
-      mkdInlineURL                               = { fg = "${blue}", style = "underline" },
-      mkdListItem                                = { fg = "${cyan}" },
-      markdownListMarker                         = { fg = "${cyan}" },
-      mkdListItemCheckbox                        = { fg = "${green}" },
-      -- markdownCheckbox                           = { fg = "${purple}" },
-      --markdownCheckboxUnchecked                  = { fg = "${purple}" },
-      -- markdownCheckboxChecked                    = { fg = "${green}" },
-      markdownCheckboxCanceled                   = { fg = "${comment}", style = "strikethrough" },
-      markdownCheckboxPostponed                  = { fg = "${comment}" },
-      markdownStrikethrough                      = { fg = "${comment}", style = "strikethrough" },
-      markdownTag                                = { fg = "${comment}" },
-      doneTag                                    = { fg = "${comment}", style = "italic" },
-      highPrioTask                               = { fg = "${red}", style = "bold" },
-      -- mkdLinkTitle
-      -- mkdID
-      -- mkdDelimiter
-      -- mkdInlineURL
-      -- mkdCode
-      -- mkdFootnote
-      -- mkdMath
-      -- htmlLink
-      TSURI                                      = { fg = "${blue}", style = "underline" },
-      TSPunctSpecial                             = { fg = "${red}" },
-      markdownTSTitle                            = { fg = "${cyan}", style = "bold" },
-      markdownAutomaticLink                      = { fg = "${blue}", style = "underline" },
-      markdownLink                               = { fg = "${green}", style = "underline" },
-      markdownLinkText                           = { fg = "${blue}", style = "underline" },
-      markdownUrl                                = { fg = "${green}", style = "underline" },
-      markdownWikiLink                           = { fg = "${blue}", style = "underline" },
-      markdownH1                                 = { fg = "${yellow}", style = "bold" },
-      markdownH2                                 = { fg = "${yellow}", style = "bold" },
-      markdownH3                                 = { fg = "${yellow}" },
-      markdownH4                                 = { fg = "${green}", style = "italic" },
-      markdownH5                                 = { fg = "${green}", style = "italic" },
-      markdownH6                                 = { fg = "${green}", style = "italic" },
-      htmlH1                                     = { fg = "${yellow}", style = "bold" },
-      htmlH2                                     = { fg = "${yellow}", style = "bold" },
-      htmlH3                                     = { fg = "${yellow}" },
-      htmlH4                                     = { fg = "${green}", style = "italic" },
-      htmlH5                                     = { fg = "${green}", style = "italic" },
-      htmlH6                                     = { fg = "${green}", style = "italic" },
-      markdownBold                               = { fg = "#ffffff", style = "bold" },
-      htmlBold                                   = { fg = "#ffffff", style = "bold" },
-      markdownItalic                             = { fg = "#eeeeee", style = "italic" },
-      htmlItalic                                 = { fg = "#eeeeee", style = "italic" },
-      markdownBoldItalic                         = { fg = "#ffffff", style = "bold,italic" },
-      htmlBoldItalic                             = { fg = "#ffffff", style = "bold,italic" },
-      SpellBad                                   = { style = "undercurl", sp = "${red}" },
-      SpellCap                                   = { style = "undercurl", sp = "${cyan}" },
-      SpellRare                                  = { style = "undercurl", sp = "Magenta" },
-      SpellLocal                                 = { style = "undercurl", sp = "${cyan}" },
-      IndentBlanklineChar                        = { fg = "#444444" },
-      -- Todo                                       = { fg = "#282c34", bg = "${highlight}", style = "bold" },
-      VertSplit                                  = { fg = "#202020", bg = "#606060" },
-      Folded                                     = { fg = "#c0c8d0", bg = "#384058" },
-      ["@comment.markdown"]                      = { fg = "${comment}" },
-      ["@field.markdown_inline"]                 = { fg = "${purple}" },
-      ["@text.literal.markdown_inline"]          = { fg = "${green}" },
-      ["@text.reference.markdown_inline"]        = { fg = "${blue}", style = "underline" },
-      ["@text.underline"]                        = { style = "underline" },
-      ["@text.strong.markdown_inline"]           = { fg = "#ffffff", style = "bold" },
-      ["@text.emphasis.markdown_inline"]         = { fg = "#eeeeee", style = "italic" },
-      ["@strikethrough.markdown_inline"]         = { fg = "${comment}", style = "strikethrough" },
-      ["@tag"]                                   = { fg = "${comment}" },
-      ["@block_quote.markdown"]                  = { fg = "${purple}", style = "italic" },
-      ["@text.title.markdown"]                   = { fg = "${yellow}", style = "bold" },
-      -- ["@parameter.markdown_inline"] = { fg = theme.palette.fg },
-      ["@punctuation.special.markdown"]          = { fg = "${cyan}" },
-      ["@punctuation.delimiter.markdown_inline"] = { fg = "${orange}" },
-      ["@text.uri.markdown_inline"]              = { fg = "${blue}" },
-      ["@text.todo.unchecked"]                   = { fg = "#ffffff", bg = "", style = "bold" },
-      ["@text.todo.checked"]                     = { fg = "${green}", style = "bold" },
+  if not SimpleUI then
+    require("onedarkpro").setup({
+      -- Call :OnedarkproCache if you make changes below and to speed startups
+      caching = true,
+      highlights = {
+        mkdLink                                    = { fg = "${blue}", style = "underline" },
+        bareLink                                   = { fg = "${blue}", style = "underline" },
+        mkdURL                                     = { fg = "${green}", style = "underline" },
+        mkdInlineURL                               = { fg = "${blue}", style = "underline" },
+        mkdListItem                                = { fg = "${cyan}" },
+        markdownListMarker                         = { fg = "${cyan}" },
+        mkdListItemCheckbox                        = { fg = "${green}" },
+        -- markdownCheckbox                           = { fg = "${purple}" },
+        --markdownCheckboxUnchecked                  = { fg = "${purple}" },
+        -- markdownCheckboxChecked                    = { fg = "${green}" },
+        markdownCheckboxCanceled                   = { fg = "${comment}", style = "strikethrough" },
+        markdownCheckboxPostponed                  = { fg = "${comment}" },
+        markdownStrikethrough                      = { fg = "${comment}", style = "strikethrough" },
+        markdownTag                                = { fg = "${comment}" },
+        doneTag                                    = { fg = "${comment}", style = "italic" },
+        highPrioTask                               = { fg = "${red}", style = "bold" },
+        -- mkdLinkTitle
+        -- mkdID
+        -- mkdDelimiter
+        -- mkdInlineURL
+        -- mkdCode
+        -- mkdFootnote
+        -- mkdMath
+        -- htmlLink
+        TSURI                                      = { fg = "${blue}", style = "underline" },
+        TSPunctSpecial                             = { fg = "${red}" },
+        markdownTSTitle                            = { fg = "${cyan}", style = "bold" },
+        markdownAutomaticLink                      = { fg = "${blue}", style = "underline" },
+        markdownLink                               = { fg = "${green}", style = "underline" },
+        markdownLinkText                           = { fg = "${blue}", style = "underline" },
+        markdownUrl                                = { fg = "${green}", style = "underline" },
+        markdownWikiLink                           = { fg = "${blue}", style = "underline" },
+        markdownH1                                 = { fg = "${yellow}", style = "bold" },
+        markdownH2                                 = { fg = "${yellow}", style = "bold" },
+        markdownH3                                 = { fg = "${yellow}" },
+        markdownH4                                 = { fg = "${green}", style = "italic" },
+        markdownH5                                 = { fg = "${green}", style = "italic" },
+        markdownH6                                 = { fg = "${green}", style = "italic" },
+        htmlH1                                     = { fg = "${yellow}", style = "bold" },
+        htmlH2                                     = { fg = "${yellow}", style = "bold" },
+        htmlH3                                     = { fg = "${yellow}" },
+        htmlH4                                     = { fg = "${green}", style = "italic" },
+        htmlH5                                     = { fg = "${green}", style = "italic" },
+        htmlH6                                     = { fg = "${green}", style = "italic" },
+        markdownBold                               = { fg = "#ffffff", style = "bold" },
+        htmlBold                                   = { fg = "#ffffff", style = "bold" },
+        markdownItalic                             = { fg = "#eeeeee", style = "italic" },
+        htmlItalic                                 = { fg = "#eeeeee", style = "italic" },
+        markdownBoldItalic                         = { fg = "#ffffff", style = "bold,italic" },
+        htmlBoldItalic                             = { fg = "#ffffff", style = "bold,italic" },
+        SpellBad                                   = { style = "undercurl", sp = "${red}" },
+        SpellCap                                   = { style = "undercurl", sp = "${cyan}" },
+        SpellRare                                  = { style = "undercurl", sp = "Magenta" },
+        SpellLocal                                 = { style = "undercurl", sp = "${cyan}" },
+        IndentBlanklineChar                        = { fg = "#444444" },
+        -- Todo                                       = { fg = "#282c34", bg = "${highlight}", style = "bold" },
+        VertSplit                                  = { fg = "#202020", bg = "#606060" },
+        Folded                                     = { fg = "#c0c8d0", bg = "#384058" },
+        ["@comment.markdown"]                      = { fg = "${comment}" },
+        ["@field.markdown_inline"]                 = { fg = "${purple}" },
+        ["@text.literal.markdown_inline"]          = { fg = "${green}" },
+        ["@text.reference.markdown_inline"]        = { fg = "${blue}", style = "underline" },
+        ["@text.underline"]                        = { style = "underline" },
+        ["@text.strong.markdown_inline"]           = { fg = "#ffffff", style = "bold" },
+        ["@text.emphasis.markdown_inline"]         = { fg = "#eeeeee", style = "italic" },
+        ["@strikethrough.markdown_inline"]         = { fg = "${comment}", style = "strikethrough" },
+        ["@tag"]                                   = { fg = "${comment}" },
+        ["@block_quote.markdown"]                  = { fg = "${purple}", style = "italic" },
+        ["@text.title.markdown"]                   = { fg = "${yellow}", style = "bold" },
+        -- ["@parameter.markdown_inline"] = { fg = theme.palette.fg },
+        ["@punctuation.special.markdown"]          = { fg = "${cyan}" },
+        ["@punctuation.delimiter.markdown_inline"] = { fg = "${orange}" },
+        ["@text.uri.markdown_inline"]              = { fg = "${blue}" },
+        ["@text.todo.unchecked"]                   = { fg = "#ffffff", bg = "", style = "bold" },
+        ["@text.todo.checked"]                     = { fg = "${green}", style = "bold" },
 
-      TelescopeBorder        = {
-        fg = "${telescope_results}",
-        bg = "${telescope_results}",
-      },
-      TelescopePromptBorder  = {
-        fg = "${telescope_prompt}",
-        bg = "${telescope_prompt}",
-      },
-      TelescopePromptCounter = { fg = "${fg}" },
-      TelescopePromptNormal  = { fg = "${fg}", bg = "${telescope_prompt}" },
-      TelescopePromptPrefix  = {
-        fg = "${purple}",
-        bg = "${telescope_prompt}",
-      },
-      TelescopePromptTitle   = {
-        fg = "${telescope_prompt}",
-        bg = "${purple}",
-      },
+        TelescopeBorder        = {
+          fg = "${telescope_results}",
+          bg = "${telescope_results}",
+        },
+        TelescopePromptBorder  = {
+          fg = "${telescope_prompt}",
+          bg = "${telescope_prompt}",
+        },
+        TelescopePromptCounter = { fg = "${fg}" },
+        TelescopePromptNormal  = { fg = "${fg}", bg = "${telescope_prompt}" },
+        TelescopePromptPrefix  = {
+          fg = "${purple}",
+          bg = "${telescope_prompt}",
+        },
+        TelescopePromptTitle   = {
+          fg = "${telescope_prompt}",
+          bg = "${purple}",
+        },
 
-      TelescopePreviewTitle = {
-        fg = "${telescope_results}",
-        bg = "${green}",
-      },
-      TelescopeResultsTitle = {
-        fg = "${telescope_results}",
-        bg = "${telescope_results}",
-      },
+        TelescopePreviewTitle = {
+          fg = "${telescope_results}",
+          bg = "${green}",
+        },
+        TelescopeResultsTitle = {
+          fg = "${telescope_results}",
+          bg = "${telescope_results}",
+        },
 
-      TelescopeMatching = { fg = "${blue}" },
-      TelescopeNormal = { bg = "${telescope_results}" },
-      TelescopeSelection = { bg = "${telescope_prompt}" },
-    },
-    styles = { -- Choose from "bold,italic,underline"
-      virtual_text = "italic", -- Style that is applied to virtual text
-    },
-    plugins = {
-      all = true
-    },
-    options = {
-      bold = simpleUI ~= "1",
-      italic = simpleUI ~= "1",
-      underline = simpleUI ~= "1",
-      undercurl = simpleUI ~= "1",
-      cursorline = true,
-      transparency = false,
-      terminal_colors = false,
-      highlight_inactive_windows = true
-    },
-    colors = {
-      onedark = {
-        telescope_prompt = "#2e323a",
-        telescope_results = "#21252d",
+        TelescopeMatching = { fg = "${blue}" },
+        TelescopeNormal = { bg = "${telescope_results}" },
+        TelescopeSelection = { bg = "${telescope_prompt}" },
       },
-      onelight = {
-        telescope_prompt = "#f5f5f5",
-        telescope_results = "#eeeeee",
+      styles = { -- Choose from "bold,italic,underline"
+        virtual_text = "italic", -- Style that is applied to virtual text
       },
-    },
-  })
+      plugins = {
+        all = true
+      },
+      options = {
+        bold = not SimpleUI,
+        italic = not SimpleUI,
+        underline = not SimpleUI,
+        undercurl = not SimpleUI,
+        cursorline = true,
+        transparency = false,
+        terminal_colors = false,
+        highlight_inactive_windows = true
+      },
+      colors = {
+        onedark = {
+          telescope_prompt = "#2e323a",
+          telescope_results = "#21252d",
+        },
+        onelight = {
+          telescope_prompt = "#f5f5f5",
+          telescope_results = "#eeeeee",
+        },
+      },
+    })
+  end
+
+  local cscheme
+  if SimpleUI then
+    cscheme = "ir_black"
+  else
+    cscheme = "onedark"
+  end
+  vim.cmd("colorscheme " .. cscheme)
   vim.api.nvim_exec([[
-    colorscheme onedark
     filetype plugin indent on
     syntax on
     syntax sync minlines=5000
-    "unlet did_load_filetypes
   ]], false)
 
   -- Brief highlight on yank

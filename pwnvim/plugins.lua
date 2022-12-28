@@ -5,39 +5,73 @@
 -- interdependencies between plugins. We'll see how it goes.
 local M = {}
 
+M.error = SimpleUI and "🛑" or ""
+M.warn = SimpleUI and "⚠️" or ""
+M.hint = SimpleUI and "" or ""
+M.info = SimpleUI and "❓" or ""
 M.signs = {
-  { name = "DiagnosticSignError", text = "" },
-  { name = "DiagnosticSignWarn", text = "" },
-  { name = "DiagnosticSignHint", text = "" },
-  { name = "DiagnosticSignInfo", text = "" }
+  { name = "DiagnosticSignError", text = M.error },
+  { name = "DiagnosticSignWarn", text = M.warn },
+  { name = "DiagnosticSignHint", text = M.hint },
+  { name = "DiagnosticSignInfo", text = M.info }
 }
-M.kind_icons = {
-  Text = "",
-  Method = "m",
-  Function = "",
-  Constructor = "",
-  Field = "",
-  Variable = "",
-  Class = "",
-  Interface = "",
-  Module = "",
-  Property = "",
-  Unit = "",
-  Value = "",
-  Enum = "",
-  Keyword = "",
-  Snippet = "",
-  Color = "",
-  File = "",
-  Reference = "",
-  Folder = "",
-  EnumMember = "",
-  Constant = "",
-  Struct = "",
-  Event = "",
-  Operator = "",
-  TypeParameter = ""
-}
+if SimpleUI then
+  M.kind_icons = {
+    Text = "T",
+    Method = "m",
+    Function = "f",
+    Constructor = "c",
+    Field = "f",
+    Variable = "v",
+    Class = "",
+    Interface = "i",
+    Module = "m",
+    Property = "p",
+    Unit = "u",
+    Value = "v",
+    Enum = "e",
+    Keyword = "",
+    Snippet = "s",
+    Color = "",
+    File = "F",
+    Reference = "r",
+    Folder = "🖿",
+    EnumMember = "em",
+    Constant = "c",
+    Struct = "s",
+    Event = "e",
+    Operator = "o",
+    TypeParameter = "t"
+  }
+else
+  M.kind_icons = {
+    Text = "",
+    Method = "m",
+    Function = "",
+    Constructor = "",
+    Field = "",
+    Variable = "",
+    Class = "",
+    Interface = "",
+    Module = "",
+    Property = "",
+    Unit = "",
+    Value = "",
+    Enum = "",
+    Keyword = "",
+    Snippet = "",
+    Color = "",
+    File = "",
+    Reference = "",
+    Folder = "",
+    EnumMember = "",
+    Constant = "",
+    Struct = "",
+    Event = "",
+    Operator = "",
+    TypeParameter = ""
+  }
+end
 
 ----------------------- UI --------------------------------
 -- Tree, GitSigns, Indent markers, Colorizer, bufferline, lualine, treesitter
@@ -54,29 +88,29 @@ M.ui = function()
         padding = " ",
         symlink_arrow = " ➛ ",
         show = {
-          file = true,
+          file = not SimpleUI,
           folder = true,
           folder_arrow = true,
           git = true
         },
         glyphs = {
-          default = "",
-          symlink = "",
+          default = SimpleUI and "🖹" or "",
+          symlink = SimpleUI and "🔗" or "",
           git = {
-            unstaged = "",
+            unstaged = SimpleUI and "•" or "",
             staged = "✓",
-            unmerged = "",
+            unmerged = SimpleUI and "⚡︎" or "",
             renamed = "➜",
-            deleted = "",
+            deleted = SimpleUI and "⌦" or "",
             untracked = "U",
             ignored = "◌"
           },
           folder = {
-            default = "",
-            open = "",
-            empty = "",
-            empty_open = "",
-            symlink = ""
+            default = SimpleUI and "📁" or "",
+            open = SimpleUI and "📂" or "",
+            empty = SimpleUI and "🗀" or "",
+            empty_open = SimpleUI and "🗁" or "",
+            symlink = SimpleUI and "🔗" or ""
           }
         }
       }
@@ -93,7 +127,7 @@ M.ui = function()
     -- show lsp diagnostics in the signcolumn
     diagnostics = {
       enable = true,
-      icons = { hint = "", info = "", warning = "", error = "" }
+      icons = { hint = M.hint, info = M.info, warning = M.warn, error = M.error }
     },
     view = {
       width = 30,
@@ -139,7 +173,7 @@ M.ui = function()
       },
       TODO = { icon = " ", color = "info", alt = { "PWTODO", "TK" } },
       HACK = { icon = " ", color = "warning" },
-      WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },
+      WARN = { icon = M.warn, color = "warning", alt = { "WARNING", "XXX" } },
       PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },
       NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
       TEST = { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },
@@ -290,9 +324,9 @@ M.ui = function()
   require('lualine').setup {
     options = {
       theme = 'papercolor_light',
-      icons_enabled = true,
-      component_separators = { left = '', right = '' },
-      section_separators = { left = '', right = '' }
+      icons_enabled = not SimpleUI,
+      component_separators = { left = SimpleUI and '>' or '', right = SimpleUI and '<' or '' },
+      section_separators = { left = SimpleUI and '>' or '', right = SimpleUI and '<' or '' }
     },
     extensions = { 'quickfix', 'nvim-tree', 'fugitive' },
     sections = {
@@ -386,10 +420,9 @@ M.ui = function()
         style = "icon",
         icon = "▎",
       },
-      buffer_close_icon = "",
       -- buffer_close_icon = '',
       modified_icon = "●",
-      close_icon = "",
+      close_icon = SimpleUI and "x" or "",
       -- close_icon = '',
       -- hover doesn't work in tmux
       -- hover = {
@@ -397,8 +430,8 @@ M.ui = function()
       --   delay = 200,
       --   reveal = { 'close' }
       -- },
-      left_trunc_marker = "",
-      right_trunc_marker = "",
+      left_trunc_marker = SimpleUI and "⬅️" or "",
+      right_trunc_marker = SimpleUI and "➡️" or "",
       max_name_length = 40,
       max_prefix_length = 30, -- prefix used when a buffer is de-duplicated
       tab_size = 20,
@@ -411,9 +444,12 @@ M.ui = function()
       diagnostics = false, -- | "nvim_lsp" | "coc",
       diagnostics_update_in_insert = false,
       offsets = { { filetype = "NvimTree", text = "", padding = 1 } },
-      show_buffer_icons = true,
       show_buffer_close_icons = true,
       show_close_icon = true,
+      show_buffer_icons = not SimpleUI,
+      show_buffer_default_icon = not SimpleUI,
+      color_icons = not SimpleUI,
+      buffer_close_icon = SimpleUI and "x" or "",
       show_tab_indicators = true,
       persist_buffer_sort = false, -- whether or not custom sorted buffers should persist
       -- can also be a table containing 2 custom separators
@@ -472,10 +508,10 @@ M.diagnostics = function()
     icons = true,
     auto_preview = true,
     signs = {
-      error = "",
-      warning = "",
-      hint = "",
-      information = "",
+      error = M.error,
+      warning = M.warn,
+      hint = M.hint,
+      information = M.info,
       other = "﫠"
     }
   }
@@ -679,7 +715,7 @@ M.diagnostics = function()
       runnables = { use_telescope = true }
     }
   })
-  require('crates').setup()
+  require('crates').setup {}
   lspconfig.tsserver.setup { capabilities = capabilities, on_attach = attached }
   lspconfig.sumneko_lua.setup {
     settings = { Lua = { workspace = { checkThirdParty = false }, completion = { callSnippet = "Replace" },
@@ -781,8 +817,8 @@ M.telescope = function()
 
   require('telescope').setup {
     file_ignore_patterns = { "*.bak", ".git/", "node_modules", ".zk/", "Caches/" },
-    prompt_prefix = " ",
-    selection_caret = " ",
+    prompt_prefix = SimpleUI and ">" or " ",
+    selection_caret = SimpleUI and "↪" or " ",
     -- path_display = { "smart" },
     defaults = {
       path_display = function(opts, path)
@@ -836,7 +872,7 @@ M.telescope = function()
         height = 0.80,
         preview_cutoff = 1,
       },
-      color_devicons = true,
+      color_devicons = not SimpleUI,
       set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
       file_previewer = require("telescope.previewers").vim_buffer_cat.new,
       grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
@@ -918,10 +954,14 @@ M.completions = function()
     },
     window = { documentation = cmp.config.window.bordered() },
     sources = {
-      { name = 'nvim_lsp' }, { name = 'nvim_lsp_signature_help' }, { name = 'nvim_lua' }, { name = 'emoji' },
+      { name = 'nvim_lsp' },
+      { name = 'nvim_lsp_signature_help' },
+      { name = 'nvim_lua' },
+      { name = 'emoji' },
       { name = 'luasnip' },
-      { name = 'path' }, { name = "crates" }, { name = "buffer", keyword_length = 3 },
-
+      { name = 'path' },
+      { name = "crates" },
+      { name = "buffer", keyword_length = 3 },
     },
     formatting = {
       fields = { "kind", "abbr", "menu" },
