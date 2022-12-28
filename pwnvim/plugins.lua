@@ -311,16 +311,19 @@ M.ui = function()
   }
   -- HACK: work-around for https://github.com/lukas-reineke/indent-blankline.nvim/issues/59
   vim.wo.colorcolumn = "99999"
-  require('indent_blankline').setup({
-    show_current_context = true,
-    use_treesitter = true,
-    buftype_exclude = { 'terminal' },
-    filetype_exclude = { 'help', 'markdown' },
+
+  if not SimpleUI then
+    require('indent_blankline').setup({
+      show_current_context = true,
+      use_treesitter = true,
+      buftype_exclude = { 'terminal' },
+      filetype_exclude = { 'help', 'markdown' },
 
 
-  })
+    })
+    require("colorizer").setup({})
+  end
 
-  require("colorizer").setup({})
   require('lualine').setup {
     options = {
       theme = 'papercolor_light',
@@ -763,7 +766,7 @@ M.diagnostics = function()
   }
 
   require 'lspsaga'.init_lsp_saga({
-    use_saga_diagnostic_sign = true,
+    use_saga_diagnostic_sign = not SimpleUI,
     use_diagnostic_virtual_text = false,
     code_action_prompt = {
       enable = true,

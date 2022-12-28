@@ -1,6 +1,8 @@
 local M = {}
 
-SimpleUI = os.getenv("SIMPLEUI") == "1" or os.getenv("TERM_PROGRAM") == "Apple_Terminal" or os.getenv("TERM") == "linux"
+SimpleUI = (
+    os.getenv("SIMPLEUI") == "1" or os.getenv("TERM_PROGRAM") == "Apple_Terminal" or os.getenv("TERM") == "linux") and
+    not vim.g.neovide
 
 M.defaults = function()
 
