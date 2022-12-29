@@ -25,7 +25,7 @@ M.config = function()
   autocmd("BufRead", { pattern = { "flake.lock" }, command = "setlocal filetype=json", group = filetypes })
   autocmd("FileType",
     { pattern = { "c", "ruby", "php", "php3", "perl", "python", "mason", "vim", "sh", "zsh", "scala", "javascript",
-      "javascriptreact", "typescript", "typescriptreact", "html", "svelte", "css" },
+      "javascriptreact", "typescript", "typescriptreact", "html", "svelte", "css", "nix" },
       callback = function() require('pwnvim.options').programming() end, group = filetypes })
   autocmd("FileType",
     { pattern = { "lua", "xml" }, callback = function() require('pwnvim.filetypes').lua() end, group = filetypes })
