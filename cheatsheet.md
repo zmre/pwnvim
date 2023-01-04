@@ -246,6 +246,16 @@ Fuzzy finder via Telescope
 ### Plugin: Grammarous
 * `,ng` will kick off the grammar checker
 * `]g` and `[g` to navigate grammar issues
-* `gf` to auto fix an issue
-* `gx` to ignore an issue
+* `,gf` to auto fix an issue
+* `,gx` to ignore an issue
 
+### Plugin: DiffView
+* `:DiffviewOpen`
+* `[x` and `]x` to navigate conflicts
+* `,co` choose ours
+* `,ct` choose theirs
+* `,cb` choose base
+* `,ca` choose all
+* `dx` delete entire conflict region
+* `,b` toggle list of files
+* `<tab>` and `<shift>-<tab>` next/prev file with conflicts

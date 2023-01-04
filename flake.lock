@@ -56,8 +56,7 @@
       "inputs": {
         "fenix": "fenix",
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs",
-        "telescope-media-files": "telescope-media-files"
+        "nixpkgs": "nixpkgs"
       }
     },
     "rust-analyzer-src": {
@@ -74,22 +73,6 @@
         "owner": "rust-lang",
         "ref": "nightly",
         "repo": "rust-analyzer",
-        "type": "github"
-      }
-    },
-    "telescope-media-files": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1634848033,
-        "narHash": "sha256-/tJs7L+uET7gKobdE6IBZWvF13QyCsPW7956YqCM46o=",
-        "owner": "nvim-telescope",
-        "repo": "telescope-media-files.nvim",
-        "rev": "513e4ee385edd72bf0b35a217b7e39f84b6fe93c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nvim-telescope",
-        "repo": "telescope-media-files.nvim",
         "type": "github"
       }
     }

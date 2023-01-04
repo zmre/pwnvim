@@ -3,35 +3,13 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    /* zk-nvim = {
-         url = "github:mickael-menu/zk-nvim";
-         flake = false;
-       };
-    */
-    telescope-media-files = {
-      url = "github:nvim-telescope/telescope-media-files.nvim";
-      flake = false;
-    };
     fenix.url = "github:nix-community/fenix";
     fenix.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs = inputs@{ self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [
-            (self: super: {
-              vimPlugins = super.vimPlugins // {
-                telescope-media-files = super.vimUtils.buildVimPlugin {
-                  name = "telescope-media-files";
-                  pname = "telescope-media-files";
-                  src = inputs.telescope-media-files;
-                };
-              };
-            })
-          ];
-        };
+        pkgs = import nixpkgs { inherit system; };
 
         recursiveMerge = attrList:
           let
@@ -48,49 +26,49 @@
           in f [ ] attrList;
 
       in rec {
-        dependencies = with pkgs; [
-          fd
-          ripgrep
-          fzy
-          zoxide
-          bat # previewer for telescope for now
-          zk # lsp for markdown notes
-          zsh # terminal requires it
-          git
-          # todo: research https://github.com/artempyanykh/marksman
-          vale # linter for prose
-          proselint # ditto
-          nixfmt # nix formatter used with null-ls
-          luaformatter # ditto for lua
-          rnix-lsp # nix lsp
-          statix # linter for nix
-          shellcheck
-          sumneko-lua-language-server # lua lsp
-          nodePackages.eslint_d # js/ts code formatter and linter
-          nodePackages.prettier # ditto
-          nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
-          nodePackages.svelte-language-server
-          nodePackages.diagnostic-languageserver
-          nodePackages.typescript-language-server
-          nodePackages.bash-language-server
-          nodePackages."@tailwindcss/language-server"
-          python310Packages.python-lsp-server # todo: is specifying 310 an issue?
-          rust-analyzer # lsp for rust
-          # r-a is currently in a partially broken state as it cannot find rust sources so can't
-          # help with native language things, which sucks. Here are some issues to track:
-          # https://github.com/rust-lang/rust/issues/95736
-          # https://github.com/rust-lang/rust-analyzer/issues/13393
-          # https://github.com/mozilla/nixpkgs-mozilla/issues/238
-          rustfmt
-          cargo # have this as a fallback when a flake isn't in place
-          rustc # have this as a fallback when a flake isn't in place
-          # TODO: add back the following when https://github.com/NixOS/nixpkgs/issues/202507 hits
-          #llvm # for debugging rust
-          #lldb # for debugging rust
-          #vscode-extensions.vadimcn.vscode-lldb # for debugging rust
-          metals # lsp for scala
-          ueberzug
-        ]; # ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ ueberzug ];
+        dependencies = with pkgs;
+          [
+            fd
+            ripgrep
+            fzy
+            zoxide
+            bat # previewer for telescope for now
+            zk # lsp for markdown notes
+            zsh # terminal requires it
+            git
+            # todo: research https://github.com/artempyanykh/marksman
+            vale # linter for prose
+            proselint # ditto
+            nixfmt # nix formatter used with null-ls
+            luaformatter # ditto for lua
+            rnix-lsp # nix lsp
+            statix # linter for nix
+            shellcheck
+            sumneko-lua-language-server # lua lsp
+            nodePackages.eslint_d # js/ts code formatter and linter
+            nodePackages.prettier # ditto
+            nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
+            nodePackages.svelte-language-server
+            nodePackages.diagnostic-languageserver
+            nodePackages.typescript-language-server
+            nodePackages.bash-language-server
+            nodePackages."@tailwindcss/language-server"
+            python310Packages.python-lsp-server # todo: is specifying 310 an issue?
+            rust-analyzer # lsp for rust
+            # r-a is currently in a partially broken state as it cannot find rust sources so can't
+            # help with native language things, which sucks. Here are some issues to track:
+            # https://github.com/rust-lang/rust/issues/95736
+            # https://github.com/rust-lang/rust-analyzer/issues/13393
+            # https://github.com/mozilla/nixpkgs-mozilla/issues/238
+            rustfmt
+            cargo # have this as a fallback when a flake isn't in place
+            rustc # have this as a fallback when a flake isn't in place
+            # TODO: add back the following when https://github.com/NixOS/nixpkgs/issues/202507 hits
+            #llvm # for debugging rust
+            #lldb # for debugging rust
+            #vscode-extensions.vadimcn.vscode-lldb # for debugging rust
+            metals # lsp for scala
+          ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ ueberzug ];
         neovim-augmented = recursiveMerge [
           pkgs.neovim-unwrapped
           { buildInputs = dependencies; }
@@ -198,12 +176,13 @@
 
                   # Misc
                   vim-fugitive # git management
+                  diffview-nvim
                   project-nvim
                   vim-tmux-navigator # navigate vim and tmux panes together
                   impatient-nvim # speeds startup times by caching lua bytecode
                   which-key-nvim
                 ] ++ pkgs.lib.optionals (!pkgs.stdenv.isDarwin) [
-                  telescope-media-files # only works on linux, requires ueberzug, but gives image preview
+                  telescope-media-files-nvim # only works on linux, requires ueberzug, but gives image preview
                 ];
               opt = with pkgs.vimPlugins; [
                 # grammar check

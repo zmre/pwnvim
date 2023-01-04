@@ -217,6 +217,7 @@ M.ui = function()
     },
   }
 
+  require("diffview").setup {}
   require("gitsigns").setup {
     signs = {
       add = {
