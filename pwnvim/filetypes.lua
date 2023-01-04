@@ -86,6 +86,8 @@ M.markdownsyntax = function()
     " let m = matchadd("markdownCheckboxChecked", "[*-] \\[x\\] ")
     let m = matchadd("markdownCheckboxCanceled", "[*-] \\[-\\] .\\+")
     let m = matchadd("markdownCheckboxPostponed", "[*-] \\[>\\] .\\+")
+    " below is because Noteplan uses capital X and default styling is a link on [X] so this will at least make it green
+    let m = matchadd("@text.todo.checked", "[*-] \\[[xX]\\] ")
     let m = matchadd("markdownTag", '#\w\+')
     let m = matchadd("markdownStrikethrough", "\\~\\~[^~]*\\~\\~")
     let m = matchadd("doneTag", '@done(20[^)]*)')
