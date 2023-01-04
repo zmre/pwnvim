@@ -367,7 +367,10 @@ M.tabindent = function()
   vim.bo.softtabstop = 4
   vim.bo.expandtab = false -- don't turn tabs to spaces
   vim.bo.autoindent = true
-  -- vim.cmd('%retab!')
+end
+
+M.retab = function()
+  vim.cmd('%retab!')
 end
 
 M.programming = function()

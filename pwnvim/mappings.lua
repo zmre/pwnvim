@@ -300,6 +300,7 @@ vim.api.nvim_set_keymap('v', ">", ">gv", options)
 
 -- easy expansion of the active directory with %% on cmd
 local options_nosilent = { noremap = true, silent = false }
+
 vim.api.nvim_set_keymap('c', '%%', "<c-r>=expand('%:p:h')<cr>/", options_nosilent)
 
 -- gx is a built-in to open URLs under the cursor, but when
@@ -310,16 +311,16 @@ vim.api.nvim_set_keymap('c', '%%', "<c-r>=expand('%:p:h')<cr>/", options_nosilen
 -- ~/Desktop/Screen Shot 2018-04-06 at 5.19.32 PM.png
 -- [abc](https://github.com/adsr/mle/commit/e4dc4314b02a324701d9ae9873461d34cce041e5.patch)
 vim.api.nvim_set_keymap('', 'gx',
-  ":!open \"<c-r><c-f>\" || xdg-open \"<c-r><c-f>\"<cr>",
+  ":silent !open \"<c-r><c-f>\" || xdg-open \"<c-r><c-f>\"<cr>",
   options)
 vim.api.nvim_set_keymap('v', 'gx',
-  "\"0y:!open \"<c-r>0\" || xdg-open \"<c-r>0\"<cr>gv",
+  "\"0y:silent !open \"<c-r>0\" || xdg-open \"<c-r>0\"<cr>gv",
   options)
 vim.api.nvim_set_keymap('', '<CR>',
-  ":!open \"<c-r><c-f>\" || xdg-open \"<c-r><c-f>\"<cr>",
+  ":silent !open \"<c-r><c-f>\" || xdg-open \"<c-r><c-f>\"<cr>",
   options)
 vim.api.nvim_set_keymap('v', '<CR>',
-  "\"0y:!open \"<c-r>0\" || xdg-open \"<c-r>0\"<cr>gv",
+  "\"0y:silent !open \"<c-r>0\" || xdg-open \"<c-r>0\"<cr>gv",
   options)
 
 -- open/close folds with space bar

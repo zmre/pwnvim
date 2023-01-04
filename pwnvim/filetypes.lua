@@ -94,12 +94,6 @@ M.markdownsyntax = function()
 end
 
 M.markdown = function()
-  -- I have historically always used spaces for indents wherever possible including markdown
-  -- Changing now to use tabs because NotePlan 3 can't figure out nested lists that are space
-  -- indented and I go back and forth between that and nvim. So, for now, this is the compatibility
-  -- compromise. 2022-09-27
-  -- vim.cmd('packadd mkdx')
-  require('pwnvim.options').tabindent()
 
   vim.g.joinspaces = true
   vim.wo.number = false
@@ -113,6 +107,7 @@ M.markdown = function()
   vim.wo.foldenable = true
   vim.bo.formatoptions = 'jtqlnr' -- no c (insert comment char on wrap), with r (indent)
   vim.bo.comments = 'b:>,b:*,b:+,b:-'
+  vim.bo.suffixesadd = '.md'
 
   vim.bo.syntax = "off" -- we use treesitter exclusively on markdown now
 
@@ -170,6 +165,10 @@ M.markdown = function()
   buf_set_keymap('n', '<D-l>', 'ysiW]%a(', opts)
   buf_set_keymap('n', '<leader>l', 'ysiW]%a(', opts)
 
+
+  buf_set_keymap('i', '<tab>', "<cmd>lua require('pwnvim.filetypes').indent()<cr>", opts)
+  buf_set_keymap('i', '<s-tab>', "<cmd>lua require('pwnvim.filetypes').outdent()<cr>", opts)
+
   if vim.env.KITTY_INSTALLATION_DIR and not vim.g.neovide then
     vim.cmd('packadd hologram.nvim')
     require('hologram').setup {
@@ -177,5 +176,38 @@ M.markdown = function()
     }
   end
 
+  -- I have historically always used spaces for indents wherever possible including markdown
+  -- Changing now to use tabs because NotePlan 3 can't figure out nested lists that are space
+  -- indented and I go back and forth between that and nvim (mainly for iOS access to notes).
+  -- So, for now, this is the compatibility compromise. 2022-09-27
+  require('pwnvim.options').tabindent()
+  require('pwnvim.options').retab() -- turn spaces to tabs when markdown file is opened
+end
+
+M.indent = function()
+  local line = vim.api.nvim_get_current_line()
+  if line:match("^%s*[*-]") then
+    --line = "\t" .. line
+    --vim.api.nvim_set_current_line(line)
+    --vim.cmd("normal l")
+    local norm_mode = vim.api.nvim_replace_termcodes("<C-o>", true, false, true)
+    local fixpos = 0
+    local shiftwidth = vim.bo.shiftwidth
+    vim.api.nvim_feedkeys(norm_mode .. ">>", "n", false)
+    vim.api.nvim_feedkeys(norm_mode .. shiftwidth .. "l", "n", false)
+  else
+    -- send through regular tab character at current position
+    vim.api.nvim_feedkeys("\t", "n", false)
+  end
+end
+
+M.outdent = function()
+  local line = vim.api.nvim_get_current_line()
+  if line:match("^%s*[*-]") then
+    local norm_mode = vim.api.nvim_replace_termcodes("<C-o>", true, false, true)
+    local shiftwidth = vim.bo.shiftwidth
+    vim.api.nvim_feedkeys(norm_mode .. "<<", "n", false)
+    vim.api.nvim_feedkeys(norm_mode .. shiftwidth .. "h", "n", false)
+  end
 end
 return M
