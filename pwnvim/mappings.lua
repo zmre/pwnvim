@@ -339,7 +339,7 @@ vim.api.nvim_set_keymap('', '<D-=>', [[:silent! let &guifont = substitute(
   \ ':h\zs\d\+',
   \ '\=eval(submatch(0)+1)',
   \ '')<CR>]], options)
-vim.api.nvim_set_keymap('', '<C-M-=>', [[:silent! let &guifont = substitute(
+vim.api.nvim_set_keymap('', '<C-=>', [[:silent! let &guifont = substitute(
   \ &guifont,
   \ ':h\zs\d\+',
   \ '\=eval(submatch(0)+1)',
@@ -349,7 +349,7 @@ vim.api.nvim_set_keymap('', '<D-->', [[:silent! let &guifont = substitute(
   \ ':h\zs\d\+',
   \ '\=eval(submatch(0)-1)',
   \ '')<CR>]], options)
-vim.api.nvim_set_keymap('', '<C-M-->', [[:silent! let &guifont = substitute(
+vim.api.nvim_set_keymap('', '<C-->', [[:silent! let &guifont = substitute(
   \ &guifont,
   \ ':h\zs\d\+',
   \ '\=eval(submatch(0)-1)',
