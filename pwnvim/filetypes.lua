@@ -177,6 +177,21 @@ M.markdown = function()
       auto_display = true -- WIP automatic markdown image display, may be prone to breaking
     }
   end
+  vim.cmd('packadd clipboard-image.nvim')
+  require 'clipboard-image'.setup {
+    default = {
+      img_name = function()
+        vim.fn.inputsave()
+        local name = vim.fn.input({ prompt = "Name: " })
+        vim.fn.inputrestore()
+        return os.date('%Y-%m-%d') .. "-" .. name
+      end,
+      img_dir = { "%:p:h", "%:t:r:s?$?_attachments?" },
+      img_dir_txt = "%:t:r:s?$?_attachments?",
+      affix = "![](%s)",
+    }
+  }
+
 
   -- I have historically always used spaces for indents wherever possible including markdown
   -- Changing now to use tabs because NotePlan 3 can't figure out nested lists that are space

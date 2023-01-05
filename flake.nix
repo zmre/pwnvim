@@ -5,11 +5,27 @@
     flake-utils.url = "github:numtide/flake-utils";
     fenix.url = "github:nix-community/fenix";
     fenix.inputs.nixpkgs.follows = "nixpkgs";
+    clipboard-image.url = "github:ekickx/clipboard-image.nvim";
+    clipboard-image.flake = false;
   };
   outputs = inputs@{ self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [
+            (self: super: {
+              vimPlugins = super.vimPlugins // {
+                clipboard-image = super.vimUtils.buildVimPluginFrom2Nix {
+                  name = "clipboard-image.nvim";
+                  pname = "clipboard-image.nvim";
+                  src = inputs.clipboard-image;
+                  # buildInputs = [ super.curl ];
+                };
+              };
+            })
+          ];
+        };
 
         recursiveMerge = attrList:
           let
@@ -68,7 +84,12 @@
             #lldb # for debugging rust
             #vscode-extensions.vadimcn.vscode-lldb # for debugging rust
             metals # lsp for scala
-          ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ ueberzug ];
+          ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+            ueberzug
+            xclip # needed by vim clipboard-image plugin
+            wl-clipboard # needed by vim clipboard-image plugin
+          ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
+          [ pngpaste ]; # needed by vim clipboard-image plugin
         neovim-augmented = recursiveMerge [
           pkgs.neovim-unwrapped
           { buildInputs = dependencies; }
@@ -189,6 +210,7 @@
                 vim-grammarous
                 hologram-nvim # images inline for markdown (only in terminal)
                 direnv-vim # auto-execute nix direnv setups -- currently my slowest plugin; enabled by programming filetype
+                clipboard-image # only loaded in markdown files
               ];
             };
           };
