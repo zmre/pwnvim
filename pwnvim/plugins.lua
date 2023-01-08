@@ -486,6 +486,7 @@ M.diagnostics = function()
       end
     end,
   })
+  require "fidget".setup {} -- shows status of lsp clients as they issue updates
   vim.diagnostic.config({
     virtual_text = false,
     signs = { active = { M.signs } },
@@ -800,7 +801,7 @@ M.telescope = function()
     -- ensure that the buffer can be written to
     if vim.api.nvim_buf_get_option(vim.api.nvim_get_current_buf(),
       "modifiable") then
-      print("Paste!")
+      -- print("Paste!")
       vim.api.nvim_put({ entry.value }, "c", true, true)
     end
   end
@@ -908,7 +909,6 @@ M.completions = function()
     local col = vim.fn.col "." - 1
     return col == 0 or vim.fn.getline("."):sub(col, col):match "%s"
   end
-  -- find more here: https://www.nerdfonts.com/cheat-sheet
   local cmp = require 'cmp'
   cmp.setup {
     enabled = function()

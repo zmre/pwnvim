@@ -135,6 +135,7 @@
                   lspsaga-nvim
                   lsp-format-nvim
                   todo-comments-nvim
+                  fidget-nvim # show lsp status in bottom right but not status line
                   neodev-nvim # help for neovim lua api
                   SchemaStore-nvim # json schemas
 
