@@ -483,8 +483,11 @@ M.diagnostics = function()
       if string.match(root_dir, "neovim") or string.match(root_dir, "pwnvim") then
         library.enabled = true
         library.plugins = true
+        library.types = true
+        library.runtime = true
       end
     end,
+    lspconfig = true
   })
   require "fidget".setup {} -- shows status of lsp clients as they issue updates
   vim.diagnostic.config({
@@ -724,7 +727,7 @@ M.diagnostics = function()
   lspconfig.tsserver.setup { capabilities = capabilities, on_attach = attached }
   lspconfig.sumneko_lua.setup {
     settings = { Lua = { workspace = { checkThirdParty = false }, completion = { callSnippet = "Replace" },
-      diagnostics = { globals = { "vim" } } } },
+      diagnostics = { globals = { "vim", "string", "require" } } } },
     on_attach = attached,
     capabilities = capabilities
   }

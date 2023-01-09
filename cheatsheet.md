@@ -4,6 +4,7 @@ _This is a combination of built-in universal keys and things that are specific t
 
 ## Misc
 * `gx` or enter to open a URL (but need gx if the URL is in a task)
+* `gf` to open the file path under the cursor
 * `gv` to reselect last selection
 * `gi` to go back to last insertion point and insert
 * `g ctrl-g` show cursor col, line, word, byte offsets
@@ -13,7 +14,7 @@ _This is a combination of built-in universal keys and things that are specific t
 * ` g;`, ` g,` go forward/backward in change list
 * ` di(`, ` di"` delete within parents/quotes. Do ` a` instead of ` i` for taking out the delimiters
 * `"_c`_m_ change _movement_ but blackhole the deletion so you can use the `"` register or paste
-    * Alt: use `v`_m_`p` to select that which you want to change and paste over it (or use `cmd-v` instead of `p`)
+	* Alt: use `v`_m_`p` to select that which you want to change and paste over it (or use `cmd-v` instead of `p`)
 * `,b` reduce multiple blank lines to one (or add bold in markdown files)
 * `,cd` change dir to current file's path
 * `,lcd` change dir for cur buffer only to current file's path
@@ -58,11 +59,11 @@ _This is a combination of built-in universal keys and things that are specific t
 
 ## Digraphs
 * `^k<char1><char2>` to insert digraph with two char code
-    * ✓ = OK
-    * ✗ = XX
-    * ™ = TM
-    * © = Co
-    * → = ->
+	* ✓ = OK
+	* ✗ = XX
+	* ™ = TM
+	* © = Co
+	* → = ->
 * `ga` view code of char under cursor (note the digraph code at the end)
 * `:help digraph-table` to view all
 
@@ -120,43 +121,43 @@ _This is a combination of built-in universal keys and things that are specific t
 * `]c`, `[c` next/prev change
 * `]n`, `[n` next/prev conflict
 * `:G`, `:GStatus`
-    * Use `ctrl + n` / `ctrl + p` to jump between files
-    * Press `-` on a file to toggle whether it is added (`git add` or `git reset` depending)
-    * Press `p` on a file to walk through hunks of changes and selectively add parts of a file
-    * Press `<enter>` to view it and then `:Gdiff` to see changes
-    * Press `cc` to commit
-    * Press `ca` to amend last commit
-    * `gq` to close status buffer
-    * `=` toggle inline diff of file under cursor (preferred)
-        * Or `dp` to invoke git diff on the file under the cursor
+	* Use `ctrl + n` / `ctrl + p` to jump between files
+	* Press `-` on a file to toggle whether it is added (`git add` or `git reset` depending)
+	* Press `p` on a file to walk through hunks of changes and selectively add parts of a file
+	* Press `<enter>` to view it and then `:Gdiff` to see changes
+	* Press `cc` to commit
+	* Press `ca` to amend last commit
+	* `gq` to close status buffer
+	* `=` toggle inline diff of file under cursor (preferred)
+		* Or `dp` to invoke git diff on the file under the cursor
 * `:Gdiff`
-    * index on left (git added or last committed), working copy on right
-    * `:diffget` will pull changes from opposite window in allowing to undo changes
-    * Press `s` to stage a hunk
-    * Press `u` to unstage a hunk
-    * Press `-` to toggle staging of hunk
-    * Use `]c` and `[c` to jump between hunks
+	* index on left (git added or last committed), working copy on right
+	* `:diffget` will pull changes from opposite window in allowing to undo changes
+	* Press `s` to stage a hunk
+	* Press `u` to unstage a hunk
+	* Press `-` to toggle staging of hunk
+	* Use `]c` and `[c` to jump between hunks
 * `:Gcommit`
 * `:GBrowse` to launch current file in github in browser
-    * "In commit messages, GitHub issues, issue URLs, and collaborators can be omni-completed (`<C-X><C-O>`, see :help compl-omni). This makes inserting those `Closes #123` remarks slightly easier than copying and pasting from the browser.
+	* "In commit messages, GitHub issues, issue URLs, and collaborators can be omni-completed (`<C-X><C-O>`, see :help compl-omni). This makes inserting those `Closes #123` remarks slightly easier than copying and pasting from the browser.
 * `:Gedit :0`
-    * Open index version of current file in a tmp buffer. index file is the git added version.
+	* Open index version of current file in a tmp buffer. index file is the git added version.
 * `:Gedit`
-    * Explore git objects to navigate commits and old versions of the tree without changing anything
-    * Can hit enter on parent (prev commit) or tree (state of all files at this point) and then select other files
-    * Get into this better with `:Gclog`
-    * When looking at a commit, hit enter on a diff line to see how things changed
-    * Capital `C` will jump you from a tmp file or whatever up to related commit
+	* Explore git objects to navigate commits and old versions of the tree without changing anything
+	* Can hit enter on parent (prev commit) or tree (state of all files at this point) and then select other files
+	* Get into this better with `:Gclog`
+	* When looking at a commit, hit enter on a diff line to see how things changed
+	* Capital `C` will jump you from a tmp file or whatever up to related commit
 * `:Git mergetool` load current conflicts into quickfix list (TODO: try `ri` on the git status screen to initiate rebase)
-    * Navigate through the conflicted files (use the unimpaired `[q` and `]q`)
-    * Launch the 3-way merge tool with `:Gvdiffsplit!` (the `!` is for 3-way and `v` for vertical split)
-        * Now put cursor in the middle window. 
-        * Left pane, "2", is local, right pane is remote, "3". For rebase though, left seems to be master and right the local branch.
-        * Use `d2o` or `d3o` to pull changes from left or right for current chunk.
-        * Navigate between chunks with `]c` and `[c`
-        * When a file is good, use `:Gw` and move on
-        * When finished you get to the end of the quickfix list, use `:G` to check status then `cc` to commit.
-        * After commit, use `rr` in the status screen or `:G rebase --contine` and hope you don't get a fresh set of conflicts, but if you do, repeat from the top.
+	* Navigate through the conflicted files (use the unimpaired `[q` and `]q`)
+	* Launch the 3-way merge tool with `:Gvdiffsplit!` (the `!` is for 3-way and `v` for vertical split)
+		* Now put cursor in the middle window. 
+		* Left pane, "2", is local, right pane is remote, "3". For rebase though, left seems to be master and right the local branch.
+		* Use `d2o` or `d3o` to pull changes from left or right for current chunk.
+		* Navigate between chunks with `]c` and `[c`
+		* When a file is good, use `:Gw` and move on
+		* When finished you get to the end of the quickfix list, use `:G` to check status then `cc` to commit.
+		* After commit, use `rr` in the status screen or `:G rebase --contine` and hope you don't get a fresh set of conflicts, but if you do, repeat from the top.
 
 ## Notes
 * `,ng` spawn grammar checker
@@ -167,10 +168,11 @@ _This is a combination of built-in universal keys and things that are specific t
 * `,nm` use zk to make new meeting note in $ZK_NOTEBOOK_DIR/Notes/meetings
 * `,nd` use zk to make new diary note in $ZK_NOTEBOOK_DIR/Calendar
 * `,nh` open hotsheet note
+* `gt` turn url under cursor into titled link
 * in open markdown note only
   * `,np` new peer note in same folder as this one
   * `,nl` show outbound links
-  * `,nr`: show reference (inbound) links
+  * `,nr` show reference (inbound) links
   * `,ni` show info preview
   * `K` over link to preview linked note
 
@@ -188,11 +190,11 @@ Fuzzy finder via Telescope
 * `,fk` fuzzy browse keymaps
 * `,fd` fuzzy browse document symbols
 * Inside the popup window:
-    * `ctrl + p` on selection to paste selection at cursor
-    * `ctrl + y` on selection to copy selection
-    * `ctrl + o` on selection call `open` on it
-    * ctrl + q to put results in quick fix list
-    * `ctrl + e` create new file in current dir or creates dir if name contains trailing slash or subdirs like `dir/subdir/file`
+	* `ctrl + p` on selection to paste selection at cursor
+	* `ctrl + y` on selection to copy selection
+	* `ctrl + o` on selection call `open` on it
+	* ctrl + q to put results in quick fix list
+	* `ctrl + e` create new file in current dir or creates dir if name contains trailing slash or subdirs like `dir/subdir/file`
 
 ## Plugin: NvimTree file explorer
 * `<CR>`, `o` open a file or folder

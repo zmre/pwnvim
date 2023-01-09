@@ -52,6 +52,7 @@
             zk # lsp for markdown notes
             zsh # terminal requires it
             git
+            curl # needed to fetch titles from urls
             # todo: research https://github.com/artempyanykh/marksman
             vale # linter for prose
             proselint # ditto
