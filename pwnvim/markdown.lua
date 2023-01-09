@@ -77,6 +77,9 @@ M.setup = function()
   buf_set_keymap('i', '<s-tab>', "<cmd>lua require('pwnvim.markdown').outdent()<cr>", opts)
 
   buf_set_keymap('n', 'gt', "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>", opts)
+  -- no idea why the lua version of adding the command is failing
+  -- vim.api.nvim_buf_add_user_command(0, 'PasteUrl', function(opts) require('pwnvim.markdown').pasteUrl() end, {})
+  vim.cmd("command! PasteUrl lua require('pwnvim.markdown').pasteUrl()")
 
   if vim.env.KITTY_INSTALLATION_DIR and not vim.g.neovide then
     vim.cmd('packadd hologram.nvim')
@@ -181,9 +184,14 @@ end
 M.transformUrlUnderCursorToMdLink = function()
   --local url = vim.fn.expand("<cfile>")
   local url = vim.fn.expand("<cWORD>")
-  print("url: " .. url)
   local title = require("pwnvim.markdown").getTitleFor(url)
   vim.cmd("normal! ciW[" .. title .. "](" .. url .. ")")
+end
+
+M.pasteUrl = function()
+  local url = vim.fn.getreg('*')
+  local title = require("pwnvim.markdown").getTitleFor(url)
+  vim.cmd("normal! i[" .. title .. "](" .. url .. ")")
 end
 
 return M
