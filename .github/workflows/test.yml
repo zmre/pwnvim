@@ -23,10 +23,8 @@ jobs:
         - linux64
         - linuxarm
         - macos
-        - win-msvc
-        - win-gnu
         include:
-        - build: linux
+        - build: linux64
           os: ubuntu-22.04
           target: x86_64-unknown-linux-musl
         - build: linuxarm
