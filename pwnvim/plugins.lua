@@ -330,6 +330,7 @@ M.ui = function()
       theme = 'papercolor_light',
       icons_enabled = not SimpleUI,
       component_separators = { left = SimpleUI and '>' or '', right = SimpleUI and '<' or '' },
+      disabled_filetypes = { 'pager' },
       section_separators = { left = SimpleUI and '>' or '', right = SimpleUI and '<' or '' }
     },
     extensions = { 'quickfix', 'nvim-tree', 'fugitive' },

@@ -38,6 +38,10 @@ M.config = function()
     { pattern = { "Outline" }, command = "setlocal nospell", group = filetypes })
 
   autocmd("TermOpen", { pattern = { "*" }, command = "setlocal nospell", group = filetypes })
+  -- Run when page pager is invoked
+  autocmd('User',
+    { pattern = { 'PageOpen', 'PageOpenFile' }, group = filetypes,
+      callback = function() require('pwnvim.filetypes').page() end })
 end
 
 M.rust = function()
@@ -67,6 +71,13 @@ end
 M.lua = function()
   require('pwnvim.options').programming()
   require('pwnvim.options').twospaceindent()
+end
+
+M.page = function()
+  -- disable status bar -- handled in config
+  -- map space to ctrl-f
+  vim.api.nvim_buf_set_keymap(0, 'n', '<space>',
+    '<PageDown>', {})
 end
 
 M.reloadFile = function()
