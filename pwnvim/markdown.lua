@@ -29,6 +29,8 @@ M.setup = function()
   --Leave F7 at SymbolOutline which happens when zk LSP attaches
   --buf_set_keymap('', '#7', ':Toc<CR>', opts)
   --buf_set_keymap('!', '#7', '<ESC>:Toc<CR>', opts)
+  --TODO: add [t ]t for navigating tasks (instead of tabs) -- but can it work between files?
+  --TODO: add desc to opts
   buf_set_keymap('n', 'gl*', [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], opts)
   buf_set_keymap('v', 'gl*', [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], opts)
   buf_set_keymap('n', 'gl>', [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], opts)
@@ -81,12 +83,15 @@ M.setup = function()
   -- vim.api.nvim_buf_add_user_command(0, 'PasteUrl', function(opts) require('pwnvim.markdown').pasteUrl() end, {})
   vim.cmd("command! PasteUrl lua require('pwnvim.markdown').pasteUrl()")
 
-  if vim.env.KITTY_INSTALLATION_DIR and not vim.g.neovide then
-    vim.cmd('packadd hologram.nvim')
-    require('hologram').setup {
-      auto_display = true -- WIP automatic markdown image display, may be prone to breaking
-    }
-  end
+  -- This is wonderful when it's working, but I sometimes get too many open files errors that seem to come from this plugin. Plus
+  -- some weirdness where my entire terminal (kitty) completely hangs for a time. Especially when typing in an alt description.
+  -- So, sadly, commenting out for now. 2023-01-19
+  -- if vim.env.KITTY_INSTALLATION_DIR and not vim.g.neovide then
+  --   vim.cmd('packadd hologram.nvim')
+  --   require('hologram').setup {
+  --     auto_display = true -- WIP automatic markdown image display, may be prone to breaking
+  --   }
+  -- end
   vim.cmd('packadd clipboard-image.nvim')
   require 'clipboard-image'.setup {
     default = {
@@ -144,7 +149,7 @@ M.indent = function()
     --vim.api.nvim_set_current_line(line)
     --vim.cmd("normal l")
     local norm_mode = vim.api.nvim_replace_termcodes("<C-o>", true, false, true)
-    local shiftwidth = vim.bo.shiftwidth
+    local shiftwidth = vim.bo.shiftwidth + 1
     vim.api.nvim_feedkeys(norm_mode .. ">>", "n", false)
     vim.api.nvim_feedkeys(norm_mode .. shiftwidth .. "l", "n", false)
   else
@@ -157,6 +162,9 @@ M.outdent = function()
   local line = vim.api.nvim_get_current_line()
   if line:match("^%s*[*-]") then
     local norm_mode = vim.api.nvim_replace_termcodes("<C-o>", true, false, true)
+    -- TODO: shift width is correct if at least that many characters are between us and last column
+    --       but if we're on last column already, we'll auto move and compensate should be 0
+    -- local col = vim.api.nvim_win_get_cursor(0)
     local shiftwidth = vim.bo.shiftwidth
     vim.api.nvim_feedkeys(norm_mode .. "<<", "n", false)
     vim.api.nvim_feedkeys(norm_mode .. shiftwidth .. "h", "n", false)
@@ -173,10 +181,13 @@ M.getTitleFor = function(url)
   }
   local title = ""
   if res then
-    title = string.match(res.body, "<title>([^<]+)</title>")
+    title = string.match(res.body, "<title[^>]*>([^<]+)</title>")
     if not title then
-      title = string.match(res.body, "<h1>([^<]+)</h1>")
+      title = string.match(res.body, "<h1[^>]*>([^<]+)</h1>")
     end
+  end
+  if not title then
+    title = "could not get title" -- TODO: put domain here
   end
   return title
 end

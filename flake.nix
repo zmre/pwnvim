@@ -222,7 +222,8 @@
               opt = with pkgs.vimPlugins; [
                 # grammar check
                 vim-grammarous
-                hologram-nvim # images inline for markdown (only in terminal)
+                # see note about hologram in markdown.lua file. commented out 2023-01-19
+                #hologram-nvim # images inline for markdown (only in terminal)
                 direnv-vim # auto-execute nix direnv setups -- currently my slowest plugin; enabled by programming filetype
                 clipboard-image # only loaded in markdown files
               ];

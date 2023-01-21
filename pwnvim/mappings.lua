@@ -201,11 +201,11 @@ local leader_mappings = {
         "Insert joke" },
     },
     m = {
-      "<cmd>lua require('zk.commands').get('ZkNew')({ dir = vim.fn.input('Folder: ',vim.env.ZK_NOTEBOOK_DIR .. '/Notes/meetings','dir'), title = vim.fn.input('Title: ') })<CR>",
+      "<cmd>lua require('zk.commands').get('ZkNew')({ dir = vim.fn.input({prompt='Folder: ',default=vim.env.ZK_NOTEBOOK_DIR .. '/Notes/meetings',completion='dir'}), title = vim.fn.input('Title: ') })<CR>",
       "New meeting"
     },
     n = {
-      "<Cmd>ZkNew { dir = vim.fn.input('Folder: ',vim.env.ZK_NOTEBOOK_DIR .. '/Notes','dir'), title = vim.fn.input('Title: ') }<CR>",
+      "<Cmd>ZkNew { dir = vim.fn.input({prompt='Folder: ',default=vim.env.ZK_NOTEBOOK_DIR .. '/Notes',completion='dir'}), title = vim.fn.input('Title: ') }<CR>",
       "New"
     },
     o = { "<cmd>ZkNotes<CR>", "Open" },

@@ -55,6 +55,7 @@ M.defaults = function()
   vim.opt.modelines = 0 -- Don't allow vim settings embedded in text files for security reasons
   vim.opt.showcmd = true -- display incomplete commands
   vim.opt.showmode = true -- display current mode
+  -- with backup off and writebackup on: backup current file, deleted afterwards
   vim.opt.backup = false
   vim.opt.writebackup = true
   vim.opt.backupcopy = "auto"

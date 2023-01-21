@@ -5,7 +5,7 @@ _This is a combination of built-in universal keys and things that are specific t
 ## Misc
 * `gx` or enter to open a URL (but need gx if the URL is in a task)
 * `gf` to open the file path under the cursor
-* `gv` to reselect last selection
+* `gv` to **reselect** last selection
 * `gi` to go back to last insertion point and insert
 * `g ctrl-g` show cursor col, line, word, byte offsets
 * `g~`_m_ switch case of _movement_
