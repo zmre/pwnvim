@@ -20,6 +20,8 @@ M.setup = function()
 
   require('pwnvim.markdown').markdownsyntax()
 
+  -- TODO: make all this whichkey instead
+
   local opts = { noremap = false, silent = true }
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(0, ...) end
 
@@ -145,13 +147,15 @@ end
 M.indent = function()
   local line = vim.api.nvim_get_current_line()
   if line:match("^%s*[*-]") then
+    local ctrlt = vim.api.nvim_replace_termcodes("<C-t>", true, false, true)
+    vim.api.nvim_feedkeys(ctrlt, "n", false)
     --line = "\t" .. line
     --vim.api.nvim_set_current_line(line)
     --vim.cmd("normal l")
-    local norm_mode = vim.api.nvim_replace_termcodes("<C-o>", true, false, true)
-    local shiftwidth = vim.bo.shiftwidth + 1
-    vim.api.nvim_feedkeys(norm_mode .. ">>", "n", false)
-    vim.api.nvim_feedkeys(norm_mode .. shiftwidth .. "l", "n", false)
+    -- local norm_mode = vim.api.nvim_replace_termcodes("<C-o>", true, false, true)
+    -- local shiftwidth = vim.bo.shiftwidth + 1
+    -- vim.api.nvim_feedkeys(norm_mode .. ">>", "n", false)
+    -- vim.api.nvim_feedkeys(norm_mode .. shiftwidth .. "l", "n", false)
   else
     -- send through regular tab character at current position
     vim.api.nvim_feedkeys("\t", "n", false)
@@ -161,13 +165,14 @@ end
 M.outdent = function()
   local line = vim.api.nvim_get_current_line()
   if line:match("^%s*[*-]") then
-    local norm_mode = vim.api.nvim_replace_termcodes("<C-o>", true, false, true)
+    local ctrld = vim.api.nvim_replace_termcodes("<C-d>", true, false, true)
+    vim.api.nvim_feedkeys(ctrld, "n", false)
     -- TODO: shift width is correct if at least that many characters are between us and last column
     --       but if we're on last column already, we'll auto move and compensate should be 0
     -- local col = vim.api.nvim_win_get_cursor(0)
-    local shiftwidth = vim.bo.shiftwidth
-    vim.api.nvim_feedkeys(norm_mode .. "<<", "n", false)
-    vim.api.nvim_feedkeys(norm_mode .. shiftwidth .. "h", "n", false)
+    --local shiftwidth = vim.bo.shiftwidth
+    --vim.api.nvim_feedkeys(norm_mode .. "<<", "n", false)
+    --vim.api.nvim_feedkeys(norm_mode .. shiftwidth .. "h", "n", false)
   end
 end
 

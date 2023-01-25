@@ -86,7 +86,11 @@ vim.api.nvim_set_keymap('!', '#8', '<C-R>=strftime("%Y-%m-%d")<CR>', options)
 
 -- Make F9 toggle distraction-free writing setup
 vim.api.nvim_set_keymap('', '#9', ':TZAtaraxis<CR>', options)
-vim.api.nvim_set_keymap('!', '#9', ':TZAtaraxis<CR>', options)
+vim.api.nvim_set_keymap('!', '#9', '<ESC>:TZAtaraxis<CR>', options)
+
+-- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
+vim.api.nvim_set_keymap('', '<F10>', ':silent !qlmanage -p "%"<CR>', options)
+vim.api.nvim_set_keymap('!', '<F10>', '<ESC>:silent !qlmanage -p "%"<CR>', options)
 
 -- Make F12 restart highlighting
 vim.api.nvim_set_keymap('', '<F12>', ':syntax sync fromstart<CR>', options)

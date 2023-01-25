@@ -25,6 +25,7 @@ _This is a combination of built-in universal keys and things that are specific t
 * `F7` Show tags or file outline drawer
 * `F8` Insert current date
 * `F9` Focus mode for writing
+* `F10` Quicklook preview file
 * `F12` Reset syntax parsing
 
 ## Windowing
@@ -199,6 +200,9 @@ Fuzzy finder via Telescope
 ## Plugin: NvimTree file explorer
 * `<CR>`, `o` open a file or folder
 * `<C-e>` edit the file in place, effectively replacing the tree explorer
+* `<F10>` quicklook file under cursor
+* `y` copy just filename to clipboard
+* `Y` copy the relative path (to cwd) to clipboard
 * `O` same as (edit) with no window picker
 * `<C-]>` cd in the directory under the cursor
 * `<C-v>` open the file in a vertical split
