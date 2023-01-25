@@ -23,6 +23,11 @@ M.config = function()
   autocmd("BufRead", { pattern = { "*.css*" }, command = "setlocal filetype=css", group = filetypes })
   autocmd("BufRead", { pattern = { "*.rss" }, command = "setlocal filetype=xml", group = filetypes })
   autocmd("BufRead", { pattern = { "flake.lock" }, command = "setlocal filetype=json", group = filetypes })
+
+  autocmd("FileType",
+    { pattern = { "sql", "mysql", "plsql" },
+      callback = function() require('cmp').setup.buffer({ sources = { { name = 'vim-dadbod-completion' } } }) end,
+      group = filetypes })
   autocmd("FileType",
     { pattern = { "c", "ruby", "php", "php3", "perl", "python", "mason", "vim", "sh", "zsh", "scala", "javascript",
       "javascriptreact", "typescript", "typescriptreact", "html", "svelte", "css", "nix" },

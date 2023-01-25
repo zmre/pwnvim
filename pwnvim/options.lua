@@ -32,6 +32,8 @@ M.defaults = function()
   vim.g.vim_markdown_conceal_code_blocks = 0
   vim.g.vim_markdown_frontmatter = 1
 
+  vim.g.db_ui_use_nerd_fonts = true
+
   -- this would allow spaces in filenames for commands like `gf` but results are really mixed.
   -- commenting for now 2022-12-22
   --vim.opt.isfname:append { "32" }

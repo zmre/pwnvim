@@ -144,6 +144,11 @@ M.markdownsyntax = function()
   ]], false)
 end
 
+local check_backspace = function()
+  local col = vim.fn.col "." - 1
+  return col == 0 or vim.fn.getline("."):sub(col, col):match "%s"
+end
+
 M.indent = function()
   local line = vim.api.nvim_get_current_line()
   if line:match("^%s*[*-]") then
@@ -156,9 +161,12 @@ M.indent = function()
     -- local shiftwidth = vim.bo.shiftwidth + 1
     -- vim.api.nvim_feedkeys(norm_mode .. ">>", "n", false)
     -- vim.api.nvim_feedkeys(norm_mode .. shiftwidth .. "l", "n", false)
-  else
+  elseif check_backspace() then
+    -- we are at first col or there is whitespace immediately before cursor
     -- send through regular tab character at current position
     vim.api.nvim_feedkeys("\t", "n", false)
+  else
+    require 'cmp'.mapping.complete({})
   end
 end
 

@@ -727,6 +727,7 @@ M.diagnostics = function()
     }
   })
   require('crates').setup {}
+  require('cmp-npm').setup({})
   lspconfig.tsserver.setup { capabilities = capabilities, on_attach = attached }
   lspconfig.sumneko_lua.setup {
     settings = { Lua = { workspace = { checkThirdParty = false }, completion = { callSnippet = "Replace" },
@@ -949,7 +950,8 @@ M.completions = function()
         elseif check_backspace() then
           fallback()
         else
-          fallback()
+          cmp.mapping.complete({})
+          -- fallback()
         end
       end, { "i", "s" }),
       ["<S-Tab>"] = cmp.mapping(function(fallback)
@@ -971,6 +973,7 @@ M.completions = function()
       { name = 'luasnip' },
       { name = 'path' },
       { name = "crates" },
+      { name = 'npm', keyword_length = 3 },
       { name = "buffer", keyword_length = 3 },
     },
     formatting = {

@@ -188,6 +188,11 @@
                   vim-eunuch # brings cp/mv type commands. :Rename and :Move are particularly handy
                   vim-speeddating # allows ctrl-x and ctrl-a to increment/decrement dates
 
+                  # Database interactions
+                  vim-dadbod
+                  vim-dadbod-ui
+                  vim-dadbod-completion
+
                   # Autocompletion
                   nvim-cmp # generic autocompleter
                   cmp-nvim-lsp # use lsp as source for completions
@@ -197,6 +202,7 @@
                   cmp-cmdline # completing in :commands
                   cmp-emoji # complete :emojis:
                   cmp-nvim-lsp-signature-help # help complete function call by showing args
+                  cmp-npm # complete node packages in package.json
                   nvim-autopairs # balances parens as you type
                   nvim-ts-autotag # balance or rename html
                   vim-emoji # TODO: redundant now?
