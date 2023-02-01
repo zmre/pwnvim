@@ -1,7 +1,7 @@
 local M = {}
 
 M.setup = function()
-
+  local bufnr = vim.api.nvim_get_current_buf()
   vim.g.joinspaces = true
   vim.wo.number = false
   vim.wo.relativenumber = false
@@ -25,22 +25,34 @@ M.setup = function()
   local opts = { noremap = false, silent = true }
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(0, ...) end
 
-  buf_set_keymap('', '<leader>m', ':silent !open -a Marked\\ 2.app "%:p"<cr>',
-    opts)
+  require("which-key").register(
+    {
+      ["<leader>"] = {
+        m = { ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview" },
+      },
+      ["gl*"] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], "Add bullets" },
+      ["gl>"] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], "Add quotes" },
+      ["gl["] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>5l]], "Add task" },
+      ["gt"] = { "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>", "Convert URL to link" }
+    }, { mode = "n", buffer = bufnr, silent = true, noremap = true }
+  )
+  require("which-key").register(
+    {
+      ["<leader>"] = {
+        m = { ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview" },
+      },
+      ["gl*"] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], "Add bullets" },
+      ["gl>"] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], "Add quotes" },
+      ["gl["] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], "Add task" },
+      ["gt"] = { "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>", "Convert URL to link" }
+    }, { mode = "v", buffer = bufnr, silent = true, noremap = true }
+  )
 
   --Leave F7 at SymbolOutline which happens when zk LSP attaches
   --buf_set_keymap('', '#7', ':Toc<CR>', opts)
   --buf_set_keymap('!', '#7', '<ESC>:Toc<CR>', opts)
   --TODO: add [t ]t for navigating tasks (instead of tabs) -- but can it work between files?
   --TODO: add desc to opts
-  buf_set_keymap('n', 'gl*', [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], opts)
-  buf_set_keymap('v', 'gl*', [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], opts)
-  buf_set_keymap('n', 'gl>', [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], opts)
-  buf_set_keymap('v', 'gl>', [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], opts)
-  buf_set_keymap('n', 'gl[', [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>5l]],
-    opts)
-  buf_set_keymap('v', 'gl[', [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
-    opts)
   --buf_set_keymap('i', '#', '<plug>(mkdx-link-compl)', opts)
 
   --buf_set_keymap('', '][', '<Plug>Markdown_MoveToNextSiblingHeader', opts)
@@ -80,7 +92,6 @@ M.setup = function()
   buf_set_keymap('i', '<tab>', "<cmd>lua require('pwnvim.markdown').indent()<cr>", opts)
   buf_set_keymap('i', '<s-tab>', "<cmd>lua require('pwnvim.markdown').outdent()<cr>", opts)
 
-  buf_set_keymap('n', 'gt', "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>", opts)
   -- no idea why the lua version of adding the command is failing
   -- vim.api.nvim_buf_add_user_command(0, 'PasteUrl', function(opts) require('pwnvim.markdown').pasteUrl() end, {})
   vim.cmd("command! PasteUrl lua require('pwnvim.markdown').pasteUrl()")

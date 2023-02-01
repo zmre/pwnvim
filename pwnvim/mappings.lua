@@ -432,31 +432,30 @@ which_key.register({
   ["[y"] = "C escape",
   ["]y"] = "C unescape",
   ["[d"] = { "<cmd>lua vim.diagnostic.goto_prev()<CR>", "Prev diagnostic" },
-  ["]d"] = { "<cmd>lua vim.diagnostic.goto_next()<CR>", "Next diagnostic" }
-}, { mode = 'n' })
+  ["]d"] = { "<cmd>lua vim.diagnostic.goto_next()<CR>", "Next diagnostic" },
+  ["[1"] = { ':BufferLineGoToBuffer 1<CR>', "Go to buffer 1" },
+  ["]1"] = { ':BufferLineGoToBuffer 1<CR>', "Go to buffer 1" },
+  ["[2"] = { ':BufferLineGoToBuffer 2<CR>', "Go to buffer 2" },
+  ["]2"] = { ':BufferLineGoToBuffer 2<CR>', "Go to buffer 2" },
+  ["[3"] = { ':BufferLineGoToBuffer 3<CR>', "Go to buffer 3" },
+  ["]3"] = { ':BufferLineGoToBuffer 3<CR>', "Go to buffer 3" },
+  ["[4"] = { ':BufferLineGoToBuffer 4<CR>', "Go to buffer 4" },
+  ["]4"] = { ':BufferLineGoToBuffer 4<CR>', "Go to buffer 4" },
+  ["[5"] = { ':BufferLineGoToBuffer 5<CR>', "Go to buffer 5" },
+  ["]5"] = { ':BufferLineGoToBuffer 5<CR>', "Go to buffer 5" },
+  ["[6"] = { ':BufferLineGoToBuffer 6<CR>', "Go to buffer 6" },
+  ["]6"] = { ':BufferLineGoToBuffer 6<CR>', "Go to buffer 6" },
+  ["[7"] = { ':BufferLineGoToBuffer 7<CR>', "Go to buffer 7" },
+  ["]7"] = { ':BufferLineGoToBuffer 7<CR>', "Go to buffer 7" },
+  ["[8"] = { ':BufferLineGoToBuffer 8<CR>', "Go to buffer 8" },
+  ["]8"] = { ':BufferLineGoToBuffer 8<CR>', "Go to buffer 8" },
+  ["[9"] = { ':BufferLineGoToBuffer 9<CR>', "Go to buffer 9" },
+  ["]9"] = { ':BufferLineGoToBuffer 9<CR>', "Go to buffer 9" },
+  ["<S-h>"] = { ':BufferLineCyclePrev<CR>', "Go to next buffer" },
+  ["<S-l>"] = { ':BufferLineCycleNext<CR>', "Go to prev buffer" },
 
--- Move to previous/next
-vim.api.nvim_set_keymap('', '<S-h>', ':BufferLineCyclePrev<CR>', options)
-vim.api.nvim_set_keymap('', '<S-l>', ':BufferLineCycleNext<CR>', options)
+}, { mode = 'n', silent = true })
 
--- Goto buffer in position...
-vim.api.nvim_set_keymap('', '[1', ':BufferLineGoToBuffer 1<CR>', options)
-vim.api.nvim_set_keymap('', '[2', ':BufferLineGoToBuffer 2<CR>', options)
-vim.api.nvim_set_keymap('', ']2', ':BufferLineGoToBuffer 2<CR>', options)
-vim.api.nvim_set_keymap('', '[3', ':BufferLineGoToBuffer 3<CR>', options)
-vim.api.nvim_set_keymap('', ']3', ':BufferLineGoToBuffer 3<CR>', options)
-vim.api.nvim_set_keymap('', '[4', ':BufferLineGoToBuffer 4<CR>', options)
-vim.api.nvim_set_keymap('', ']4', ':BufferLineGoToBuffer 4<CR>', options)
-vim.api.nvim_set_keymap('', '[5', ':BufferLineGoToBuffer 5<CR>', options)
-vim.api.nvim_set_keymap('', ']5', ':BufferLineGoToBuffer 5<CR>', options)
-vim.api.nvim_set_keymap('', '[6', ':BufferLineGoToBuffer 6<CR>', options)
-vim.api.nvim_set_keymap('', ']6', ':BufferLineGoToBuffer 6<CR>', options)
-vim.api.nvim_set_keymap('', '[7', ':BufferLineGoToBuffer 7<CR>', options)
-vim.api.nvim_set_keymap('', ']7', ':BufferLineGoToBuffer 7<CR>', options)
-vim.api.nvim_set_keymap('', '[8', ':BufferLineGoToBuffer 8<CR>', options)
-vim.api.nvim_set_keymap('', ']8', ':BufferLineGoToBuffer 8<CR>', options)
-vim.api.nvim_set_keymap('', '[9', ':BufferLineGoToBuffer 9<CR>', options)
-vim.api.nvim_set_keymap('', ']9', ':BufferLineGoToBuffer 9<CR>', options)
 -- Close buffer
 vim.api.nvim_set_keymap('', '<D-w>', ':Bdelete<CR>', options)
 vim.api.nvim_set_keymap('!', '<D-w>', '<ESC>:Bdelete<CR>', options)

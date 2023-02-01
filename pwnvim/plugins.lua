@@ -78,8 +78,8 @@ end
 M.ui = function()
   -- following options are the default
   -- each of these are documented in `:help nvim-tree.OPTION_NAME`
-  local nvim_tree_config = require("nvim-tree.config")
-  local tree_cb = nvim_tree_config.nvim_tree_callback
+  -- local nvim_tree_config = require("nvim-tree.config")
+  -- local tree_cb = nvim_tree_config.nvim_tree_callback
   require 'nvim-tree'.setup {
     renderer = {
       icons = {
@@ -157,7 +157,7 @@ M.ui = function()
 
   require("nvim-surround").setup({
     aliases = {
-      ["e"] = "**"
+      ["e"] = "**" -- e for emphasis -- bold in markdown
     }
   })
 
@@ -276,20 +276,50 @@ M.ui = function()
       end, { expr = true })
 
       -- Actions
-      map({ 'n', 'v' }, '<leader>hs', ':Gitsigns stage_hunk<CR>')
-      map({ 'n', 'v' }, '<leader>hr', ':Gitsigns reset_hunk<CR>')
-      map('n', '<leader>hS', gs.stage_buffer)
-      map('n', '<leader>hu', gs.undo_stage_hunk)
-      map('n', '<leader>hR', gs.reset_buffer)
-      map('n', '<leader>hp', gs.preview_hunk)
-      map('n', '<leader>hb', function() gs.blame_line { full = true } end)
-      map('n', '<leader>tb', gs.toggle_current_line_blame)
-      map('n', '<leader>hd', gs.diffthis)
-      map('n', '<leader>hD', function() gs.diffthis('~') end)
-      map('n', '<leader>td', gs.toggle_deleted)
-
-      -- Text object
-      map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+      require("which-key").register(
+        {
+          ["<leader>"] = {
+            h = {
+              name = "hunk (git)",
+              s = { ':Gitsigns stage_hunk<CR>', "Stage hunk" },
+              r = { ':Gitsigns reset_hunk<CR>', "Reset hunk" },
+              S = { gs.stage_buffer, "Stage buffer" },
+              u = { gs.undo_stage_hunk, "Undo stage hunk" },
+              R = { gs.reset_buffer, "Reset buffer" },
+              p = { gs.preview_hunk, "Preview hunk" },
+              b = { function() gs.blame_line { full = true } end, "Blame hunk" },
+              d = { gs.diffthis, "Diff this to index" },
+              D = { function() gs.diffthis('~') end, "Diff this to previous" },
+            },
+            t = {
+              name = "git toggles",
+              b = { gs.toggle_current_line_blame, "Toggle current line blame" },
+              d = { gs.toggle_deleted, "Toggle deleted" },
+            }
+          }
+        }, { mode = "n", buffer = bufnr, silent = true, norewrap = true }
+      )
+      require("which-key").register(
+        {
+          ["<leader>"] = {
+            h = {
+              name = "hunk (git)",
+              s = { ':Gitsigns stage_hunk<CR>', "Stage hunk" },
+              r = { ':Gitsigns reset_hunk<CR>', "Reset hunk" },
+            }
+          }
+        }, { mode = "n", buffer = bufnr, silent = true, norewrap = true }
+      )
+      require("which-key").register(
+        {
+          ["ih"] = { ':<C-U>Gitsigns select_hunk<CR>', "Select git hunk" }
+        }, { mode = "o", buffer = bufnr, silent = true, norewrap = true }
+      )
+      require("which-key").register(
+        {
+          ["ih"] = { ':<C-U>Gitsigns select_hunk<CR>', "Select git hunk" }
+        }, { mode = "x", buffer = bufnr, silent = true, norewrap = true }
+      )
     end
   }
 
@@ -535,7 +565,7 @@ M.diagnostics = function()
 
     local opts = { noremap = true, silent = false }
     if client.name == "tsserver" or client.name == "jsonls" or client.name ==
-        "rnix" or client.name == "eslint" or client.name == "html" or client.name == "cssls" or
+        "nil" or client.name == "eslint" or client.name == "html" or client.name == "cssls" or
         client.name == "tailwindcss" then
       -- Most of these are being turned off because prettier handles the use case better
       client.server_capabilities.documentFormattingProvider = false
@@ -680,8 +710,9 @@ M.diagnostics = function()
     sources = {
       -- sumneko seems to also have formatting now
       -- formatting.lua_format,
-      formatting.nixfmt,
-      formatting.prismaFmt,
+      --formatting.nixfmt,
+      formatting.alejandra, -- for nix
+      formatting.prismaFmt, -- for node prisma db orm
       formatting.prettier.with {
 
         -- extra_args = {
@@ -699,8 +730,8 @@ M.diagnostics = function()
       }, -- diagnostics.vale,
       codeactions.eslint_d,
       codeactions.gitsigns,
-      codeactions.statix,
-      diagnostics.statix,
+      codeactions.statix, -- for nix
+      diagnostics.statix, -- for nix
       null_ls.builtins.hover.dictionary,
       codeactions.shellcheck,
       diagnostics.shellcheck,
@@ -712,9 +743,15 @@ M.diagnostics = function()
   local cmp_nvim_lsp = require("cmp_nvim_lsp")
   --local capabilities = cmp_nvim_lsp.default_capabilities()
   --local capabilities = cmp_nvim_lsp.default_capabilities(vim.lsp.protocol.make_client_capabilities())
-  local completion_capabilities = cmp_nvim_lsp.default_capabilities()
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
-  capabilities.textDocument.completion = completion_capabilities.textDocument.completion
+  -- local completion_capabilities = cmp_nvim_lsp.default_capabilities()
+  -- local capabilities = vim.lsp.protocol.make_client_capabilities()
+  -- capabilities.textDocument.completion = completion_capabilities.textDocument.completion
+
+  local capabilities = vim.tbl_extend(
+    'keep',
+    vim.lsp.protocol.make_client_capabilities(),
+    cmp_nvim_lsp.default_capabilities()
+  );
 
   -- lspconfig.rust_analyzer.setup {
   --   on_attach = attached,
@@ -742,7 +779,7 @@ M.diagnostics = function()
     capabilities = capabilities,
     settings = { files = { exclude = { "**/.git/**", "**/node_modules/**", "**/*.md" } } }
   }
-  lspconfig.rnix.setup { on_attach = attached, capabilities = capabilities }
+  lspconfig.nil_ls.setup { on_attach = attached, capabilities = capabilities }
   lspconfig.cssls.setup {
     on_attach = attached,
     capabilities = capabilities,
@@ -1003,7 +1040,7 @@ M.completions = function()
   cmp.setup.cmdline(':', {
     mapping = cmp.mapping.preset.cmdline(),
     sources = cmp.config.sources({
-      { name = 'path' }
+      { name = 'path' },
     }, {
       {
         name = 'cmdline',
