@@ -681,6 +681,7 @@ M.diagnostics = function()
       -- sumneko seems to also have formatting now
       -- formatting.lua_format,
       formatting.nixfmt,
+      formatting.prismaFmt,
       formatting.prettier.with {
 
         -- extra_args = {

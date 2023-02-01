@@ -70,6 +70,7 @@
             proselint # ditto
             nixfmt # nix formatter used with null-ls
             luaformatter # ditto for lua
+            prisma-engines # ditto for schema.prisma files
             rnix-lsp # nix lsp
             statix # linter for nix
             shellcheck
