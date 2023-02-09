@@ -1,0 +1,61 @@
+require 'nvim-treesitter.configs'.setup {
+  auto_install = false,
+  autotag = { enable = true },
+  highlight = {
+    enable = true,
+    --disable = { "markdown", "markdown_inline" }, -- 2022-11-30 conflicts with markdown plugin, which detects more things like bold+italic and strikethrough
+    --additional_vim_regex_highlighting = { "markdown" } -- leaving in case we bring back markdown plugin
+  },
+  indent = { enable = true, disable = { "yaml" } },
+  incremental_selection = { enable = true },
+  context_commentstring = {
+    enable = true,
+    enable_autocmd = false -- per directions for kommentary integration https://github.com/joosepalviste/nvim-ts-context-commentstring/
+  },
+  textobjects = {
+    select = {
+      enable = true,
+      lookahead = true,
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ["af"] = { query = "@function.outer", desc = "Select outer function" },
+        ["if"] = { query = "@function.inner", desc = "Select inner function" },
+        ["ac"] = { query = "@class.outer", desc = "Select outer class" },
+        ["ic"] = { query = "@class.inner", desc = "Select inner class" },
+        ["im"] = { query = "@block.inner", desc = "Select inner block" },
+        ["am"] = { query = "@block.outer", desc = "Select outer block" },
+        -- ["il"] = { query = "@list.inner", desc = "Select inner list" },
+        -- ["al"] = { query = "@list.outer", desc = "Select outer list" },
+        -- ["ih"] = { query = "@section.inner", desc = "Select inner section" },
+        -- ["ah"] = { query = "@section.outer", desc = "Select outer section" },
+      },
+    },
+    move = {
+      enable = true,
+      set_jumps = true, -- whether to set jumps in the jumplist
+      goto_next_start = {
+        ["]m"] = "@function.outer",
+        ["]]"] = { query = "@class.outer", desc = "Next class start" },
+      },
+      goto_next_end = {
+        ["]M"] = "@function.outer",
+        ["]["] = "@class.outer",
+      },
+      goto_previous_start = {
+        ["[m"] = "@function.outer",
+        ["[["] = "@class.outer",
+      },
+      goto_previous_end = {
+        ["[M"] = "@function.outer",
+        ["[]"] = "@class.outer",
+      },
+    },
+
+  }
+}
+require 'treesitter-context'.setup {
+  max_lines = 0, -- no max window height
+  patterns = {
+    markdown = { "atx_heading" }
+  },
+}
