@@ -269,11 +269,6 @@ M.diagnostics = function()
   }
   local lspconfig = require("lspconfig")
   local cmp_nvim_lsp = require("cmp_nvim_lsp")
-  --local capabilities = cmp_nvim_lsp.default_capabilities()
-  --local capabilities = cmp_nvim_lsp.default_capabilities(vim.lsp.protocol.make_client_capabilities())
-  -- local completion_capabilities = cmp_nvim_lsp.default_capabilities()
-  -- local capabilities = vim.lsp.protocol.make_client_capabilities()
-  -- capabilities.textDocument.completion = completion_capabilities.textDocument.completion
 
   local capabilities = vim.tbl_extend(
     'keep',
@@ -281,10 +276,6 @@ M.diagnostics = function()
     cmp_nvim_lsp.default_capabilities()
   );
 
-  -- lspconfig.rust_analyzer.setup {
-  --   on_attach = attached,
-  --   capabilities = capabilities
-  -- }
   require('rust-tools').setup({
     server = { on_attach = attached, capabilities = capabilities, standalone = false },
     tools = {
@@ -352,11 +343,11 @@ M.diagnostics = function()
 
     -- TODO: re-enable this at next update - getting error 2022-08-02
     -- code_action_lightbulb = {
-    -- enable = false,
-    -- sign = true,
-    -- enable_in_insert = true,
-    -- sign_priority = 20,
-    -- virtual_text = false,
+    --   enable = false,
+    --   sign = true,
+    --   enable_in_insert = true,
+    --   sign_priority = 20,
+    --   virtual_text = false,
     -- },
   })
 
@@ -368,15 +359,10 @@ M.telescope = function()
   local actions = require('telescope.actions')
   local action_state = require('telescope.actions.state')
 
-  local function paste_selected_entry(prompt_bufnr)
+  local function quicklook_selected_entry(prompt_bufnr)
     local entry = action_state.get_selected_entry()
-    actions.close(prompt_bufnr)
-    -- ensure that the buffer can be written to
-    if vim.api.nvim_buf_get_option(vim.api.nvim_get_current_buf(),
-      "modifiable") then
-      -- print("Paste!")
-      vim.api.nvim_put({ entry.value }, "c", true, true)
-    end
+    -- actions.close(prompt_bufnr)
+    vim.cmd("silent !qlmanage -p '" .. entry.value .. "'")
   end
 
   local function yank_selected_entry(prompt_bufnr)
@@ -399,7 +385,7 @@ M.telescope = function()
     selection_caret = SimpleUI and "↪" or " ",
     -- path_display = { "smart" },
     defaults = {
-      path_display = function(opts, path)
+      path_display = function(_, path)
         local tail = require("telescope.utils").path_tail(path)
         return string.format("%s (%s)", tail,
           require("telescope.utils").path_smart(
@@ -412,14 +398,14 @@ M.telescope = function()
       -- path_display = { "truncate" },
       mappings = {
         n = {
-          --["<C-p>"] = paste_selected_entry,
           ["<C-y>"] = yank_selected_entry,
           ["<C-o>"] = system_open_selected_entry,
+          ["<F10>"] = quicklook_selected_entry,
           ["q"] = require("telescope.actions").close
         },
         i = {
-          --["<C-p>"] = paste_selected_entry,
           ["<C-y>"] = yank_selected_entry,
+          ["<F10>"] = quicklook_selected_entry,
           ["<C-o>"] = system_open_selected_entry
         }
       },
@@ -480,7 +466,7 @@ M.completions = function()
   local luasnip = require("luasnip")
   local check_backspace = function()
     local col = vim.fn.col "." - 1
-    return col == 0 or vim.fn.getline("."):sub(col, col):match "%s"
+    return col == 0 or vim.fn.list2str(vim.fn.getline(vim.fn.line("."))):sub(col, col):match "%s"
   end
   local cmp = require 'cmp'
   cmp.setup {
@@ -848,23 +834,19 @@ M.misc = function()
   })
   require('telescope').load_extension('projects')
 
-  vim.g.kommentary_create_default_mappings = false
-  require('kommentary.config').configure_language({ "lua", "rust" }, {
-    prefer_single_line_comments = true
-  })
-  require('kommentary.config').configure_language({ "lua", "vim", "svelte", "typescriptreact", "markdown", "html",
-    "javascriptreact" }, {
-    single_line_comment_string = 'auto',
-    multi_line_comment_strings = 'auto',
-    hook_function = function()
-      require('ts_context_commentstring.internal').update_commentstring()
-    end,
-
-  })
-  vim.api.nvim_set_keymap('n', '<leader>c<space>',
-    '<Plug>kommentary_line_default', {})
-  vim.api.nvim_set_keymap('v', '<leader>c<space>',
-    '<Plug>kommentary_visual_default', {})
+  require('Comment').setup()
+  require("which-key").register(
+    {
+      ["<leader>c<space>"] = { '<Plug>(comment_toggle_linewise_current)', "Toggle comments" },
+      ["g/"] = { '<Plug>(comment_toggle_linewise_current)', "Toggle comments" }
+    }, { mode = "n", silent = true, norewrap = true }
+  )
+  require("which-key").register(
+    {
+      ["<leader>c<space>"] = { '<Plug>(comment_toggle_linewise_visual)', "Toggle comments" },
+      ["g/"] = { '<Plug>(comment_toggle_linewise_visual)', "Toggle comments" }
+    }, { mode = "v", silent = true, norewrap = true }
+  )
 
   require('nvim-autopairs').setup({})
 

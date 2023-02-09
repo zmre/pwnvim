@@ -385,17 +385,6 @@ M.programming = function()
   vim.wo.cursorline = true -- add indicator for current line
 
   M.twospaceindent()
-  -- Setup Ctrl and Cmd-/ to toggle comments
-  vim.api.nvim_buf_set_keymap(0, 'n', '<D-/>',
-    '<Plug>kommentary_line_default', {})
-  vim.api.nvim_buf_set_keymap(0, 'v', '<D-/>',
-    '<Plug>kommentary_visual_default', {})
-  vim.api.nvim_buf_set_keymap(0, 'i', '<D-/>', '<C-O>,c<space>', {})
-  vim.api.nvim_buf_set_keymap(0, 'n', '<C-/>',
-    '<Plug>kommentary_line_default', {})
-  vim.api.nvim_buf_set_keymap(0, 'v', '<C-/>',
-    '<Plug>kommentary_visual_default', {})
-  vim.api.nvim_buf_set_keymap(0, 'i', '<C-/>', '<C-O>,c<space>', {})
 
   -- Could be a performance penalty on this
   -- Will make periodic checks to see if the file changed

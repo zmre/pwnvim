@@ -10,7 +10,6 @@ require 'nvim-treesitter.configs'.setup {
   incremental_selection = { enable = true },
   context_commentstring = {
     enable = true,
-    enable_autocmd = false -- per directions for kommentary integration https://github.com/joosepalviste/nvim-ts-context-commentstring/
   },
   textobjects = {
     select = {
