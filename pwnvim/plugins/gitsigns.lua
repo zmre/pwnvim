@@ -56,7 +56,6 @@ require("gitsigns").setup {
     -- Actions -- normal mode
     require("which-key").register(
       {
-        ["ih"] = { ':<C-U>Gitsigns select_hunk<CR>', "Select git hunk" },
         ["<leader>"] = {
           h = {
             name = "hunk (git)",
@@ -81,7 +80,6 @@ require("gitsigns").setup {
     -- Actions -- visual and select mode
     require("which-key").register(
       {
-        ["ih"] = { ':<C-U>Gitsigns select_hunk<CR>', "Select git hunk" },
         ["<leader>"] = {
           h = {
             name = "hunk (git)",

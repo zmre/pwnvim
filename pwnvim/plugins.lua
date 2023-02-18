@@ -466,7 +466,7 @@ M.completions = function()
   local luasnip = require("luasnip")
   local check_backspace = function()
     local col = vim.fn.col "." - 1
-    return col == 0 or vim.fn.list2str(vim.fn.getline(vim.fn.line("."))):sub(col, col):match "%s"
+    return col == 0 or vim.fn.getline(vim.fn.line(".")):sub(col, col):match "%s"
   end
   local cmp = require 'cmp'
   cmp.setup {
