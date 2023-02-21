@@ -239,7 +239,7 @@ end
 M.pasteUrl = function()
   local url = vim.fn.getreg('*')
   local title = require("pwnvim.markdown").getTitleFor(url)
-  vim.cmd("normal! i[" .. title .. "](" .. url .. ")")
+  vim.cmd("normal! a[" .. title .. "](" .. url .. ")")
   -- cursor ends up one to the left, so move over right one if possible
   local right = vim.api.nvim_replace_termcodes("<right>", true, false, true)
   vim.api.nvim_feedkeys(right, "n", false)
