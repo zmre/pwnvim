@@ -25,6 +25,7 @@ M.setup = function()
   local opts = { noremap = false, silent = true }
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(0, ...) end
 
+  -- normal mode mappings
   require("which-key").register(
     {
       ["<leader>"] = {
@@ -33,9 +34,18 @@ M.setup = function()
       ["gl*"] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], "Add bullets" },
       ["gl>"] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], "Add quotes" },
       ["gl["] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>5l]], "Add task" },
-      ["gt"] = { "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>", "Convert URL to link" }
+      ["gt"] = { "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>", "Convert URL to link" },
+      ["gp"] = { require('pwnvim.markdown').pasteUrl, "Paste URL as link" },
+      ["<C-M-v>"] = { require('pwnvim.markdown').pasteUrl, "Paste URL as link" },
     }, { mode = "n", buffer = bufnr, silent = true, noremap = true }
   )
+  -- insert mode mappings
+  require("which-key").register(
+    {
+      ["<C-M-v>"] = { require('pwnvim.markdown').pasteUrl, "Paste URL as link" },
+    }, { mode = "i", buffer = bufnr, silent = true, noremap = true }
+  )
+  -- visual mode mappings
   require("which-key").register(
     {
       ["<leader>"] = {
@@ -197,6 +207,9 @@ end
 
 M.getTitleFor = function(url)
   local curl = require "plenary.curl"
+  if not string.match(url, "^https?:[^%s]*$") then
+    return "" -- doesn't look like a URL -- avoid curl sadness
+  end
   local res = curl.request {
     url = url,
     method = "get",
@@ -227,6 +240,9 @@ M.pasteUrl = function()
   local url = vim.fn.getreg('*')
   local title = require("pwnvim.markdown").getTitleFor(url)
   vim.cmd("normal! i[" .. title .. "](" .. url .. ")")
+  -- cursor ends up one to the left, so move over right one if possible
+  local right = vim.api.nvim_replace_termcodes("<right>", true, false, true)
+  vim.api.nvim_feedkeys(right, "n", false)
 end
 
 return M

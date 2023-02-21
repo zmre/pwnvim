@@ -318,6 +318,7 @@ M.diagnostics = function()
       files = { exclude = { "**/.git/**", "**/node_modules/**", "**/*.md" } }
     }
   }
+  -- nil_ls is a nix lsp
   lspconfig.nil_ls.setup { on_attach = attached, capabilities = capabilities }
   lspconfig.cssls.setup {
     on_attach = attached,

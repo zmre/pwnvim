@@ -35,21 +35,21 @@ There are a few ways to install a flake in your own config if you want it to be 
 ```nix
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    # ...
-    pwnvim.url = "github:zmre/pwnvim";
-    pwneovide.url = "github:zmre/pwneovide";
+	nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+	# ...
+	pwnvim.url = "github:zmre/pwnvim";
+	pwneovide.url = "github:zmre/pwneovide";
   }
   outputs = inputs@{ pwnvim, pwneovide, ... }: {
-    pkgs = import nixpkgs {
-      inherit system;
-      overlays = [
-        (final: prev: {
-          pwnvim = inputs.pwnvim.packages.${final.system}.pwnvim;
-          pwneovide = inputs.pwneovide.packages.${final.system}.pwneovide;
-        })
-      ];
-    };
+	pkgs = import nixpkgs {
+	  inherit system;
+	  overlays = [
+		(final: prev: {
+		  pwnvim = inputs.pwnvim.packages.${final.system}.pwnvim;
+		  pwneovide = inputs.pwneovide.packages.${final.system}.pwneovide;
+		})
+	  ];
+	};
   }
 }
 ```
