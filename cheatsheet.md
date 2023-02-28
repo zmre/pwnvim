@@ -19,6 +19,8 @@ _This is a combination of built-in universal keys and things that are specific t
 * `,cd` change dir to current file's path
 * `,lcd` change dir for cur buffer only to current file's path
 * `,q` open quicklist with any errors
+* `q:` opens command mode but in editor
+	* `<C-f>` is equivalent but launches from command mode
 * `F2`, `,e` Show/hide file explorer
 * `F3` Fast grep
 * `F4` Toggle showing invisible characters
