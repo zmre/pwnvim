@@ -7,6 +7,9 @@ _This is a combination of built-in universal keys and things that are specific t
 * `gf` to open the file path under the cursor
 * `gv` to **reselect** last selection
 * `gi` to go back to last insertion point and insert
+* `gp` paste markdown url (auto lookup the title)
+* `:PasteImg` will save image to subdir if it is on clipboard
+	* On mac, use `ctrl` modifier on screenshot like `cmd-ctrl-shift-4` to put screenshot on clipboard
 * `g ctrl-g` show cursor col, line, word, byte offsets
 * `g~`_m_ switch case of _movement_
 * `'"` go to position before last edit

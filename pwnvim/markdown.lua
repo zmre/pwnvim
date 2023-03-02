@@ -121,11 +121,13 @@ M.setup = function()
       img_name = function()
         vim.fn.inputsave()
         local name = vim.fn.input({ prompt = "Name: " })
+        -- TODO: swap spaces out for dashes
         vim.fn.inputrestore()
         return os.date('%Y-%m-%d') .. "-" .. name
       end,
       img_dir = { "%:p:h", "%:t:r:s?$?_attachments?" },
       img_dir_txt = "%:t:r:s?$?_attachments?",
+      -- TODO: can I put the name as the title somehow?
       affix = "![](%s)",
     }
   }
