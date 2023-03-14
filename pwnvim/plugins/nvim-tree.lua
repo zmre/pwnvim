@@ -48,6 +48,10 @@ require 'nvim-tree'.setup {
     enable = true,
     icons = { hint = signs.hint, info = signs.info, warning = signs.warn, error = signs.error }
   },
+  git = {
+    enable = true,
+    timeout = 400 -- (in ms)
+  },
   view = {
     width = 30,
     -- height = 30,
@@ -58,7 +62,7 @@ require 'nvim-tree'.setup {
       custom_only = false,
       list = {
         { key = { "l", "<CR>", "o" }, action = "edit" },
-        { key = "h", action = "close_node" },
+        { key = "h",                  action = "close_node" },
         { key = "<F10>", action = "quicklook",
           action_cb = function(node) vim.cmd("silent !qlmanage -p '" .. node.absolute_path .. "'") end },
         { key = "v", action = "vsplit" }

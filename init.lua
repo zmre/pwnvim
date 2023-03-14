@@ -1,3 +1,9 @@
+-- Neovide needs this defined very early
+if vim.fn.has('mac') == 1 then
+  vim.opt.guifont = "Hasklug Nerd Font:h18"
+else
+  vim.opt.guifont = "Hasklug Nerd Font:h9"
+end
 require('impatient')
 require('impatient').enable_profile()
 require('pwnvim.filetypes').config()
