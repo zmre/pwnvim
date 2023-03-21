@@ -113,20 +113,20 @@ M.diagnostics = function()
 
     local which_key = require("which-key")
     local local_leader_opts = {
-      mode = "n", -- NORMAL mode
+      mode = "n",     -- NORMAL mode
       prefix = "<leader>",
       buffer = bufnr, -- Local mappings.
-      silent = true, -- use `silent` when creating keymaps
+      silent = true,  -- use `silent` when creating keymaps
       noremap = true, -- use `noremap` when creating keymaps
-      nowait = true -- use `nowait` when creating keymaps
+      nowait = true   -- use `nowait` when creating keymaps
     }
     local local_leader_opts_visual = {
-      mode = "v", -- VISUAL mode
+      mode = "v",     -- VISUAL mode
       prefix = "<leader>",
       buffer = bufnr, -- Local mappings.
-      silent = true, -- use `silent` when creating keymaps
+      silent = true,  -- use `silent` when creating keymaps
       noremap = true, -- use `noremap` when creating keymaps
-      nowait = true -- use `nowait` when creating keymaps
+      nowait = true   -- use `nowait` when creating keymaps
     }
 
     require("symbols-outline").setup({
@@ -254,9 +254,9 @@ M.diagnostics = function()
       args = {
         "-f", "json", "--stdin", "--stdin-filename", "$FILENAME"
       }
-    }, -- diagnostics.vale,
+    },                                                                -- diagnostics.vale,
       codeactions.eslint_d, codeactions.gitsigns, codeactions.statix, -- for nix
-      diagnostics.statix, -- for nix
+      diagnostics.statix,                                             -- for nix
       null_ls.builtins.hover.dictionary, codeactions.shellcheck,
       diagnostics.shellcheck
       -- removed formatting.rustfmt since rust_analyzer seems to do the same thing
@@ -267,7 +267,7 @@ M.diagnostics = function()
   local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
   local capabilities = vim.tbl_extend('keep', vim.lsp.protocol
-  .make_client_capabilities(),
+    .make_client_capabilities(),
     cmp_nvim_lsp.default_capabilities());
 
   require('rust-tools').setup({
@@ -330,7 +330,7 @@ M.diagnostics = function()
   lspconfig.bashls.setup { on_attach = attached, capabilities = capabilities }
   -- TODO: investigate nvim-metals and remove line below
   lspconfig.metals.setup { on_attach = attached, capabilities = capabilities } -- for scala
-  lspconfig.pylsp.setup { on_attach = attached, capabilities = capabilities } -- for python
+  lspconfig.pylsp.setup { on_attach = attached, capabilities = capabilities }  -- for python
   lspconfig.jsonls.setup {
     on_attach = attached,
     settings = {
@@ -449,9 +449,9 @@ M.telescope = function()
       set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
       file_previewer = require("telescope.previewers").vim_buffer_cat.new,
       grep_previewer = require("telescope.previewers").vim_buffer_vimgrep
-      .new,
+          .new,
       qflist_previewer = require("telescope.previewers").vim_buffer_qflist
-      .new
+          .new
     },
 
     extensions = {
@@ -495,7 +495,7 @@ M.completions = function()
     mapping = {
       ['<C-p>'] = cmp.mapping.select_prev_item(),
       ['<C-n>'] = cmp.mapping.select_next_item(),
-      ['<C-d>'] = cmp.mapping.scroll_docs( -4),
+      ['<C-d>'] = cmp.mapping.scroll_docs(-4),
       ['<C-f>'] = cmp.mapping.scroll_docs(4),
       ['<C-Space>'] = cmp.mapping.complete({}),
       ['<C-e>'] = cmp.mapping.close(),
@@ -520,8 +520,8 @@ M.completions = function()
       ["<S-Tab>"] = cmp.mapping(function(fallback)
         if cmp.visible() then
           cmp.select_prev_item()
-        elseif luasnip.jumpable( -1) then
-          luasnip.jump( -1)
+        elseif luasnip.jumpable(-1) then
+          luasnip.jump(-1)
         else
           fallback()
         end
@@ -542,12 +542,12 @@ M.completions = function()
         vim_item.kind = string.format("%s",
           signs.kind_icons[vim_item.kind])
         vim_item.menu = ({
-              nvim_lsp = "[LSP]",
-              nvim_lsp_signature_help = "[LSPS]",
-              luasnip = "[Snippet]",
-              buffer = "[Buffer]",
-              path = "[Path]"
-            })[entry.source.name]
+          nvim_lsp = "[LSP]",
+          nvim_lsp_signature_help = "[LSPS]",
+          luasnip = "[Snippet]",
+          buffer = "[Buffer]",
+          path = "[Path]"
+        })[entry.source.name]
         return vim_item
       end
     },
@@ -582,20 +582,20 @@ M.notes = function()
 
           local which_key = require("which-key")
           local local_leader_opts = {
-            mode = "n", -- NORMAL mode
+            mode = "n",     -- NORMAL mode
             prefix = "<leader>",
             buffer = bufnr, -- Local mappings.
-            silent = true, -- use `silent` when creating keymaps
+            silent = true,  -- use `silent` when creating keymaps
             noremap = true, -- use `noremap` when creating keymaps
-            nowait = true -- use `nowait` when creating keymaps
+            nowait = true   -- use `nowait` when creating keymaps
           }
           local local_leader_opts_visual = {
-            mode = "v", -- VISUAL mode
+            mode = "v",     -- VISUAL mode
             prefix = "<leader>",
             buffer = bufnr, -- Local mappings.
-            silent = true, -- use `silent` when creating keymaps
+            silent = true,  -- use `silent` when creating keymaps
             noremap = true, -- use `noremap` when creating keymaps
-            nowait = true -- use `nowait` when creating keymaps
+            nowait = true   -- use `nowait` when creating keymaps
           }
 
           local leader_mappings = {
@@ -668,7 +668,7 @@ M.notes = function()
   })
 
   -- Focus mode dimming of text out of current block
-  require("twilight").setup {
+  --[[ require("twilight").setup {
     dimming = {
       alpha = 0.25, -- amount of dimming
       -- we try to get the foreground from the highlight groups or fallback color
@@ -684,28 +684,31 @@ M.notes = function()
       "function", "method", "table", "if_statement"
     },
     exclude = {} -- exclude these filetypes
-  }
-
+  } ]]
   -- Focus mode / centering
   require("true-zen").setup {
     -- your config goes here
     -- or just leave it empty :)
-    modes = { -- configurations per mode
+    modes = {
+      -- configurations per mode
       ataraxis = {
         shade = "dark", -- if `dark` then dim the padding windows, otherwise if it's `light` it'll brighten said windows
-        backdrop = 0, -- percentage by which padding windows should be dimmed/brightened. Must be a number between 0 and 1. Set to 0 to keep the same background color
-        minimum_writing_area = { -- minimum size of main window
+        backdrop = 0,   -- percentage by which padding windows should be dimmed/brightened. Must be a number between 0 and 1. Set to 0 to keep the same background color
+        minimum_writing_area = {
+          -- minimum size of main window
           width = 70,
           height = 44
         },
         quit_untoggles = true, -- type :q or :qa to quit Ataraxis mode
-        padding = { -- padding windows
+        padding = {
+          -- padding windows
           left = 52,
           right = 52,
           top = 0,
           bottom = 0
         },
-        callbacks = { -- run functions when opening/closing Ataraxis mode
+        callbacks = {
+          -- run functions when opening/closing Ataraxis mode
           open_pre = function()
             vim.opt.scrolloff = 999 -- keep cursor in vertical middle of screen
           end,
@@ -718,7 +721,8 @@ M.notes = function()
       },
       minimalist = {
         ignored_buf_types = { "nofile" }, -- save current options from any window except ones displaying these kinds of buffers
-        options = { -- options to be disabled when entering Minimalist mode
+        options = {
+          -- options to be disabled when entering Minimalist mode
           number = false,
           relativenumber = false,
           showtabline = 0,
@@ -731,7 +735,8 @@ M.notes = function()
           ruler = false,
           numberwidth = 1
         },
-        callbacks = { -- run functions when opening/closing Minimalist mode
+        callbacks = {
+          -- run functions when opening/closing Minimalist mode
           open_pre = nil,
           open_pos = nil,
           close_pre = nil,
@@ -745,7 +750,8 @@ M.notes = function()
         --- function() end: pass a custom func with your fold lines. See :h foldtext
         folds_style = "informative",
         run_ataraxis = true, -- display narrowed text in a Ataraxis session
-        callbacks = { -- run functions when opening/closing Narrow mode
+        callbacks = {
+          -- run functions when opening/closing Narrow mode
           open_pre = nil,
           open_pos = nil,
           close_pre = nil,
@@ -753,7 +759,8 @@ M.notes = function()
         }
       },
       focus = {
-        callbacks = { -- run functions when opening/closing Focus mode
+        callbacks = {
+          -- run functions when opening/closing Focus mode
           open_pre = nil,
           open_pos = nil,
           close_pre = nil,
@@ -763,12 +770,13 @@ M.notes = function()
     },
     integrations = {
       tmux = false, -- hide tmux status bar in (minimalist, ataraxis)
-      kitty = { -- increment font size in Kitty. Note: you must set `allow_remote_control socket-only` and `listen_on unix:/tmp/kitty` in your personal config (ataraxis)
-        enabled = false,
-        font = "+3"
+      kitty = {
+        -- increment font size in Kitty. Note: you must set `allow_remote_control socket-only` and `listen_on unix:/tmp/kitty` in your personal config (ataraxis)
+        enabled = false, -- disabled 2023-03-20 because it doesn't reset the font size on exit
+        font = "+2"
       },
       twilight = false, -- enable twilight text dimming outside cursor block
-      lualine = false -- hide nvim-lualine (ataraxis)
+      lualine = true    -- hide nvim-lualine (ataraxis)
     }
   }
 

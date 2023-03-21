@@ -226,7 +226,7 @@
                 # writing
                 zk-nvim # lsp for a folder of notes for searching/linking/etc.
                 true-zen-nvim # distraction free, width constrained writing mode
-                twilight-nvim # dim text outside of current scope
+                # twilight-nvim # dim text outside of current scope
 
                 # Misc
                 vim-fugitive # git management
