@@ -128,7 +128,7 @@ M.setup = function()
       img_dir = { "%:p:h", "%:t:r:s?$?_attachments?" },
       img_dir_txt = "%:t:r:s?$?_attachments?",
       -- TODO: can I put the name as the title somehow?
-      affix = "![](%s)",
+      affix = "![image](%s)",
     }
   }
 
