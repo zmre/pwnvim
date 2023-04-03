@@ -245,6 +245,7 @@ Fuzzy finder via Telescope
 * `[q`, `]q` prev/next quickfix errors list
 * `[Q`, `]Q` first/last quickfix errors list
 * `[o`, `]o` prev/next file in dir by alpha
+* `[n`, `]n` prev/next git conflict
 * `[<space>`, `]<space>` add line above/below
 * `[e`, `]e` exchange line with above/below
 * `[x`_m_ xml encode (&lt;) movement _m_ or _VISUAL_
@@ -253,6 +254,15 @@ Fuzzy finder via Telescope
 * `]u`_m_ url decode (%20) movement _m_ or _VISUAL_
 * `[y`_m_ c encode (\") movement _m_ or _VISUAL_
 * `]y`_m_ c decode (\") movement _m_ or _VISUAL_
+* Pasting
+	* `>p`    Paste after linewise, increasing indent.
+	* `>P`    Paste before linewise, increasing indent.
+	* `<p*    Paste after linewise, decreasing indent.
+	* `<P`    Paste before linewise, decreasing indent.
+	* `=p`    Paste after linewise, reindenting.
+	* `=P`    Paste before linewise, reindenting.
+	* `]p`, `[p`, `[P`, and `]P` have also been remapped to force linewise pasting,
+	* `pkJ` or `vp` will take a yanked line with newlines and put it in the current line while preserving their usual indent matching behavior. So will insert mode `ctrl-r "`
 
 ### Plugin: Grammarous
 * `,ng` will kick off the grammar checker
