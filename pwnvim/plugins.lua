@@ -50,6 +50,7 @@ M.diagnostics = function()
     end,
     lspconfig = true
   })
+  require 'nu'.setup {}     -- support nushell scripts
   require "fidget".setup {} -- shows status of lsp clients as they issue updates
   vim.diagnostic.config({
     virtual_text = false,

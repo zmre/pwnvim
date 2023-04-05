@@ -163,6 +163,7 @@
                 todo-comments-nvim
                 fidget-nvim # show lsp status in bottom right but not status line
                 neodev-nvim # help for neovim lua api
+                nvim-nu # support for nushell scripts
                 SchemaStore-nvim # json schemas
 
                 # UI #################################################
@@ -183,7 +184,8 @@
                 bufferline-nvim
                 indent-blankline-nvim # visual indent
                 toggleterm-nvim # better terminal management
-                nvim-treesitter.withAllGrammars # better code coloring
+                #nvim-treesitter.withAllGrammars # better code coloring (not sure withAllGrammars works anymore)
+                (nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
                 playground # treesitter playground
                 nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
                 nvim-treesitter-context # keep current block header (func defn or whatever) on first line
