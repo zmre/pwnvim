@@ -38,8 +38,6 @@ require 'nvim-tree'.setup {
   disable_netrw = true,
   -- hijack netrw window on startup
   hijack_netrw = true,
-  -- open the tree when running this setup function
-  open_on_setup = false,
   update_cwd = true,
   -- update_to_buf_dir = { enable = true, auto_open = true },
   update_focused_file = { enable = true, update_cwd = true },
@@ -63,8 +61,11 @@ require 'nvim-tree'.setup {
       list = {
         { key = { "l", "<CR>", "o" }, action = "edit" },
         { key = "h",                  action = "close_node" },
-        { key = "<F10>", action = "quicklook",
-          action_cb = function(node) vim.cmd("silent !qlmanage -p '" .. node.absolute_path .. "'") end },
+        {
+          key = "<F10>",
+          action = "quicklook",
+          action_cb = function(node) vim.cmd("silent !qlmanage -p '" .. node.absolute_path .. "'") end
+        },
         { key = "v", action = "vsplit" }
       }
     },
