@@ -20,8 +20,6 @@ M.setup = function()
 
   require('pwnvim.markdown').markdownsyntax()
 
-  -- TODO: make all this whichkey instead
-
   local opts = { noremap = false, silent = true }
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(0, ...) end
 
@@ -143,17 +141,6 @@ end
 
 M.markdownsyntax = function()
   vim.api.nvim_exec([[
-    " markdownWikiLink is a new region
-    "syn region markdownWikiLink matchgroup=markdownLinkDelimiter start="\[\[" end="\]\]" contains=markdownUrl keepend oneline concealends
-    " markdownLinkText is copied from runtime files with 'concealends' appended
-    "syn region markdownLinkText matchgroup=markdownLinkTextDelimiter start="!\=\[\%(\%(\_[^][]\|\[\_[^][]*\]\)*]\%( \=[[(]\)\)\@=" end="\]\%( \=[[(]\)\@=" nextgroup=markdownLink,markdownId skipwhite contains=@markdownInline,markdownLineStart concealends
-    " markdownLink is copied from runtime files with 'conceal' appended
-    "syn region markdownLink matchgroup=markdownLinkDelimiter start="(" end=")" contains=markdownUrl keepend contained conceal
-    " syn match markdownTag '#\w\+'
-    " syn cluster markdownInline add=markdownTag
-    " Edit htmlTag to ignore tags starting with a number like <2022
-    " syn region htmlTag start=+<[^/0-9]+ end=+>+ fold contains=htmlTagN,htmlString,htmlArg,htmlValue,htmlTagError,htmlEvent,htmlCssDefinition,@htmlPreproc,@htmlArgCluster
-    " syn match mkdListItemCheckbox /\[[xXoO\> -]\]\ze\s\+/ contained contains=mkdListItem
     let m = matchadd("bareLink", "\\<https:[a-zA-Z?&,;=$+%#/.!~':@0-9_-]*")
     " let m = matchadd("markdownCheckboxChecked", "[*-] \\[x\\] ")
     let m = matchadd("markdownCheckboxCanceled", "[*-] \\[-\\] .\\+")
@@ -177,13 +164,6 @@ M.indent = function()
   if line:match("^%s*[*-]") then
     local ctrlt = vim.api.nvim_replace_termcodes("<C-t>", true, false, true)
     vim.api.nvim_feedkeys(ctrlt, "n", false)
-    --line = "\t" .. line
-    --vim.api.nvim_set_current_line(line)
-    --vim.cmd("normal l")
-    -- local norm_mode = vim.api.nvim_replace_termcodes("<C-o>", true, false, true)
-    -- local shiftwidth = vim.bo.shiftwidth + 1
-    -- vim.api.nvim_feedkeys(norm_mode .. ">>", "n", false)
-    -- vim.api.nvim_feedkeys(norm_mode .. shiftwidth .. "l", "n", false)
   elseif check_backspace() then
     -- we are at first col or there is whitespace immediately before cursor
     -- send through regular tab character at current position
@@ -198,12 +178,6 @@ M.outdent = function()
   if line:match("^%s*[*-]") then
     local ctrld = vim.api.nvim_replace_termcodes("<C-d>", true, false, true)
     vim.api.nvim_feedkeys(ctrld, "n", false)
-    -- TODO: shift width is correct if at least that many characters are between us and last column
-    --       but if we're on last column already, we'll auto move and compensate should be 0
-    -- local col = vim.api.nvim_win_get_cursor(0)
-    --local shiftwidth = vim.bo.shiftwidth
-    --vim.api.nvim_feedkeys(norm_mode .. "<<", "n", false)
-    --vim.api.nvim_feedkeys(norm_mode .. shiftwidth .. "h", "n", false)
   end
 end
 
