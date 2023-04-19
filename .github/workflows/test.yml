@@ -25,13 +25,13 @@ jobs:
           - macos
         include:
           - build: linux64
-            os: ubuntu-22.04
+            os: ubuntu-latest
             target: x86_64-unknown-linux-musl
           - build: linuxarm
-            os: ubuntu-22.04
+            os: ubuntu-latest
             target: arm-unknown-linux-gnu
           - build: macos
-            os: macos-12
+            os: macos-latest
     steps:
       - uses: actions/checkout@v3
       - uses: cachix/install-nix-action@v20
@@ -42,4 +42,3 @@ jobs:
           name: zmre
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
       - run: nix build
-    #- run: nix-shell --run "echo OK"
