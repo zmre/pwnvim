@@ -28,27 +28,32 @@ M.scheduleTask = function(line, newyear, newmonth, newday)
   local buf = vim.api.nvim_get_current_buf()
   local win = vim.api.nvim_get_current_win()
 
-  -- Step 1: change current task to [>]
-  local nline = line:gsub("%[[ oO>-]%] ", "[>] ", 1)
-  if line == nline then
-    -- no changes then abort
+  -- Step 0: ignore tasks that are complete or canceled
+  if line:match("%[[xX-]%] ") ~= nil then
     return line
   end
 
-  -- Step 2: add scheduled date to end as ">YYYY-mm-dd" removing any existing ">date" tags
-  nline = nline:gsub(">[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]?", "")
-  nline = nline .. " >" .. newyear .. "-" .. newmonth .. "-" .. newday
-  --vim.api.nvim_set_current_line(nline)
+  -- Step 1: change current task to [>]
+  local nline = line:gsub("%[[ oO>]%] ", "[>] ", 1)
+  if line ~= nline then
+    -- if we're here, this is a task
+    -- if the line isn't a task, we're still copying it over, just without all the modifications
+    -- Step 2: add scheduled date to end as ">YYYY-mm-dd" removing any existing ">date" tags
+    nline = nline:gsub(">[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]?", "")
+    nline = nline .. " >" .. newyear .. "-" .. newmonth .. "-" .. newday
+    --vim.api.nvim_set_current_line(nline)
 
-  -- Step 3: try to get the date from the current note
-  local date = require("pwnvim.tasks").getDateFromCurrentFile()
+    -- Step 3: try to get the date from the current note
+    local date = require("pwnvim.tasks").getDateFromCurrentFile()
 
-  -- Step 4: add "<YYYY-mm-dd" to end of the copied task if it doesn't already have a date
-  --         and if we can glean a source date from a date in the filename or frontmatter
-  --         or worst case, just don't put that
-  if line:match("<%d+-%d+-%d+") == nil and date ~= nil then
-    line = line .. " <" .. date
+    -- Step 4: add "<YYYY-mm-dd" to end of the copied task if it doesn't already have a date
+    --         and if we can glean a source date from a date in the filename or frontmatter
+    --         or worst case, just don't put that
+    if line:match("<%d+-%d+-%d+") == nil and date ~= nil then
+      line = line .. " <" .. date
+    end
   end
+
 
   -- Step 5: take current task and copy it to Calendar/YYYYmmdd.md
   local target = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar/' .. newyear .. newmonth .. newday .. '.md'
