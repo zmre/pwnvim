@@ -3,8 +3,8 @@ require 'nvim-treesitter.configs'.setup {
   autotag = { enable = true },
   highlight = {
     enable = true,
-    --disable = { "markdown", "markdown_inline" }, -- 2022-11-30 conflicts with markdown plugin, which detects more things like bold+italic and strikethrough
-    --additional_vim_regex_highlighting = { "markdown" } -- leaving in case we bring back markdown plugin
+    disable = { "bash", "c_sharp", "erlang", "gdscript", "java", "kotlin", "ruby", "scala", "sql" }, -- 2023-04-26 failing in :checkhealth nvim-treesitter
+    additional_vim_regex_highlighting = false
   },
   indent = { enable = true, disable = { "yaml" } },
   incremental_selection = { enable = true },
@@ -49,7 +49,6 @@ require 'nvim-treesitter.configs'.setup {
         ["[]"] = "@class.outer",
       },
     },
-
   }
 }
 require 'treesitter-context'.setup {
