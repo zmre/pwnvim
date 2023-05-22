@@ -4,4 +4,4 @@ OLDRESULT=$(realpath result)
 nix flake update
 nix build
 echo "Diff with $OLDRESULT"
-nix store diff-closures "$OLDRESULT" ./result |egrep -v '[∅ε]' |grep '→'
+nix store diff-closures "$OLDRESULT" ./result |grep -Ev '[∅ε]' |grep '→'
