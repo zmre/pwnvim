@@ -1,7 +1,7 @@
 local M = {}
 
 SimpleUI = (os.getenv("SIMPLEUI") == "1" or os.getenv("TERM_PROGRAM") ==
-    "Apple_Terminal" or os.getenv("TERM") == "linux") and
+      "Apple_Terminal" or os.getenv("TERM") == "linux") and
     not vim.g.neovide
 
 M.defaults = function()
@@ -11,7 +11,7 @@ M.defaults = function()
   vim.g.loaded_tarPlugin = 0
   vim.g.loaded_zipPlugin = 0
   vim.g.loaded_2html_plugin = 0
-  vim.g.loaded_netrw = 1 -- disable netrw
+  vim.g.loaded_netrw = 1       -- disable netrw
   vim.g.loaded_netrwPlugin = 1 -- disable netrw
   -- we just use lua plugins here so disable others
   vim.g.loaded_perl_provider = 0
@@ -44,26 +44,26 @@ M.defaults = function()
   -- ignore completions and menus for the below
   vim.opt.wildignore =
   "*/node_modules/*,_site,*/__pycache__/,*/venv/*,*/target/*,*/.vim$,\\~$,*/.log,*/.aux,*/.cls,*/.aux,*/.bbl,*/.blg,*/.fls,*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk,*.bak,*.o,*.a,*.sw?,.git/,*.class,.direnv/,.DS_Store"
-  vim.opt.wildmenu = true -- cmd line completion a-la zsh
+  vim.opt.wildmenu = true           -- cmd line completion a-la zsh
   vim.opt.wildmode = "list:longest" -- matches mimic that of bash or zsh
 
   vim.opt.swapfile = false
   vim.opt.spell = true
   vim.opt.spelllang = "en_us"
-  vim.opt.ruler = true -- show the cursor position all the time
+  vim.opt.ruler = true      -- show the cursor position all the time
   vim.opt.cursorline = true -- add indicator for current line
-  vim.opt.secure = true -- don't execute shell cmds in .vimrc not owned by me
-  vim.opt.history = 50 -- keep 50 lines of command line history
+  vim.opt.secure = true     -- don't execute shell cmds in .vimrc not owned by me
+  vim.opt.history = 50      -- keep 50 lines of command line history
   vim.opt.shell = "zsh"
-  vim.opt.modelines = 0 -- Don't allow vim settings embedded in text files for security reasons
-  vim.opt.showcmd = true -- display incomplete commands
-  vim.opt.showmode = true -- display current mode
+  vim.opt.modelines = 0     -- Don't allow vim settings embedded in text files for security reasons
+  vim.opt.showcmd = true    -- display incomplete commands
+  vim.opt.showmode = true   -- display current mode
   -- with backup off and writebackup on: backup current file, deleted afterwards
   vim.opt.backup = false
   vim.opt.writebackup = true
   vim.opt.backupcopy = "auto"
   vim.opt.hidden = true
-  vim.opt.cf = true -- jump to errors based on error files
+  vim.opt.cf = true   -- jump to errors based on error files
   vim.o.listchars = "tab:⇥ ,trail:␣,extends:⇉,precedes:⇇,nbsp:·"
   vim.opt.list = true -- render special chars (tabs, trails, ...)
   vim.opt.ttyfast = true
@@ -75,7 +75,7 @@ M.defaults = function()
   vim.opt.complete = vim.opt.complete - { 'i' }
   vim.opt.encoding = "utf-8"
   vim.opt.backspace = "indent,eol,start" -- allow backspacing over everything in insert mode
-  vim.opt.joinspaces = false -- don't insert two spaces after sentences on joins
+  vim.opt.joinspaces = false             -- don't insert two spaces after sentences on joins
   vim.opt.binary = false
   vim.opt.display = "lastline"
   vim.opt.viewoptions = "folds,cursor,unix,slash" -- better unix / windows compatibility
@@ -84,8 +84,8 @@ M.defaults = function()
 
   -- wrapping
   vim.opt.wrap = true
-  vim.opt.sidescroll = 2 -- min number of columns to scroll from edge
-  vim.opt.scrolloff = 8 -- when 4 away from edge start scrolling
+  vim.opt.sidescroll = 2    -- min number of columns to scroll from edge
+  vim.opt.scrolloff = 8     -- when 4 away from edge start scrolling
   vim.opt.sidescrolloff = 8 -- keep cursor one col from end of line
   vim.opt.textwidth = 0
   vim.opt.breakindent = true
@@ -97,23 +97,23 @@ M.defaults = function()
   vim.opt.tabstop = 4
   vim.opt.shiftwidth = 4
   vim.opt.softtabstop = 4
-  vim.opt.expandtab = true -- turn tabs to spaces by default
+  vim.opt.expandtab = true   -- turn tabs to spaces by default
 
-  vim.opt.autoindent = true -- autoindent to same level as previous line
+  vim.opt.autoindent = true  -- autoindent to same level as previous line
   vim.opt.smartindent = true -- indent after { and cinwords words
-  vim.opt.smartcase = true -- intelligently ignore case in searches
-  vim.opt.ignorecase = true -- default to not being case sensitive
+  vim.opt.smartcase = true   -- intelligently ignore case in searches
+  vim.opt.ignorecase = true  -- default to not being case sensitive
   vim.opt.smarttab = true
-  vim.opt.icm = "nosplit" -- show substitutions as you type
+  vim.opt.icm = "nosplit"    -- show substitutions as you type
   vim.opt.hlsearch = true
-  vim.opt.updatetime = 250 -- Decrease update time
+  vim.opt.updatetime = 250   -- Decrease update time
   vim.wo.signcolumn = 'yes'
   vim.opt.visualbell = true
   vim.opt.autoread = true -- auto reload files changed on disk if not changed in buffer
   vim.opt.cursorline = false
   vim.opt.ttyfast = true
   vim.opt.formatoptions = 'jcroqlt' -- t=text, c=comments, q=format with "gq"
-  vim.opt.showmatch = true -- auto hilights matching bracket or paren
+  vim.opt.showmatch = true          -- auto hilights matching bracket or paren
   vim.opt.nrformats = vim.opt.nrformats - { 'octal' }
   vim.opt.shiftround = true
   vim.opt.ttimeout = true
@@ -188,11 +188,17 @@ M.defaults = function()
         markdownLinkText = { fg = "${blue}", style = "underline" },
         markdownUrl = { fg = "${green}", style = "underline" },
         markdownWikiLink = { fg = "${blue}", style = "underline" },
+        ["@text.title.1"] = { fg = "${yellow}", style = "bold" },
         markdownH1 = { fg = "${yellow}", style = "bold" },
+        ["@text.title.2"] = { fg = "${yellow}", style = "bold" },
         markdownH2 = { fg = "${yellow}", style = "bold" },
+        ["@text.title.3"] = { fg = "${yellow}" },
         markdownH3 = { fg = "${yellow}" },
+        ["@text.title.4"] = { fg = "${green}", style = "italic" },
         markdownH4 = { fg = "${green}", style = "italic" },
+        ["@text.title.5"] = { fg = "${green}", style = "italic" },
         markdownH5 = { fg = "${green}", style = "italic" },
+        ["@text.title.6"] = { fg = "${green}", style = "italic" },
         markdownH6 = { fg = "${green}", style = "italic" },
         htmlH1 = { fg = "${yellow}", style = "bold" },
         htmlH2 = { fg = "${yellow}", style = "bold" },
@@ -283,7 +289,7 @@ M.defaults = function()
         TelescopeNormal = { bg = "${telescope_results}" },
         TelescopeSelection = { bg = "${telescope_prompt}" }
       },
-      styles = { -- Choose from "bold,italic,underline"
+      styles = {                -- Choose from "bold,italic,underline"
         virtual_text = "italic" -- Style that is applied to virtual text
       },
       plugins = { all = true },
