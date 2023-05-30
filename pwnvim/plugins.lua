@@ -400,7 +400,7 @@ M.telescope = function()
 
   require('telescope').setup {
     file_ignore_patterns = {
-      "*.bak", ".git/", "node_modules", ".zk/", "Caches/"
+      "*.bak", ".git/", "node_modules", ".zk/", "Caches/", "Backups/"
     },
     prompt_prefix = SimpleUI and ">" or " ",
     selection_caret = SimpleUI and "↪" or " ",
