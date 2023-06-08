@@ -47,7 +47,10 @@ M.defaults = function()
   vim.opt.wildmenu = true           -- cmd line completion a-la zsh
   vim.opt.wildmode = "list:longest" -- matches mimic that of bash or zsh
 
-  vim.opt.swapfile = false
+  vim.opt.swapfile = true           -- I've lived without them for years, but recent crashes have me reconsidering
+  -- The swap files will be wiped on reboot (cuz /tmp), which could mean lost work on system crash; nvim will create
+  -- the dir if it doesn't exist. The double slash ending means filenames will include full path to original file.
+  vim.opt.directory = "/tmp/nvim-swap//"
   vim.opt.spell = true
   vim.opt.spelllang = "en_us"
   vim.opt.ruler = true      -- show the cursor position all the time
