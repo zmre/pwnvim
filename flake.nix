@@ -17,7 +17,9 @@
     flake-utils.url = "github:numtide/flake-utils";
     fenix.url = "github:nix-community/fenix";
     fenix.inputs.nixpkgs.follows = "nixpkgs";
-    clipboard-image.url = "github:ekickx/clipboard-image.nvim";
+    # ekickx doesn't seem to be maintaing. postfen's fork worth using for now.
+    # clipboard-image.url = "github:ekickx/clipboard-image.nvim";
+    clipboard-image.url = "github:postfen/clipboard-image.nvim";
     clipboard-image.flake = false;
   };
   outputs = inputs @ {
@@ -84,6 +86,7 @@
           lua-language-server
           nodePackages.eslint_d # js/ts code formatter and linter
           nodePackages.prettier # ditto
+          nodePackages.prisma
           nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
           nodePackages.svelte-language-server
           nodePackages.diagnostic-languageserver
@@ -184,8 +187,8 @@
                 bufferline-nvim
                 indent-blankline-nvim # visual indent
                 toggleterm-nvim # better terminal management
-                #nvim-treesitter.withAllGrammars # better code coloring (not sure withAllGrammars works anymore)
-                (nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
+                nvim-treesitter.withAllGrammars # better code coloring (not sure withAllGrammars works anymore)
+                #(nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
                 playground # treesitter playground
                 nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
                 nvim-treesitter-context # keep current block header (func defn or whatever) on first line

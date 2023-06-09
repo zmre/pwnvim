@@ -3,7 +3,6 @@ require 'nvim-treesitter.configs'.setup {
   autotag = { enable = true },
   highlight = {
     enable = true,
-    disable = { "bash", "c_sharp", "erlang", "gdscript", "java", "kotlin", "ruby", "scala", "sql" }, -- 2023-04-26 failing in :checkhealth nvim-treesitter
     additional_vim_regex_highlighting = false
   },
   indent = { enable = true, disable = { "yaml" } },
