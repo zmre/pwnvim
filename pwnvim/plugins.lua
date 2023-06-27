@@ -105,7 +105,7 @@ M.diagnostics = function()
       require("lsp-format").on_attach(client)
     end
 
-    print("LSP attached " .. client.name)
+    -- print("LSP attached " .. client.name)
 
     vim.api.nvim_buf_set_option(bufnr, "formatexpr",
       "v:lua.vim.lsp.formatexpr()")
@@ -579,7 +579,7 @@ M.notes = function()
       },
       config = {
         on_attach = function(_, bufnr)
-          print("ZK attached")
+          -- print("ZK attached")
 
           local which_key = require("which-key")
           local local_leader_opts = {
