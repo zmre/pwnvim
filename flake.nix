@@ -31,6 +31,7 @@
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
+        config = {allowUnfree = true;};
         overlays = [
           (self: super: {
             vimPlugins =
