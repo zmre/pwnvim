@@ -21,6 +21,8 @@
     # clipboard-image.url = "github:ekickx/clipboard-image.nvim";
     clipboard-image.url = "github:postfen/clipboard-image.nvim";
     clipboard-image.flake = false;
+    fidget-nvim.url = "github:j-hui/fidget.nvim/legacy";
+    fidget-nvim.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -42,6 +44,14 @@
                   pname = "clipboard-image.nvim";
                   src = inputs.clipboard-image;
                   # buildInputs = [ super.curl ];
+                };
+              }
+              // {
+                fidget-nvim-legacy = super.vimUtils.buildVimPluginFrom2Nix {
+                  pname = "fidget.nvim";
+                  version = "legacy";
+                  src = inputs.fidget-nvim;
+                  meta.homepage = "https://github.com/j-hui/fidget.nvim/";
                 };
               };
           })
@@ -165,7 +175,7 @@
                 lspsaga-nvim
                 lsp-format-nvim
                 todo-comments-nvim
-                fidget-nvim # show lsp status in bottom right but not status line
+                fidget-nvim-legacy # show lsp status in bottom right but not status line
                 neodev-nvim # help for neovim lua api
                 nvim-nu # support for nushell scripts
                 SchemaStore-nvim # json schemas
