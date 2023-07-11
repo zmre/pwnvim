@@ -23,6 +23,8 @@
     clipboard-image.flake = false;
     fidget-nvim.url = "github:j-hui/fidget.nvim/legacy";
     fidget-nvim.flake = false;
+    vscode-langservers-custom.url = "github:hrsh7th/vscode-langservers-extracted/v4.7.0";
+    vscode-langservers-custom.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -52,6 +54,40 @@
                   version = "legacy";
                   src = inputs.fidget-nvim;
                   meta.homepage = "https://github.com/j-hui/fidget.nvim/";
+                };
+              };
+          })
+          (self: super: {
+            nodePackages =
+              super.nodePackages
+              // {
+                vscode-langservers-custom = super.buildNpmPackage {
+                  # see https://github.com/Lord-Valen/nixpkgs/blob/master/pkgs/development/tools/language-servers/vscode-langservers-extracted/default.nix
+                  # we have this custom because they don't have the eslint server and they hard code
+                  # some vscodium paths that we don't care about
+                  pname = "vscode-langservers-custom";
+                  version = "4.7.0";
+                  src = inputs.vscode-langservers-custom;
+                  npmDepsHash = "sha256-DhajWr+O0zgJALr7I/Nc5GmkOsa9QXfAQpZCaULV47M=";
+
+                  buildPhase = let
+                    extensions =
+                      if super.stdenv.isDarwin
+                      then "${super.vscodium}/Applications/VSCodium.app/Contents/Resources/app/extensions"
+                      else "${super.vscodium}/lib/vscode/resources/app/extensions";
+                  in ''
+                    npx babel ${extensions}/css-language-features/server/dist/node \
+                      --out-dir lib/css-language-server/node/
+                    npx babel ${extensions}/html-language-features/server/dist/node \
+                      --out-dir lib/html-language-server/node/
+                    npx babel ${extensions}/json-language-features/server/dist/node \
+                      --out-dir lib/json-language-server/node/
+                    npx babel ${extensions}/markdown-language-features/server/dist/node \
+                      --out-dir lib/markdown-language-server/node/
+                    cp -r ${super.vscode-extensions.dbaeumer.vscode-eslint}/share/vscode/extensions/dbaeumer.vscode-eslint/server/out \
+                      lib/eslint-language-server
+                    mv lib/markdown-language-server/node/workerMain.js lib/markdown-language-server/node/main.js
+                  '';
                 };
               };
           })
@@ -98,7 +134,7 @@
           nodePackages.eslint_d # js/ts code formatter and linter
           nodePackages.prettier # ditto
           nodePackages.prisma
-          nodePackages.vscode-langservers-extracted # lsp servers for json, html, css
+          nodePackages.vscode-langservers-custom # lsp servers for json, html, css, eslint
           nodePackages.svelte-language-server
           nodePackages.diagnostic-languageserver
           nodePackages.typescript-language-server

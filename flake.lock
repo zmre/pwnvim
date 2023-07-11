@@ -94,7 +94,8 @@
         "fenix": "fenix",
         "fidget-nvim": "fidget-nvim",
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "vscode-langservers-custom": "vscode-langservers-custom"
       }
     },
     "rust-analyzer-src": {
@@ -126,6 +127,23 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "vscode-langservers-custom": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1682357637,
+        "narHash": "sha256-RLRDEHfEJ2ckn0HTMu0WbMK/o9W20Xwm+XI6kCq57u8=",
+        "owner": "hrsh7th",
+        "repo": "vscode-langservers-extracted",
+        "rev": "dfa59d9fbea396c02884af085d6a1b300057b60c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hrsh7th",
+        "ref": "v4.7.0",
+        "repo": "vscode-langservers-extracted",
         "type": "github"
       }
     }
