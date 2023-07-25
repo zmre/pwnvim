@@ -131,6 +131,7 @@
           shellcheck
           # luajitPackages.lua-lsp
           lua-language-server
+          nodePackages.pyright # python lsp (written in node? so weird)
           nodePackages.eslint_d # js/ts code formatter and linter
           nodePackages.prettier # ditto
           nodePackages.prisma
@@ -140,7 +141,9 @@
           nodePackages.typescript-language-server
           nodePackages.bash-language-server
           nodePackages."@tailwindcss/language-server"
-          python310Packages.python-lsp-server # todo: is specifying 310 an issue?
+          mypy # static typing for python used by null-ls
+          ruff # python linter used by null-ls
+          black # python formatter
           rust-analyzer # lsp for rust
           # rust-analyzer is currently in a partially broken state as it cannot find rust sources so can't
           # help with native language things, which sucks. Here are some issues to track:

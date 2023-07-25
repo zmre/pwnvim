@@ -258,6 +258,9 @@ M.diagnostics = function()
     },                                                                -- diagnostics.vale,
       codeactions.eslint_d, codeactions.gitsigns, codeactions.statix, -- for nix
       diagnostics.statix,                                             -- for nix
+      diagnostics.mypy,                                               -- static types for python
+      diagnostics.ruff,                                               -- lint for python
+      formatting.black,                                               -- formatter for python
       null_ls.builtins.hover.dictionary, codeactions.shellcheck,
       diagnostics.shellcheck
       -- removed formatting.rustfmt since rust_analyzer seems to do the same thing
@@ -330,8 +333,8 @@ M.diagnostics = function()
   lspconfig.html.setup { on_attach = attached, capabilities = capabilities }
   lspconfig.bashls.setup { on_attach = attached, capabilities = capabilities }
   -- TODO: investigate nvim-metals and remove line below
-  lspconfig.metals.setup { on_attach = attached, capabilities = capabilities } -- for scala
-  lspconfig.pylsp.setup { on_attach = attached, capabilities = capabilities }  -- for python
+  lspconfig.metals.setup { on_attach = attached, capabilities = capabilities }                            -- for scala
+  lspconfig.pyright.setup { on_attach = attached, capabilities = capabilities, filetypes = { "python" } } -- for python
   lspconfig.jsonls.setup {
     on_attach = attached,
     settings = {
