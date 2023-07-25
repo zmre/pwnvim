@@ -38,7 +38,7 @@ M.defaults = function()
   -- vim.opt.isfname:append { "32" }
 
   vim.opt.grepprg =
-  "rg\\ --vimgrep\\ --no-heading\\ --smart-case\\ --color\\ never"
+  "rg --vimgrep --no-heading --smart-case --color never"
   vim.opt.grepformat = "%f:%l:%c:%m,%f:%l:%m,%f"
 
   -- ignore completions and menus for the below
