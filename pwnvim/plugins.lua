@@ -151,7 +151,7 @@ M.diagnostics = function()
           "<Cmd>Telescope lsp_implementations<CR>", "Implementations"
         },
         r = { "<cmd>Telescope lsp_references<CR>", "References" },
-        f = { "<cmd>Lspsaga code_action<CR>", "Fix Code Actions" },
+        f = { "<cmd>lua vim.lsp.buf.code_action()<CR>", "Fix Code Actions" },
         t = { "<cmd>lua vim.lsp.buf.signature_help()<CR>", "Signature" },
         e = {
           "<cmd>lua vim.diagnostic.open_float()<CR>",
@@ -355,25 +355,6 @@ M.diagnostics = function()
     },
     capabilities = capabilities
   }
-
-  require 'lspsaga'.init_lsp_saga({
-    use_saga_diagnostic_sign = not SimpleUI,
-    use_diagnostic_virtual_text = false,
-    code_action_prompt = {
-      enable = true,
-      sign = false,
-      sign_priority = 20,
-      virtual_text = true
-    }
-    -- TODO: re-enable this at next update - getting error 2022-08-02
-    -- code_action_lightbulb = {
-    --   enable = false,
-    --   sign = true,
-    --   enable_in_insert = true,
-    --   sign_priority = 20,
-    --   virtual_text = false,
-    -- },
-  })
 end -- Diagnostics setup
 
 ----------------------- TELESCOPE --------------------------------
@@ -629,7 +610,7 @@ M.notes = function()
                 "Info preview"
               },
               f = {
-                "<cmd>Lspsaga code_action<CR>",
+                "<cmd>lua vim.lsp.buf.code_action()<CR>",
                 "Fix Code Actions"
               },
               e = {

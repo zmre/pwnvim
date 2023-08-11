@@ -211,7 +211,6 @@
                 trouble-nvim # navigate all warnings and errors in quickfix-like window
                 #nvim-dap # debugging functionality used by rust-tools-nvim
                 #nvim-dap-ui # ui for debugging
-                lspsaga-nvim
                 lsp-format-nvim
                 todo-comments-nvim
                 fidget-nvim-legacy # show lsp status in bottom right but not status line
