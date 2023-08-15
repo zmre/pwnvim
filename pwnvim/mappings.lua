@@ -2,22 +2,22 @@
 local which_key = require("which-key")
 which_key.setup({
   plugins = {
-    marks = true, -- shows a list of your marks on ' and `
-    registers = true, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
+    marks = true,      -- shows a list of your marks on ' and `
+    registers = true,  -- shows your registers on " in NORMAL or <C-r> in INSERT mode
     spelling = {
-      enabled = true, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
+      enabled = true,  -- enabling this will show WhichKey when pressing z= to select spelling suggestions
       suggestions = 20 -- how many suggestions should be shown in the list?
     },
     -- the presets plugin, adds help for a bunch of default keybindings in Neovim
     -- No actual key bindings are created
     presets = {
-      operators = true, -- adds help for operators like d, y, ... and registers them for motion / text object completion
-      motions = false, -- adds help for motions
+      operators = true,    -- adds help for operators like d, y, ... and registers them for motion / text object completion
+      motions = false,     -- adds help for motions
       text_objects = true, -- help for text objects triggered after entering an operator
-      windows = true, -- default bindings on <c-w>
-      nav = true, -- misc bindings to work with windows
-      z = true, -- bindings for folds, spelling and others prefixed with z
-      g = true -- bindings for prefixed with g
+      windows = true,      -- default bindings on <c-w>
+      nav = true,          -- misc bindings to work with windows
+      z = true,            -- bindings for folds, spelling and others prefixed with z
+      g = true             -- bindings for prefixed with g
     }
   },
   icons = {
@@ -27,26 +27,26 @@ which_key.setup({
   },
   popup_mappings = {
     scroll_down = "<c-d>", -- binding to scroll down inside the popup
-    scroll_up = "<c-u>" -- binding to scroll up inside the popup
+    scroll_up = "<c-u>"    -- binding to scroll up inside the popup
   },
   window = {
-    border = "rounded", -- none, single, double, shadow
-    position = "bottom", -- bottom, top
-    margin = { 1, 0, 1, 0 }, -- extra window margin [top, right, bottom, left]
+    border = "rounded",       -- none, single, double, shadow
+    position = "bottom",      -- bottom, top
+    margin = { 1, 0, 1, 0 },  -- extra window margin [top, right, bottom, left]
     padding = { 2, 2, 2, 2 }, -- extra window padding [top, right, bottom, left]
     winblend = 0
   },
   layout = {
     height = { min = 4, max = 25 }, -- min and max height of the columns
     width = { min = 20, max = 50 }, -- min and max width of the columns
-    spacing = 3, -- spacing between columns
-    align = "left" -- align columns left, center or right
+    spacing = 3,                    -- spacing between columns
+    align = "left"                  -- align columns left, center or right
   },
-  ignore_missing = true, -- enable this to hide mappings for which you didn't specify a label
+  ignore_missing = true,            -- enable this to hide mappings for which you didn't specify a label
   hidden = {
     "<silent>", "<CMD>", "<cmd>", "<Cmd>", "<cr>", "<CR>", "call", "lua",
     "^:", "^ "
-  }, -- hide mapping boilerplate
+  },                -- hide mapping boilerplate
   show_help = true, -- show help message on the command line when the popup is visible
   triggers = "auto" -- automatically setup triggers
   -- triggers = {"<leader>"} -- or specify a list manually
@@ -116,20 +116,20 @@ vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
 local global_leader_opts = {
-  mode = "n", -- NORMAL mode
+  mode = "n",     -- NORMAL mode
   prefix = "<leader>",
-  buffer = nil, -- Global mappings. Specify a buffer number for buffer local mappings
-  silent = true, -- use `silent` when creating keymaps
+  buffer = nil,   -- Global mappings. Specify a buffer number for buffer local mappings
+  silent = true,  -- use `silent` when creating keymaps
   noremap = true, -- use `noremap` when creating keymaps
-  nowait = true -- use `nowait` when creating keymaps
+  nowait = true   -- use `nowait` when creating keymaps
 }
 local global_leader_opts_visual = {
-  mode = "v", -- VISUAL mode
+  mode = "v",     -- VISUAL mode
   prefix = "<leader>",
-  buffer = nil, -- Global mappings. Specify a buffer number for buffer local mappings
-  silent = true, -- use `silent` when creating keymaps
+  buffer = nil,   -- Global mappings. Specify a buffer number for buffer local mappings
+  silent = true,  -- use `silent` when creating keymaps
   noremap = true, -- use `noremap` when creating keymaps
-  nowait = true -- use `nowait` when creating keymaps
+  nowait = true   -- use `nowait` when creating keymaps
 }
 
 local leader_mappings = {
@@ -153,7 +153,8 @@ local leader_mappings = {
     l = { "<cmd>lua require('telescope.builtin').loclist()<cr>", "Loclist" },
     p = { "<cmd>Telescope projects<cr>", "Projects" },
     k = { "<cmd>Telescope keymaps<cr>", "Keymaps" },
-    t = { "<cmd>lua require('telescope.builtin').grep_string{search = \"^\\\\s*[*-] \\\\[ \\\\]\", previewer = false, glob_pattern = \"*.md\", use_regex = true, disable_coordinates=true}<cr>",
+    t = {
+      "<cmd>lua require('telescope.builtin').grep_string{search = \"^\\\\s*[*-] \\\\[ \\\\]\", previewer = false, glob_pattern = \"*.md\", use_regex = true, disable_coordinates=true}<cr>",
       "Todos" },
     n = { "<Cmd>ZkNotes { match = {vim.fn.input('Search: ')} }<CR>", "Find" },
   },
@@ -198,10 +199,12 @@ local leader_mappings = {
     },
     h = { "<cmd>edit ~/Notes/Notes/HotSheet.md<CR>", "Open HotSheet" },
     i = {
-      c = { "<cmd>r!/opt/homebrew/bin/icalBuddy --bullet '* ' --timeFormat '\\%H:\\%M' --dateFormat '' --noPropNames --noCalendarNames --excludeAllDayEvents --includeCals 'IC - Work' --includeEventProps datetime,title,attendees,location --propertyOrder datetime,title,attendees,location --propertySeparators '| |\\n    * |\\n    * | |' eventsToday<cr>",
+      c = {
+        "<cmd>r!/opt/homebrew/bin/icalBuddy --bullet '* ' --timeFormat '\\%H:\\%M' --dateFormat '' --noPropNames --noCalendarNames --excludeAllDayEvents --includeCals 'IC - Work' --includeEventProps datetime,title,attendees,location --propertyOrder datetime,title,attendees,location --propertySeparators '| |\\n    * |\\n    * | |' eventsToday<cr>",
         "Insert today's calendar" },
       o = { "<cmd>r!gtm-okr goals<cr>", "Insert OKRs" },
-      j = { "<cmd>r!( (curl -s https://icanhazdadjoke.com/ | grep '\\\"subtitle\\\"') || curl -s https://icanhazdadjoke.com/ ) | sed 's/<[^>]*>//g' | sed -z 's/\\n/ /'<cr>",
+      j = {
+        "<cmd>r!( (curl -s https://icanhazdadjoke.com/ | grep '\\\"subtitle\\\"') || curl -s https://icanhazdadjoke.com/ ) | sed 's/<[^>]*>//g' | sed -z 's/\\n/ /'<cr>",
         "Insert joke" },
     },
     m = {
@@ -320,12 +323,12 @@ vim.api.nvim_set_keymap('', 'gx',
 vim.api.nvim_set_keymap('v', 'gx',
   "\"0y:silent !open \"<c-r>0\" || xdg-open \"<c-r>0\"<cr>gv",
   options)
-vim.api.nvim_set_keymap('', '<CR>',
-  ":silent !open \"<c-r><c-f>\" || xdg-open \"<c-r><c-f>\"<cr>",
-  options)
-vim.api.nvim_set_keymap('v', '<CR>',
-  "\"0y:silent !open \"<c-r>0\" || xdg-open \"<c-r>0\"<cr>gv",
-  options)
+-- vim.api.nvim_set_keymap('', '<CR>',
+--   ":silent !open \"<c-r><c-f>\" || xdg-open \"<c-r><c-f>\"<cr>",
+--   options)
+-- vim.api.nvim_set_keymap('v', '<CR>',
+--   "\"0y:silent !open \"<c-r>0\" || xdg-open \"<c-r>0\"<cr>gv",
+--   options)
 
 -- open/close folds with space bar
 vim.api.nvim_set_keymap('', '<Space>',
