@@ -92,9 +92,9 @@ local function on_attach(bufnr)
   vim.keymap.set('n', 'h', api.node.navigate.parent_close, opts('Close Directory'))
   vim.keymap.set('n', '<F10>', function()
     local node = api.tree.get_node_under_cursor()
+    vim.cmd("silent !qlmanage -p '" .. node.absolute_path .. "'")
     -- your code goes here
   end, opts('quicklook'))
-
   vim.keymap.set('n', 'v', api.node.open.vertical, opts('Open: Vertical Split'))
 end
 
@@ -156,19 +156,6 @@ require 'nvim-tree'.setup {
     hide_root_folder = false,
     side = "left",
     -- auto_resize = true,
-    mappings = {
-      custom_only = false,
-      list = {
-        { key = { "l", "<CR>", "o" }, action = "edit" },
-        { key = "h",                  action = "close_node" },
-        {
-          key = "<F10>",
-          action = "quicklook",
-          action_cb = function(node) vim.cmd("silent !qlmanage -p '" .. node.absolute_path .. "'") end
-        },
-        { key = "v", action = "vsplit" }
-      }
-    },
     number = false,
     relativenumber = false
   }
