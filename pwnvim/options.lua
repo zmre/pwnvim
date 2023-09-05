@@ -22,7 +22,7 @@ M.defaults = function()
   -- vim.g.loaded_matchparen = 0
   vim.g.loaded_spec = 0
   vim.g.vim_markdown_no_default_key_mappings = 1
-  vim.g.markdown_folding = 1
+  --vim.g.markdown_folding = 1
   vim.g.vim_markdown_strikethrough = 1
   vim.g.vim_markdown_auto_insert_bullets = 1
   vim.g.vim_markdown_new_list_item_indent = 0
@@ -133,7 +133,7 @@ M.defaults = function()
   -- Globals
   vim.g.vimsyn_embed = 'l' -- Highlight Lua code inside .vim files
   -- vim.g.polyglot_disabled = { 'sensible', 'autoindent' } -- preserve in case I want to bring back polyglot
-  vim.g.foldlevelstart = 3
+  vim.opt.foldlevelstart = 10
 
   -- map the leader key
   vim.api.nvim_set_keymap('n', ',', '', {})
@@ -414,6 +414,11 @@ M.programming = function()
   vim.wo.spell = false
   vim.wo.relativenumber = false
   vim.wo.cursorline = true -- add indicator for current line
+  vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+  vim.wo.foldmethod = "expr"
+  vim.wo.foldenable = false -- zi will turn it on
+  vim.wo.foldcolumn = "0"
+
 
   M.twospaceindent()
 

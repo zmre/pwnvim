@@ -334,6 +334,23 @@ vim.api.nvim_set_keymap('v', 'gx',
 vim.api.nvim_set_keymap('', '<Space>',
   [[@=(foldlevel('.')?'za':"\<Space>")<CR>]], options)
 
+vim.api.nvim_set_keymap('', 'zi', [[]], options)
+which_key.register({
+  z = {
+    i = { function() -- override default fold toggle behavior to fix fold columns and scan
+      if vim.wo.foldenable then
+        -- Disable completely
+        vim.wo.foldenable = false
+        vim.wo.foldcolumn = "0"
+      else
+        vim.wo.foldenable = true
+        vim.wo.foldcolumn = "auto:4"
+        vim.cmd("normal zx") -- reset folds
+      end
+    end, "Toggle folding" }
+  }
+}, {})
+
 -- Make nvim terminal more sane
 vim.api.nvim_set_keymap('t', '<Esc>', [[<C-\><C-n>]], options)
 vim.api.nvim_set_keymap('t', '<M-[>', "<Esc>", options)

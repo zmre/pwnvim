@@ -1,5 +1,18 @@
 local M = {}
 
+M.mdFoldLevel = function(lnum)
+  if not lnum then
+    lnum = vim.v.lnum
+  end
+  local line = vim.fn.getline(lnum)
+  local heading = string.match(line, "^#+ ")
+  if heading then
+    return ">" .. (string.len(heading) - 1) -- start off fold
+  else
+    return "="                              -- continue previous fold level
+  end
+end
+
 M.setup = function()
   local bufnr = vim.api.nvim_get_current_buf()
   vim.g.joinspaces = true
@@ -7,11 +20,18 @@ M.setup = function()
   vim.wo.relativenumber = false
   vim.wo.spell = true
   vim.wo.list = false
-  -- vim.bo.formatoptions = "jcroqln"
-  vim.wo.foldmethod = "expr"
-  vim.wo.foldexpr = "nvim_treesitter#foldexpr()"
-  vim.wo.foldlevel = 3
+
+  -- Treesitter is pretty good, but includes folds for bullet lists and code in code blocks
+  -- which could be great, but more often annoys me. I'm not sure how to tune it, so
+  -- just making my own function to collapse on headings instead
+  -- vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+  vim.wo.foldexpr = "v:lua.require('pwnvim.markdown').mdFoldLevel(v:lnum)"
   vim.wo.foldenable = true
+  vim.wo.foldlevel = 20
+  vim.wo.foldcolumn = "auto:5"
+  vim.wo.foldmethod = "expr"
+
+  -- vim.bo.formatoptions = "jcroqln"
   vim.bo.formatoptions = 'jtqlnr' -- no c (insert comment char on wrap), with r (indent)
   vim.bo.comments = 'b:>,b:*,b:+,b:-'
   vim.bo.suffixesadd = '.md'
@@ -144,6 +164,10 @@ M.setup = function()
     require('pwnvim.options').twospaceindent()
     -- require('pwnvim.options').retab() -- turn tabs to spaces when markdown file is opened
   end
+  -- Temporary workaround for https://github.com/nvim-telescope/telescope.nvim/issues/559
+  -- which prevents folds from being calculated initially when launching from telescope
+  -- Has the lousy side-effect of calculating them twice if not launched from telescope
+  vim.cmd("normal zx")
 end
 
 M.markdownsyntax = function()
