@@ -17,12 +17,10 @@
     flake-utils.url = "github:numtide/flake-utils";
     fenix.url = "github:nix-community/fenix";
     fenix.inputs.nixpkgs.follows = "nixpkgs";
-    # ekickx doesn't seem to be maintaing. postfen's fork worth using for now.
+    # ekickx doesn't seem to be maintaing. postfen's fork worth using for now. TODO: revisit
     # clipboard-image.url = "github:ekickx/clipboard-image.nvim";
     clipboard-image.url = "github:postfen/clipboard-image.nvim";
     clipboard-image.flake = false;
-    fidget-nvim.url = "github:j-hui/fidget.nvim/legacy";
-    fidget-nvim.flake = false;
     vscode-langservers-custom.url = "github:hrsh7th/vscode-langservers-extracted/v4.7.0";
     vscode-langservers-custom.flake = false;
   };
@@ -46,14 +44,6 @@
                   pname = "clipboard-image.nvim";
                   src = inputs.clipboard-image;
                   # buildInputs = [ super.curl ];
-                };
-              }
-              // {
-                fidget-nvim-legacy = super.vimUtils.buildVimPluginFrom2Nix {
-                  pname = "fidget.nvim";
-                  version = "legacy";
-                  src = inputs.fidget-nvim;
-                  meta.homepage = "https://github.com/j-hui/fidget.nvim/";
                 };
               };
           })
@@ -213,7 +203,6 @@
                 #nvim-dap-ui # ui for debugging
                 lsp-format-nvim
                 todo-comments-nvim
-                fidget-nvim-legacy # show lsp status in bottom right but not status line
                 neodev-nvim # help for neovim lua api
                 nvim-nu # support for nushell scripts
                 SchemaStore-nvim # json schemas
@@ -242,6 +231,9 @@
                 nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
                 nvim-treesitter-context # keep current block header (func defn or whatever) on first line
                 lf-vim
+                nui-nvim # needed by noice
+                nvim-notify # needed by noice
+                noice-nvim # show progress and add other UI improvements
 
                 # Editor Features ####################################
                 vim-abolish # better abbreviations / spelling fixer

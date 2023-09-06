@@ -50,8 +50,89 @@ M.diagnostics = function()
     end,
     lspconfig = true
   })
-  require 'nu'.setup {}     -- support nushell scripts
-  require "fidget".setup {} -- shows status of lsp clients as they issue updates
+  require("noice").setup({
+    lsp = {
+      -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+      override = {
+        ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+        ["vim.lsp.util.stylize_markdown"] = true,
+        ["cmp.entry.get_documentation"] = true,
+      },
+      progress = {
+        enabled = true,
+        -- Lsp Progress is formatted using the builtins for lsp_progress. See config.format.builtin
+        -- See the section on formatting for more details on how to customize.
+        --- @type NoiceFormat|string
+        format = "lsp_progress",
+        --- @type NoiceFormat|string
+        format_done = "lsp_progress_done",
+        throttle = 1000 / 30, -- frequency to update lsp progress message
+        view = "mini",
+      },
+      hover = {
+        enabled = true,
+        silent = false, -- set to true to not show a message if hover is not available
+        view = nil,     -- when nil, use defaults from documentation
+        ---@type NoiceViewOptions
+        opts = {},      -- merged with defaults from documentation
+      },
+      signature = {
+        enabled = true,
+        auto_open = {
+          enabled = true,
+          trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
+          luasnip = true, -- Will open signature help when jumping to Luasnip insert nodes
+          throttle = 50,  -- Debounce lsp signature help request by 50ms
+        },
+        view = nil,       -- when nil, use defaults from documentation
+        ---@type NoiceViewOptions
+        opts = {},        -- merged with defaults from documentation
+      },
+      message = {
+        -- Messages shown by lsp servers
+        enabled = true,
+        view = "notify",
+        opts = {},
+      },
+    },
+    -- you can enable a preset for easier configuration
+    presets = {
+      bottom_search = true,         -- use a classic bottom cmdline for search
+      command_palette = false,      -- position the cmdline and popupmenu together
+      long_message_to_split = true, -- long messages will be sent to a split
+      inc_rename = false,           -- enables an input dialog for inc-rename.nvim
+      lsp_doc_border = true,        -- add a border to hover docs and signature help
+    },
+    cmdline = {
+      enabled = true,
+      view = "cmdline",
+      format = {
+        conceal = false
+      }
+    },
+    messages = {
+      enabled = true,
+      view = "mini",
+      view_error = "notify",
+      view_warn = "notify",
+      view_history = "messages", -- view for :messages
+      view_search = "virtualtext",
+    },
+    popupmenu = {
+      enabled = false,
+      backend = "nui"
+    },
+    notify = {
+      -- Noice can be used as `vim.notify` so you can route any notification like other messages
+      -- Notification messages have their level and other properties set.
+      -- event is always "notify" and kind can be any log level as a string
+      -- The default routes will forward notifications to nvim-notify
+      -- Benefit of using Noice for this is the routing and consistent history view
+      enabled = true,
+      view = "notify",
+    },
+  })
+  require 'nu'.setup {} -- support nushell scripts
   vim.diagnostic.config({
     virtual_text = false,
     signs = { active = { signs.signs } },
@@ -323,7 +404,19 @@ M.diagnostics = function()
     }
   }
   -- nil_ls is a nix lsp
-  lspconfig.nil_ls.setup { on_attach = attached, capabilities = capabilities }
+  lspconfig.nil_ls.setup {
+    on_attach = attached,
+    capabilities = capabilities,
+    settings = {
+      ['nil'] = {
+        nix = {
+          flake = {
+            autoArchive = true
+          }
+        }
+      },
+    },
+  }
   lspconfig.cssls.setup {
     on_attach = attached,
     capabilities = capabilities,
@@ -448,6 +541,7 @@ M.telescope = function()
   }
   require 'telescope'.load_extension('fzy_native')
   require("telescope").load_extension("zk")
+  require("telescope").load_extension("noice")
   if vim.fn.has('mac') ~= 1 then
     -- doesn't currently work on mac
     require 'telescope'.load_extension('media_files')

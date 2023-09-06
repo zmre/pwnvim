@@ -46,8 +46,10 @@ M.defaults = function()
   "*/node_modules/*,_site,*/__pycache__/,*/venv/*,*/target/*,*/.vim$,\\~$,*/.log,*/.aux,*/.cls,*/.aux,*/.bbl,*/.blg,*/.fls,*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk,*.bak,*.o,*.a,*.sw?,.git/,*.class,.direnv/,.DS_Store,*/Backups/*"
   vim.opt.wildmenu = true           -- cmd line completion a-la zsh
   vim.opt.wildmode = "list:longest" -- matches mimic that of bash or zsh
+  vim.opt.cmdheight = 1
+  vim.opt.cmdwinheight = 1
 
-  vim.opt.swapfile = true           -- I've lived without them for years, but recent crashes have me reconsidering
+  vim.opt.swapfile = true -- I've lived without them for years, but recent crashes have me reconsidering
   -- The swap files will be wiped on reboot (cuz /tmp), which could mean lost work on system crash; nvim will create
   -- the dir if it doesn't exist. The double slash ending means filenames will include full path to original file.
   vim.opt.directory = "/tmp/nvim-swap//"
@@ -434,6 +436,7 @@ M.programming = function()
   -- Load direnv when we're in a programming file as we may want
   -- the nix environment provided. Run explicitly since the autocmds
   -- might not otherwise fire.
+  vim.g.direnv_auto = 0
   vim.cmd('packadd direnv.vim')
   vim.cmd('DirenvExport')
 end

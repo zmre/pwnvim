@@ -12,16 +12,20 @@ require('lualine').setup {
     lualine_b = { 'branch' },
     lualine_c = { 'nvim-tree', 'filename' },
     lualine_x = { 'encoding', 'fileformat', 'filetype' },
-    lualine_y = { 'progress' },
+    lualine_y = { 'progress', 'location' },
     lualine_z = {
       {
-        'diagnostics',
-        sources = { 'nvim_diagnostic' },
-        -- displays diagnostics from defined severity
-        sections = { 'error', 'warn' }, -- 'info', 'hint'},}}
-        color_error = "#E06C75", -- changes diagnostic's error foreground color
-        color_warn = "#E5C07B"
-      }
+        require("noice").api.statusline.mode.get,
+        cond = require("noice").api.statusline.mode.has,
+        color = { fg = "#ff9e64" },
+      }, {
+      'diagnostics',
+      sources = { 'nvim_diagnostic' },
+      -- displays diagnostics from defined severity
+      sections = { 'error', 'warn' },   -- 'info', 'hint'},}}
+      color_error = "#E06C75",          -- changes diagnostic's error foreground color
+      color_warn = "#E5C07B"
+    }
     }
   }
 }
