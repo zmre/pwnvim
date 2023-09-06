@@ -6,7 +6,14 @@ require 'nvim-treesitter.configs'.setup {
     additional_vim_regex_highlighting = false
   },
   indent = { enable = true, disable = { "yaml" } },
-  incremental_selection = { enable = true },
+  incremental_selection = {
+    enable = true,
+    is_supported = function()
+      -- disable in command window
+      local mode = vim.api.nvim_get_mode().mode
+      return mode ~= "c"
+    end
+  },
   context_commentstring = {
     enable = true,
   },
