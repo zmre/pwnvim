@@ -234,6 +234,7 @@
                 nui-nvim # needed by noice
                 nvim-notify # needed by noice
                 noice-nvim # show progress and add other UI improvements
+                lsp_lines-nvim # use virtual text to inline errors and warnings
 
                 # Editor Features ####################################
                 vim-abolish # better abbreviations / spelling fixer
@@ -246,6 +247,7 @@
                 #nvim-ts-context-commentstring # makes kommentary contextual for embedded languages
                 vim-eunuch # brings cp/mv type commands. :Rename and :Move are particularly handy
                 vim-speeddating # allows ctrl-x and ctrl-a to increment/decrement dates
+                flash-nvim
 
                 # Database interactions
                 vim-dadbod
