@@ -307,7 +307,7 @@
       packages.default = packages.pwnvim;
       apps.default = apps.pwnvim;
       devShell = pkgs.mkShell {
-        buildInputs = with pkgs; [packages.pwnvim] ++ dependencies;
+        buildInputs = [packages.pwnvim] ++ dependencies;
       };
     });
 }
