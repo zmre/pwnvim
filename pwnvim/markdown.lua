@@ -1,15 +1,13 @@
 local M = {}
 
 M.mdFoldLevel = function(lnum)
-  if not lnum then
-    lnum = vim.v.lnum
-  end
+  if not lnum then lnum = vim.v.lnum end
   local line = vim.fn.getline(lnum)
   local heading = string.match(line, "^#+ ")
   if heading then
     return ">" .. (string.len(heading) - 1) -- start off fold
   else
-    return "="                              -- continue previous fold level
+    return "=" -- continue previous fold level
   end
 end
 
@@ -40,58 +38,71 @@ M.setup = function()
 
   require('pwnvim.markdown').markdownsyntax()
 
-  local opts = { noremap = false, silent = true }
+  local opts = {noremap = false, silent = true}
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(0, ...) end
 
   -- normal mode mappings
-  require("which-key").register(
-    {
-      ["<leader>"] = {
-        m = { ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview" },
-      },
-      ["gl*"] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], "Add bullets" },
-      ["gl>"] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]], "Add quotes" },
-      ["gl["] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>5l]], "Add task" },
-      ["gt"] = { "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>", "Convert URL to link" },
-      ["gp"] = { require('pwnvim.markdown').pasteUrl, "Paste URL as link" },
-      ["<C-M-v>"] = { require('pwnvim.markdown').pasteUrl, "Paste URL as link" },
-    }, { mode = "n", buffer = bufnr, silent = true, noremap = true }
-  )
+  require("which-key").register({
+    m = {':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview"}
+  }, {
+    mode = "n",
+    prefix = "<leader>",
+    buffer = bufnr,
+    silent = true,
+    noremap = true
+  })
+  require("which-key").register({
+    ["gl*"] = {
+      [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],
+      "Add bullets"
+    },
+    ["gl>"] = {
+      [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],
+      "Add quotes"
+    },
+    ["gl["] = {
+      [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>5l]],
+      "Add task"
+    },
+    ["gt"] = {
+      "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>",
+      "Convert URL to link"
+    },
+    ["gp"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"},
+    ["<C-M-v>"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"}
+  }, {mode = "n", buffer = bufnr, silent = true, noremap = true})
   -- insert mode mappings
-  require("which-key").register(
-    {
-      ["<C-M-v>"] = { require('pwnvim.markdown').pasteUrl, "Paste URL as link" },
-    }, { mode = "i", buffer = bufnr, silent = true, noremap = true }
-  )
+  require("which-key").register({
+    ["<C-M-v>"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"}
+  }, {mode = "i", buffer = bufnr, silent = true, noremap = true})
   -- visual mode mappings
-  require("which-key").register(
-    {
-      ["<leader>"] = {
-        m = { ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview" },
-      },
-      ["gl*"] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], "Add bullets" },
-      ["gl>"] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], "Add quotes" },
-      ["gl["] = { [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], "Add task" },
-      ["gt"] = { "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>", "Convert URL to link" }
-    }, { mode = "v", buffer = bufnr, silent = true, noremap = true }
-  )
+  require("which-key").register({
+    ["<leader>"] = {
+      m = {':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview"}
+    },
+    ["gl*"] = {
+      [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
+      "Add bullets"
+    },
+    ["gl>"] = {
+      [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
+      "Add quotes"
+    },
+    ["gl["] = {
+      [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
+      "Add task"
+    },
+    ["gt"] = {
+      "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>",
+      "Convert URL to link"
+    }
+  }, {mode = "v", buffer = bufnr, silent = true, noremap = true})
 
-  --Leave F7 at SymbolOutline which happens when zk LSP attaches
-  --buf_set_keymap('', '#7', ':Toc<CR>', opts)
-  --buf_set_keymap('!', '#7', '<ESC>:Toc<CR>', opts)
-  --TODO: add [t ]t for navigating tasks (instead of tabs) -- but can it work between files?
-  --TODO: add desc to opts
-  --buf_set_keymap('i', '#', '<plug>(mkdx-link-compl)', opts)
-
-  --buf_set_keymap('', '][', '<Plug>Markdown_MoveToNextSiblingHeader', opts)
-  --buf_set_keymap('', '[]', '<Plug>Markdown_MoveToPreviousSiblingHeader', opts)
-  --buf_set_keymap('', ']u', '<Plug>Markdown_MoveToParentHeader', opts)
-  --buf_set_keymap('', ']c', '<Plug>Markdown_MoveToCurHeader', opts)
-  --buf_set_keymap('', 'ge', '<Plug>Markdown_EditUrlUnderCursor', opts)
+  -- Leave F7 at SymbolOutline which happens when zk LSP attaches
   -- Handle cmd-b for bold
   buf_set_keymap('!', '<D-b>', '****<C-O>h', opts)
   buf_set_keymap('v', '<D-b>', 'Se', opts)
-  --buf_set_keymap('v', '<leader>b', 'S*gvS*', opts)
+  -- buf_set_keymap('v', '<leader>b', 'S*gvS*', opts)
   buf_set_keymap('v', '<leader>b', 'Se', opts) -- e is an alias configured at surround setup and equal to **
   buf_set_keymap('n', '<D-b>', 'ysiwe', opts)
   buf_set_keymap('n', '<leader>b', 'ysiwe', opts)
@@ -116,14 +127,16 @@ M.setup = function()
   buf_set_keymap('n', '<D-l>', 'ysiW]%a(', opts)
   buf_set_keymap('n', '<leader>l', 'ysiW]%a(', opts)
 
-
-  buf_set_keymap('i', '<tab>', "<cmd>lua require('pwnvim.markdown').indent()<cr>", opts)
-  buf_set_keymap('i', '<s-tab>', "<cmd>lua require('pwnvim.markdown').outdent()<cr>", opts)
+  buf_set_keymap('i', '<tab>',
+                 "<cmd>lua require('pwnvim.markdown').indent()<cr>", opts)
+  buf_set_keymap('i', '<s-tab>',
+                 "<cmd>lua require('pwnvim.markdown').outdent()<cr>", opts)
 
   -- no idea why the lua version of adding the command is failing
   -- vim.api.nvim_buf_add_user_command(0, 'PasteUrl', function(opts) require('pwnvim.markdown').pasteUrl() end, {})
   vim.cmd("command! PasteUrl lua require('pwnvim.markdown').pasteUrl()")
 
+  -- Hologram displays image thumbnails in-terminal while editing markdown in vim
   -- This is wonderful when it's working, but I sometimes get too many open files errors that seem to come from this plugin. Plus
   -- some weirdness where my entire terminal (kitty) completely hangs for a time. Especially when typing in an alt description.
   -- So, sadly, commenting out for now. 2023-01-19
@@ -134,22 +147,21 @@ M.setup = function()
   --   }
   -- end
   vim.cmd('packadd clipboard-image.nvim')
-  require 'clipboard-image'.setup {
+  require'clipboard-image'.setup {
     default = {
       img_name = function()
         vim.fn.inputsave()
-        local name = vim.fn.input({ prompt = "Name: " })
+        local name = vim.fn.input({prompt = "Name: "})
         -- TODO: swap spaces out for dashes
         vim.fn.inputrestore()
         return os.date('%Y-%m-%d') .. "-" .. name
       end,
-      img_dir = { "%:p:h", "%:t:r:s?$?_attachments?" },
+      img_dir = {"%:p:h", "%:t:r:s?$?_attachments?"},
       img_dir_txt = "%:t:r:s?$?_attachments?",
       -- TODO: can I put the name as the title somehow?
-      affix = "![image](%s)",
+      affix = "![image](%s)"
     }
   }
-
 
   -- I have historically always used spaces for indents wherever possible including markdown
   -- Changing now to use tabs because NotePlan 3 can't figure out nested lists that are space
@@ -157,7 +169,8 @@ M.setup = function()
   -- So, for now, this is the compatibility compromise. 2022-09-27
   -- UPDATE 2023-08-18: going to do ugly stateful things and check the CWD and only
   --         use tabs when in a Notes directory so I stop screwing up READMEs.
-  if (string.find(vim.fn.getcwd(), "Notes")) then
+  if (string.find(vim.fn.getcwd(), "Notes") or
+      string.find(vim.fn.getcwd(), "noteplan")) then
     require('pwnvim.options').tabindent()
     require('pwnvim.options').retab() -- turn spaces to tabs when markdown file is opened
   else
@@ -200,7 +213,7 @@ M.indent = function()
     -- send through regular tab character at current position
     vim.api.nvim_feedkeys("\t", "n", false)
   else
-    require 'cmp'.mapping.complete({})
+    require'cmp'.mapping.complete({})
   end
 end
 
@@ -221,14 +234,12 @@ M.getTitleFor = function(url)
     url = url,
     method = "get",
     accept = "text/html",
-    raw = { "-L" } -- follow redirects
+    raw = {"-L"} -- follow redirects
   }
   local title = ""
   if res then
     title = string.match(res.body, "<title[^>]*>([^<]+)</title>")
-    if not title then
-      title = string.match(res.body, "<h1[^>]*>([^<]+)</h1>")
-    end
+    if not title then title = string.match(res.body, "<h1[^>]*>([^<]+)</h1>") end
   end
   if not title then
     title = "could not get title" -- TODO: put domain here
@@ -237,7 +248,7 @@ M.getTitleFor = function(url)
 end
 
 M.transformUrlUnderCursorToMdLink = function()
-  --local url = vim.fn.expand("<cfile>")
+  -- local url = vim.fn.expand("<cfile>")
   local url = vim.fn.expand("<cWORD>")
   local title = require("pwnvim.markdown").getTitleFor(url)
   vim.cmd("normal! ciW[" .. title .. "](" .. url .. ")")

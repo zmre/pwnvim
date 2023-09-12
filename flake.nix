@@ -242,7 +242,7 @@
                 vim-unimpaired # bunch of convenient navigation key mappings
                 vim-repeat # supports all of the above so you can use .
                 vim-rsi # brings keyline bindings to editing (like ctrl-e for end of line when in insert mode)
-                vim-visualstar # press * or # on a word to find it
+                #vim-visualstar # press * or # on a word to find it
                 comment-nvim # code commenter
                 #nvim-ts-context-commentstring # makes kommentary contextual for embedded languages
                 vim-eunuch # brings cp/mv type commands. :Rename and :Move are particularly handy
