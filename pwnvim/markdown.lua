@@ -38,9 +38,6 @@ M.setup = function()
 
   require('pwnvim.markdown').markdownsyntax()
 
-  local opts = {noremap = false, silent = true}
-  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(0, ...) end
-
   -- normal mode mappings
   require("which-key").register({
     m = {':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview"}
@@ -69,12 +66,26 @@ M.setup = function()
       "Convert URL to link"
     },
     ["gp"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"},
-    ["<C-M-v>"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"}
+    ["<C-M-v>"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"},
+    ["<D-b>"] = {'ysiwe', "Bold"},
+    ["<leader>b"] = {'ysiwe', "Bold"},
+    ["<D-i>"] = {'ysiw_', "Italic"},
+    ["<leader>i"] = {'ysiw_', "Italic"},
+    ["<D-1>"] = {'ysiw`', "Code block"},
+    ["<leader>`"] = {'ysiw`', "Code block"},
+    ["<D-l>"] = {'ysiW]%a(`', "Link"}
   }, {mode = "n", buffer = bufnr, silent = true, noremap = true})
 
   -- insert mode mappings
   require("which-key").register({
-    ["<C-M-v>"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"}
+    ["<C-M-v>"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"},
+    ["<D-b>"] = {"****<C-O>h", "Bold"},
+    ["<D-i>"] = {[[__<C-O>h]], "Italic"},
+    ["<D-1>"] = {[[``<C-O>h]], "Code block"},
+    ["<tab>"] = {function() require('pwnvim.markdown').indent() end, "Indent"},
+    ["<s-tab>"] = {
+      function() require('pwnvim.markdown').outdent() end, "Outdent"
+    }
   }, {mode = "i", buffer = bufnr, silent = true, noremap = true})
 
   -- visual mode mappings
@@ -94,42 +105,15 @@ M.setup = function()
     ["gt"] = {
       "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>",
       "Convert URL to link"
-    }
+    },
+    ["<D-b>"] = {"Se", "Bold"},
+    ["<leader>b"] = {"Se", "Bold"},
+    ["<D-i>"] = {"S_", "Italic"},
+    ["<leader>i"] = {"S_", "Italic"},
+    ["<D-1>"] = {"S`", "Code ticks"},
+    ["<leader>`"] = {"S_", "Code ticks"},
+    ["<D-l>"] = {"S]%a(", "Code ticks"}
   }, {mode = "v", buffer = bufnr, silent = true, noremap = true})
-
-  -- Leave F7 at SymbolOutline which happens when zk LSP attaches
-  -- Handle cmd-b for bold
-  buf_set_keymap('!', '<D-b>', '****<C-O>h', opts)
-  buf_set_keymap('v', '<D-b>', 'Se', opts)
-  -- buf_set_keymap('v', '<leader>b', 'S*gvS*', opts)
-  buf_set_keymap('v', '<leader>b', 'Se', opts) -- e is an alias configured at surround setup and equal to **
-  buf_set_keymap('n', '<D-b>', 'ysiwe', opts)
-  buf_set_keymap('n', '<leader>b', 'ysiwe', opts)
-
-  -- Handle cmd-i for italic
-  buf_set_keymap('!', '<D-i>', [[__<C-O>h]], opts)
-  buf_set_keymap('v', '<D-i>', 'S_', opts)
-  buf_set_keymap('v', '<leader>i', 'S_', opts)
-  buf_set_keymap('n', '<D-i>', 'ysiw_', opts)
-  buf_set_keymap('n', '<leader>i', 'ysiw_', opts)
-
-  -- Handle cmd-1 for inline code blocks (since cmd-` has special meaning already)
-  buf_set_keymap('!', '<D-1>', [[``<C-O>h]], opts)
-  buf_set_keymap('v', '<D-1>', 'S`', opts)
-  buf_set_keymap('v', '<leader>`', 'S`', opts)
-  buf_set_keymap('n', '<D-1>', 'ysiw`', opts)
-  buf_set_keymap('n', '<leader>`', 'ysiw`', opts)
-
-  -- Handle cmd-l and ,l for adding a link
-  buf_set_keymap('v', '<D-l>', 'S]%a(', opts)
-  buf_set_keymap('v', '<leader>l', 'S]%a(', opts)
-  buf_set_keymap('n', '<D-l>', 'ysiW]%a(', opts)
-  buf_set_keymap('n', '<leader>l', 'ysiW]%a(', opts)
-
-  buf_set_keymap('i', '<tab>',
-                 "<cmd>lua require('pwnvim.markdown').indent()<cr>", opts)
-  buf_set_keymap('i', '<s-tab>',
-                 "<cmd>lua require('pwnvim.markdown').outdent()<cr>", opts)
 
   -- no idea why the lua version of adding the command is failing
   -- vim.api.nvim_buf_add_user_command(0, 'PasteUrl', function(opts) require('pwnvim.markdown').pasteUrl() end, {})
