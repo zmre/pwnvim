@@ -68,7 +68,8 @@ M.defaults = function()
   vim.opt.backupcopy = "auto"
   vim.opt.hidden = true
   vim.opt.cf = true -- jump to errors based on error files
-  vim.o.listchars = "tab:⇥ ,trail:␣,extends:⇉,precedes:⇇,nbsp:·"
+  vim.o.listchars =
+      "tab:⇥ ,trail:␣,multispace:␣,extends:⇉,precedes:⇇,nbsp:·"
   vim.opt.list = true -- render special chars (tabs, trails, ...)
   vim.opt.ttyfast = true
   vim.opt.expandtab = true

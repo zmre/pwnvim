@@ -39,9 +39,17 @@ which_key.register({
   ["#1"] = {"<Esc>", "Escape"},
   -- Make F2 bring up a file browser
   ["#2"] = {"<cmd>NvimTreeToggle<cr>", "Toggle file browser"},
+  -- Make F4 toggle invisible characters (locally)
   ["#4"] = {
-    function() vim.opt.list = not (vim.opt.list:get()) end,
-    "Toggle show invisible chars"
+    function()
+      if vim.opt_local.list:get() then
+        vim.opt_local.list = false
+        vim.opt_local.conceallevel = 2
+      else
+        vim.opt_local.list = true
+        vim.opt_local.conceallevel = 0
+      end
+    end, "Toggle show invisible chars"
   },
   -- Make ctrl-p open a file finder
   -- When using ctrl-p, screen out media files that we probably don't want
