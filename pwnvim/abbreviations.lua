@@ -1,64 +1,65 @@
-vim.cmd("ab jjcheck ✓")
-vim.cmd("ab Ironcore IronCore")
-vim.cmd("ab Hubspot HubSpot")
-vim.cmd("ab jjheart ♥")
-vim.cmd("ab jjcomm ⌘")
-vim.cmd("ab accidant accident")
-vim.cmd("ab accomodate accommodate")
-vim.cmd("ab accross across")
-vim.cmd("ab acheive achieve")
-vim.cmd("ab accomodate accommodate")
-vim.cmd("ab acomodate accommodate")
-vim.cmd("ab andthe and the")
-vim.cmd("ab apparant apparent")
-vim.cmd("ab aquisition acquisition")
-vim.cmd("ab assistent assistant")
-vim.cmd("ab asthe as the")
-vim.cmd("ab atthe at the")
-vim.cmd("ab beutiful beautiful")
-vim.cmd("ab cemetary cemetery")
-vim.cmd("ab changeing changing")
-vim.cmd("ab convertable convertible")
-vim.cmd("ab defendent defendant")
-vim.cmd("ab embarass embarrass")
-vim.cmd("ab equivalant equivalent")
-vim.cmd("ab guage gauge")
-vim.cmd("ab harrass harass")
-vim.cmd("ab hte the")
-vim.cmd("ab teh the")
-vim.cmd("ab judgment judgement")
-vim.cmd("ab liason liaison")
-vim.cmd("ab lieutenent lieutenant")
-vim.cmd("ab performence performance")
-vim.cmd("ab permanant permanent")
-vim.cmd("ab questionaire questionnaire")
-vim.cmd("ab recieve receive")
-vim.cmd("ab relevent relevant")
-vim.cmd("ab rythm rhythm")
-vim.cmd("ab seperate separate")
-vim.cmd("ab shouldnt shouldn't")
-vim.cmd("ab couldnt couldn't")
-vim.cmd("ab supercede supersede")
-vim.cmd("ab taht that")
-vim.cmd("ab threshhold threshold")
-vim.cmd("ab tomorow tomorrow")
-vim.cmd("ab transfered transferred")
-vim.cmd("ab vacume vacuum")
-vim.cmd("ab wierd weird")
-vim.cmd("ab wouldnt wouldn't")
-vim.cmd("ab independant independent")
-vim.cmd("ab independance independence")
-vim.cmd("ab occured occurred")
-vim.cmd("ab occurence occurrence")
-vim.cmd("ab occurance occurrence")
-vim.cmd("ab occurrance occurrence")
-vim.cmd("ab reccomend recommend")
-vim.cmd("ab reccommend recommend")
-vim.cmd("ab monday Monday")
-vim.cmd("ab tuesday Tuesday")
-vim.cmd("ab wednesday Wednesday")
-vim.cmd("ab thursday Thursday")
-vim.cmd("ab friday Friday")
-vim.cmd("ab saturday Saturday")
-vim.cmd("ab sunday Sunday")
-
+vim.cmd([[
+  ab jjcheck ✓
+  ab Ironcore IronCore
+  ab Hubspot HubSpot
+  ab jjheart ♥
+  ab jjcomm ⌘
+  ab accidant accident
+  ab accomodate accommodate
+  ab accross across
+  ab acheive achieve
+  ab accomodate accommodate
+  ab acomodate accommodate
+  ab andthe and the
+  ab apparant apparent
+  ab aquisition acquisition
+  ab assistent assistant
+  ab asthe as the
+  ab atthe at the
+  ab beutiful beautiful
+  ab cemetary cemetery
+  ab changeing changing
+  ab convertable convertible
+  ab defendent defendant
+  ab embarass embarrass
+  ab equivalant equivalent
+  ab guage gauge
+  ab harrass harass
+  ab hte the
+  ab teh the
+  ab judgment judgement
+  ab liason liaison
+  ab lieutenent lieutenant
+  ab performence performance
+  ab permanant permanent
+  ab questionaire questionnaire
+  ab recieve receive
+  ab relevent relevant
+  ab rythm rhythm
+  ab seperate separate
+  ab shouldnt shouldn't
+  ab couldnt couldn't
+  ab supercede supersede
+  ab taht that
+  ab threshhold threshold
+  ab tomorow tomorrow
+  ab transfered transferred
+  ab vacume vacuum
+  ab wierd weird
+  ab wouldnt wouldn't
+  ab independant independent
+  ab independance independence
+  ab occured occurred
+  ab occurence occurrence
+  ab occurance occurrence
+  ab occurrance occurrence
+  ab reccomend recommend
+  ab reccommend recommend
+  ab monday Monday
+  ab tuesday Tuesday
+  ab wednesday Wednesday
+  ab thursday Thursday
+  ab friday Friday
+  ab saturday Saturday
+  ab sunday Sunday
+]])

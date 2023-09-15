@@ -71,15 +71,14 @@ M.setup = function()
     ["gp"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"},
     ["<C-M-v>"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"}
   }, {mode = "n", buffer = bufnr, silent = true, noremap = true})
+
   -- insert mode mappings
   require("which-key").register({
     ["<C-M-v>"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"}
   }, {mode = "i", buffer = bufnr, silent = true, noremap = true})
+
   -- visual mode mappings
   require("which-key").register({
-    ["<leader>"] = {
-      m = {':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview"}
-    },
     ["gl*"] = {
       [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
       "Add bullets"
