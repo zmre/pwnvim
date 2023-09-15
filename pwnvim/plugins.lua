@@ -31,7 +31,25 @@ M.ui = function()
   require("pwnvim.plugins.lualine")
   require("pwnvim.plugins.treesitter")
   require("pwnvim.plugins.bufferline")
-  require("flash").setup()
+  require("flash").setup({
+    modes = {
+      char = {
+        enabled = false, -- actually slowing me down :(
+        jump_labels = true,
+        autohide = true,
+        keys = {"f", "F", "t", "T", ";"}, -- needed to remove "," as that is our mapleader
+        highlight = {backdrop = false},
+        char_actions = function(motion)
+          return {
+            [";"] = "next", -- set to `right` to always go right
+            -- [","] = "prev", -- set to `left` to always go left
+            [motion:lower()] = "next",
+            [motion:upper()] = "prev"
+          }
+        end
+      }
+    }
+  })
 end -- UI setup
 
 ----------------------- DIAGNOSTICS --------------------------------
@@ -231,11 +249,11 @@ M.diagnostics = function()
     }
     which_key.register(leader_mappings, local_leader_opts)
     -- Create a new note after asking for its title.
-    buf_set_keymap("", "#7", "<cmd>SymbolsOutline<CR>", opts)
+    buf_set_keymap("n", "#7", "<cmd>SymbolsOutline<CR>", opts)
     buf_set_keymap("!", "#7", "<cmd>SymbolsOutline<CR>", opts)
-    buf_set_keymap("", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
+    buf_set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
     -- override standard tag jump
-    buf_set_keymap("", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+    buf_set_keymap("n", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
     buf_set_keymap("!", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
 
     -- Set some keybinds conditional on server capabilities
@@ -325,7 +343,8 @@ M.diagnostics = function()
     server = {
       on_attach = attached,
       capabilities = capabilities,
-      standalone = false
+      standalone = true,
+      settings = {["rust-analyzer"] = {files = {excludeDirs = {".direnv"}}}}
     },
     tools = {
       autoSetHints = true,
@@ -586,7 +605,7 @@ M.completions = function()
     },
     snippet = {expand = function(args) luasnip.lsp_expand(args.body) end}
   })
-  cmp.setup.cmdline("/", {
+  --[[ cmp.setup.cmdline("/", {
     mapping = cmp.mapping.preset.cmdline(),
     sources = {{name = "buffer"}}
   })
@@ -595,7 +614,7 @@ M.completions = function()
     sources = cmp.config.sources({{name = "path"}}, {
       {name = "cmdline", option = {ignore_cmds = {"Man", "!"}}}
     })
-  })
+  }) ]]
 end -- completions
 
 ----------------------- NOTES --------------------------------
@@ -681,7 +700,7 @@ M.notes = function()
                                       "<Cmd>lua vim.lsp.buf.definition()<CR>",
                                       opts)
           -- Preview a linked note.
-          vim.api.nvim_buf_set_keymap(bufnr, "", "K",
+          vim.api.nvim_buf_set_keymap(bufnr, "n", "K",
                                       "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
 
           require("pwnvim.options").tabindent()
@@ -823,10 +842,10 @@ M.grammar_check = function()
   local opts = {noremap = false, silent = true}
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(0, ...) end
 
-  buf_set_keymap("", "<leader>gf", "<Plug>(grammarous-fixit)", opts)
-  buf_set_keymap("", "<leader>gx", "<Plug>(grammarous-remove-error)", opts)
-  buf_set_keymap("", "]g", "<Plug>(grammarous-move-to-next-error)", opts)
-  buf_set_keymap("", "[g", "<Plug>(grammarous-move-to-previous-error)", opts)
+  buf_set_keymap("n", "<leader>gf", "<Plug>(grammarous-fixit)", opts)
+  buf_set_keymap("n", "<leader>gx", "<Plug>(grammarous-remove-error)", opts)
+  buf_set_keymap("n", "]g", "<Plug>(grammarous-move-to-next-error)", opts)
+  buf_set_keymap("n", "[g", "<Plug>(grammarous-move-to-previous-error)", opts)
   vim.cmd("GrammarousCheck")
 end
 

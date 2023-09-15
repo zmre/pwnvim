@@ -1,5 +1,6 @@
 -- We use which-key in mappings, which is loaded before plugins, so set up here
 local which_key = require("which-key")
+local enter = vim.api.nvim_replace_termcodes("<cr>", true, false, true)
 which_key.setup({
   plugins = {
     marks = true, -- shows a list of your marks on ' and `
@@ -12,7 +13,7 @@ which_key.setup({
     -- No actual key bindings are created
     presets = {
       operators = true, -- adds help for operators like d, y, ... and registers them for motion / text object completion
-      motions = true, -- adds help for motions
+      motions = false, -- adds help for motions
       text_objects = true, -- help for text objects triggered after entering an operator
       windows = true, -- default bindings on <c-w>
       nav = true, -- misc bindings to work with windows
@@ -20,86 +21,215 @@ which_key.setup({
       g = true -- bindings for prefixed with g
     }
   },
-  icons = {
-    breadcrumb = "»", -- symbol used in the command line area that shows your active key combo
-    separator = "➜", -- symbol used between a key and it's label
-    group = "+" -- symbol prepended to a group
-  },
-  popup_mappings = {
-    scroll_down = "<c-d>", -- binding to scroll down inside the popup
-    scroll_up = "<c-u>" -- binding to scroll up inside the popup
-  },
-  window = {
-    border = "rounded", -- none, single, double, shadow
-    position = "bottom", -- bottom, top
-    margin = {1, 0, 1, 0}, -- extra window margin [top, right, bottom, left]
-    padding = {2, 2, 2, 2}, -- extra window padding [top, right, bottom, left]
-    winblend = 0
-  },
-  layout = {
-    height = {min = 4, max = 25}, -- min and max height of the columns
-    width = {min = 20, max = 50}, -- min and max width of the columns
-    spacing = 3, -- spacing between columns
-    align = "left" -- align columns left, center or right
-  },
-  ignore_missing = true, -- enable this to hide mappings for which you didn't specify a label
-  hidden = {
-    "<silent>", "<CMD>", "<cmd>", "<Cmd>", "<cr>", "<CR>", "call", "lua", "^:",
-    "^ "
-  }, -- hide mapping boilerplate
+  -- hidden = {
+  --   "<silent>", "<CMD>", "<cmd>", "<Cmd>", "<cr>", "<CR>", "call", "lua", "^:",
+  --   "^ "
+  -- }, -- hide mapping boilerplate
   show_help = true, -- show help message on the command line when the popup is visible
   triggers = "auto" -- automatically setup triggers
   -- triggers = {"<leader>"}
   -- triggers_nowait = {"'", '"', "y", "d"}
 })
+
 -- This file is for mappings that will work regardless of filetype. Always available.
-local options = {noremap = true, silent = true}
 
-for _, m in ipairs({"", "i", "c"}) do
-  which_key.register({
-    -- Make F1 act like escape for accidental hits
-    ["#1"] = {"<Esc>", "Escape"},
-    -- Make F2 bring up a file browser
-    ["#2"] = {"<cmd>NvimTreeToggle<cr>", "Toggle file browser"},
-    -- Make ctrl-p open a file finder
-    -- When using ctrl-p, screen out media files that we probably don't want
-    -- to open in vim. And if we really want, then we can use ,ff
-    ["<c-p>"] = {"<cmd>silent Telescope find_files<cr>", "Find files"},
-    ["#9"] = {'<cmd>TZAtaraxis<cr>', "Focus mode"},
-    -- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
-    ["#10"] = {'<cmd>silent !qlmanage -p "%"<cr>', "Quicklook (mac)"},
-    ["#12"] = {'<cmd>syntax sync fromstart<cr>', "Restart highlighting"},
-    -- Pane navigation integrated with tmux
-    ["<c-h>"] = {"<cmd>TmuxNavigateLeft<cr>", "Pane left"},
-    ["<c-j>"] = {"<cmd>TmuxNavigateDown<cr>", "Pane down"},
-    ["<c-k>"] = {"<cmd>TmuxNavigateUp<cr>", "Pane up"},
-    ["<c-l>"] = {"<cmd>TmuxNavigateRight<cr>", "Pane right"},
-    ["<D-g>"] = {'"*p', "paste"}
-  }, {mode = m, noremap = true, silent = true})
-end
+-- ALL MODE (EXCEPT OPERATOR) MAPPINGS
+which_key.register({
+  -- Make F1 act like escape for accidental hits
+  ["#1"] = {"<Esc>", "Escape"},
+  -- Make F2 bring up a file browser
+  ["#2"] = {"<cmd>NvimTreeToggle<cr>", "Toggle file browser"},
+  ["#4"] = {
+    function() vim.opt.list = not (vim.opt.list:get()) end,
+    "Toggle show invisible chars"
+  },
+  -- Make ctrl-p open a file finder
+  -- When using ctrl-p, screen out media files that we probably don't want
+  -- to open in vim. And if we really want, then we can use ,ff
+  ["<c-p>"] = {"<cmd>silent Telescope find_files<cr>", "Find files"},
+  ["#9"] = {'<cmd>TZAtaraxis<cr>', "Focus mode"},
+  -- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
+  ["#10"] = {'<cmd>silent !qlmanage -p "%"<cr>', "Quicklook (mac)"},
+  ["#12"] = {'<cmd>syntax sync fromstart<cr>', "Restart highlighting"},
+  -- Pane navigation integrated with tmux
+  ["<c-h>"] = {"<cmd>TmuxNavigateLeft<cr>", "Pane left"},
+  ["<c-j>"] = {"<cmd>TmuxNavigateDown<cr>", "Pane down"},
+  ["<c-k>"] = {"<cmd>TmuxNavigateUp<cr>", "Pane up"},
+  ["<c-l>"] = {"<cmd>TmuxNavigateRight<cr>", "Pane right"},
+  ["<D-g>"] = {'"*p', "paste"},
+  ["<D-v>"] = {'<cmd>normal "*p<cr>', "paste"},
+  ["<leader>p"] = {'<cmd>normal "*p<cr>', "paste"},
+  ["<D-w>"] = {"<cmd>Bdelete<CR>", "Close buffer"},
+  ["<A-w>"] = {"<cmd>Bdelete<CR>", "Close buffer"},
+  ["<M-w>"] = {"<cmd>Bdelete<CR>", "Close buffer"},
+  ["<D-n>"] = {"<cmd>enew<cr>", "New buffer"},
+  ["<D-t>"] = {"<cmd>tabnew<cr>", "New tab"},
+  ["<D-s>"] = {"<cmd>write<cr>", "Save buffer"},
+  ["<D-q>"] = {"<cmd>quit<cr>", "Quit"},
+  -- Magic buffer-picking mode
+  ["<M-b>"] = {"<cmd>BufferLinePick<CR>", "Pick buffer by letter"},
+  ["[0"] = {"<cmd>BufferLinePick<CR>", "Pick buffer by letter"},
+  ["]0"] = {"<cmd>BufferLinePick<CR>", "Pick buffer by letter"}
+}, {mode = {"n", "v", "i", "c"}, noremap = true, silent = true})
 
--- Make F4 toggle showing invisible characters
-vim.api
-    .nvim_set_keymap("", "_z", ":set list<CR>:map #4 _Z<CR>", {silent = true})
-vim.api.nvim_set_keymap("", "_Z", ":set nolist<CR>:map #4 _z<CR>",
-                        {silent = true})
-vim.api.nvim_set_keymap("", "#4", "_Z", {})
+-- NORMAL AND VISUAL MAPPINGS
+-- which_key.register({
+-- },{mode={"n","v"}})
 
--- Enter the date on F8
-vim.api.nvim_set_keymap("", "#8", '"=strftime("%Y-%m-%d")<CR>P', options)
-vim.api.nvim_set_keymap("!", "#8", '<C-R>=strftime("%Y-%m-%d")<CR>', options)
+-- NORMAL AND VISUAL AND COMMAND MAPPINGS
 
--- Center screen vertically when navigating by half screens
-vim.keymap.set("n", "<C-d>", "<C-d>zz")
-vim.keymap.set("n", "<C-u>", "<C-u>zz")
+-- NORMAL MODE ONLY MAPPINGS
+which_key.register({
+  ["A-Up"] = {"[e", "Move line up"},
+  ["A-Down"] = {"]e", "Move line down"},
+  ["zi"] = {
+    function() -- override default fold toggle behavior to fix fold columns and scan
+      if vim.wo.foldenable then
+        -- Disable completely
+        vim.wo.foldenable = false
+        vim.wo.foldcolumn = "0"
+      else
+        vim.wo.foldenable = true
+        vim.wo.foldcolumn = "auto:4"
+        vim.cmd("normal zx") -- reset folds
+      end
+    end, "Toggle folding"
+  },
+  ["#8"] = {'"=strftime("%Y-%m-%d")<CR>P', "Insert date"},
+  ["<D-[>"] = {'<<', "Outdent"},
+  ["<D-]>"] = {'>>', "Indent"},
+  n = {
+    "nzzzv",
+    "Center search hits vertically on screen and expand folds if hit is inside"
+  },
+  N = {
+    "Nzzzv",
+    "Center search hits vertically on screen and expand folds if hit is inside"
+  },
+  ["<c-d>"] = {"<c-d>zz"},
+  ["<c-u>"] = {"<c-u>zz"},
+  -- gx is a built-in to open URLs under the cursor, but when
+  -- not using netrw, it doesn't work right. Or maybe it's just me
+  -- but anyway this command works great.
+  -- /Users/pwalsh/Documents/md2rtf-style.html
+  -- ../README.md
+  -- ~/Desktop/Screen Shot 2018-04-06 at 5.19.32 PM.png
+  -- [abc](https://github.com/adsr/mle/commit/e4dc4314b02a324701d9ae9873461d34cce041e5.patch)
+  ["gx"] = {
+    ':silent !open "<c-r><c-f>" || xdg-open "<c-r><c-f>"<cr>',
+    "Launch URL or path"
+  },
+  ["*"] = {
+    function()
+      local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "/", "\\/") ..
+                       "\\>"
+      -- vim.cmd("/\\V" .. text) -- works, but doesn't trigger flash
+      vim.api.nvim_feedkeys("/\\V" .. text .. enter, 'n', false)
+      -- Can't find a way to have flash jump keep going past what's visible on the screen
+      -- require("flash").jump({
+      --   pattern = vim.fn.expand("<cword>"),
+      --   search = {forward = true, wrap = false, multi_window = false},
+      --   jump = {autojump=true}
+      -- })
+    end, "Find word under cursor forward"
+  },
+  ["#"] = {
+    function()
+      local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "?", "\\?") ..
+                       "\\>"
+      vim.api.nvim_feedkeys("?\\V" .. text .. enter, 'n', false)
+      -- vim.cmd("?\\V" .. text) -- works, but doesn't trigger flash
+    end, "Find word under cursor backward"
+  },
+  ["g*"] = {
+    function()
+      -- Same as above, but don't qualify as full word only
+      local text = string.gsub(vim.fn.expand("<cword>"), "/", "\\/")
+      vim.api.nvim_feedkeys("/\\V" .. text .. enter, 'n', false)
+      -- vim.cmd("/\\V" .. text) -- works, but doesn't trigger flash
+    end, "Find partial word under cursor forward"
+  },
+  ["g#"] = {
+    function()
+      -- Same as above, but don't qualify as full word only
+      local text = string.gsub(vim.fn.expand("<cword>"), "?", "\\?")
+      vim.api.nvim_feedkeys("?" .. text .. enter, 'n', false)
+      -- vim.cmd("?\\V" .. text) -- works, but doesn't trigger flash
+    end, "Find partial word under cursor backward"
+  },
+  ["<space>"] = {
+    [[@=(foldlevel('.')?'za':"\<Space>")<CR>]], "Toggle folds if enabled"
+  },
+  -- Adjust font sizes
+  ["<D-=>"] = {
+    [[:silent! let &guifont = substitute(&guifont, ':h\zs\d\+',
+  \ '\=eval(submatch(0)+1)', '')<CR>]], "Increase font size"
+  },
+  ["<C-=>"] = {
+    [[:silent! let &guifont = substitute(&guifont, ':h\zs\d\+',
+  \ '\=eval(submatch(0)+1)', '')<CR>]], "Increase font size"
+  },
+  ["<D-->"] = {
+    [[:silent! let &guifont = substitute(&guifont, ':h\zs\d\+',
+  \ '\=eval(submatch(0)-1)', '')<CR>]], "Shrink font size"
+  },
+  ["<C-->"] = {
+    [[:silent! let &guifont = substitute(&guifont, ':h\zs\d\+',
+  \ '\=eval(submatch(0)-1)', '')<CR>]], "Shrink font size"
+  }
+}, {mode = "n"})
 
--- Center search hits vertically on screen
-vim.keymap.set("n", "n", "nzzzv")
-vim.keymap.set("n", "N", "Nzzzv")
+-- VISUAL MODE ONLY MAPPINGS
+which_key.register({
+  ["gx"] = {
+    '"0y:silent !open "<c-r>0" || xdg-open "<c-r>0"<cr>gv', "Launch URL or path"
+  },
+  -- When pasting over selected text, keep original register value
+  ["p"] = {'"_dP', "Paste over selected no store register"},
+  -- keep visual block so you can move things repeatedly
+  ["<"] = {"<gv", "Outdent and preserve block"},
+  [">"] = {">gv", "Indent and preserve block"},
+  ["<D-[>"] = {"<gv", "Outdent and preserve block"},
+  ["<D-]>"] = {">gv", "Indent and preserve block"},
+  ["A-Up"] = {"[egv", "Move line up preserve block"},
+  ["A-Down"] = {"]egv", "Move line down preserve block"}
+}, {mode = "v"})
+
+-- OPERATOR PENDING MODE ONLY MAPPINGS
+
+-- INSERT MODE ONLY MAPPINGS
+which_key.register({
+  -- emacs bindings to jump around in lines
+  ["<C-e>"] = {"<C-o>A", "Jump to end of line"},
+  ["<C-a>"] = {"<C-o>I", "Jump to start of line"},
+  ["<D-[>"] = {"<C-o><<", "Outdent"},
+  ["<D-]>"] = {"<C-o>>>", "Indent"}
+}, {mode = "i"})
+
+-- COMMAND AND INSERT MAPPINGS
+which_key.register({
+  ["%%"] = {"<c-r>=expand('%:p:h')<cr>/", "Insert current folder for file"},
+  ["#8"] = {'<C-R>=strftime("%Y-%m-%d")<CR>', "Insert date at cursor"}
+}, {mode = {"c", "i"}, noremap = true, silent = false})
+
+-- COMMAND MODE ONLY MAPPINGS
+which_key.register({
+  -- Send cursor somewhere on screen and pick a text object from it.
+  -- Uses operator pending mode so you start it with something like `yr` then
+  -- after jump pick the text object like `iw` and you'll copy that other thing
+  -- and be back where you were at the start.
+  R = {function() require("flash").remote() end, "Remote operation via Flash"},
+  ["<c-s>"] = {function() require("flash").jump() end, "Flash select"},
+  r = {
+    function() require("flash").treesitter() end, "Flash select via Treesitter"
+  }
+}, {mode = "o"})
+
+local options = {}
 
 -- Move visually selected lines up and down
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+-- vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+-- vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
 local leader_mappings = {
   e = {"<cmd>NvimTreeToggle<cr>", "Explorer"},
@@ -277,64 +407,7 @@ which_key.register({
   -- Have ctrl-l continue to do what it did, but also temp clear search match highlighting
   Y = {"y$", "Yank to end of line"},
   ["-"] = {"<cmd>NvimTreeFindFile<cr>", "Find current file in file browser"}
-}, {mode = "", noremap = true, silent = true})
-
--- Bubble lines up and down using the unimpaired plugin
-vim.api.nvim_set_keymap("n", "<A-Up>", "[e", options)
-vim.api.nvim_set_keymap("n", "<A-Down>", "]e", options)
-vim.api.nvim_set_keymap("v", "<A-Up>", "[egv", options)
-vim.api.nvim_set_keymap("v", "<A-Down>", "]egv", options)
-
--- Indent/outdent shortcuts
-vim.api.nvim_set_keymap("n", "<D-[>", "<<", options)
-vim.api.nvim_set_keymap("v", "<D-[>", "<gv", options)
-vim.api.nvim_set_keymap("!", "<D-[>", "<C-o><<", options)
-vim.api.nvim_set_keymap("n", "<D-]>", ">>", options)
-vim.api.nvim_set_keymap("v", "<D-]>", ">gv", options)
-vim.api.nvim_set_keymap("!", "<D-]>", "<C-o>>>", options)
--- keep visual block so you can move things repeatedly
-vim.api.nvim_set_keymap("v", "<", "<gv", options)
-vim.api.nvim_set_keymap("v", ">", ">gv", options)
-
--- easy expansion of the active directory with %% on cmd
-local options_nosilent = {noremap = true, silent = false}
-
-vim.api.nvim_set_keymap("c", "%%", "<c-r>=expand('%:p:h')<cr>/",
-                        options_nosilent)
-
--- gx is a built-in to open URLs under the cursor, but when
--- not using netrw, it doesn't work right. Or maybe it's just me
--- but anyway this command works great.
--- /Users/pwalsh/Documents/md2rtf-style.html
--- ../README.md
--- ~/Desktop/Screen Shot 2018-04-06 at 5.19.32 PM.png
--- [abc](https://github.com/adsr/mle/commit/e4dc4314b02a324701d9ae9873461d34cce041e5.patch)
-vim.api.nvim_set_keymap("", "gx",
-                        ':silent !open "<c-r><c-f>" || xdg-open "<c-r><c-f>"<cr>',
-                        options)
-vim.api.nvim_set_keymap("v", "gx",
-                        '"0y:silent !open "<c-r>0" || xdg-open "<c-r>0"<cr>gv',
-                        options)
-
--- open/close folds with space bar
-vim.api.nvim_set_keymap("", "<Space>",
-                        [[@=(foldlevel('.')?'za':"\<Space>")<CR>]], options)
-
-which_key.register({
-  ["zi"] = {
-    function() -- override default fold toggle behavior to fix fold columns and scan
-      if vim.wo.foldenable then
-        -- Disable completely
-        vim.wo.foldenable = false
-        vim.wo.foldcolumn = "0"
-      else
-        vim.wo.foldenable = true
-        vim.wo.foldcolumn = "auto:4"
-        vim.cmd("normal zx") -- reset folds
-      end
-    end, "Toggle folding"
-  }
-}, {mode = ""})
+}, {mode = "n", noremap = true, silent = true})
 
 -- Make nvim terminal more sane
 which_key.register({
@@ -350,64 +423,6 @@ which_key.register({
   ["<C-v><C-k>"] = {[[<C-k>]], "Send c-k to terminal"},
   ["<C-v><C-l>"] = {[[<C-l>]], "Send c-l to terminal"}
 }, {mode = "t", noremap = true, silent = true})
-
--- gui nvim stuff
--- Adjust font sizes
-vim.api.nvim_set_keymap("", "<D-=>", [[:silent! let &guifont = substitute(
-  \ &guifont,
-  \ ':h\zs\d\+',
-  \ '\=eval(submatch(0)+1)',
-  \ '')<CR>]], options)
-vim.api.nvim_set_keymap("", "<C-=>", [[:silent! let &guifont = substitute(
-  \ &guifont,
-  \ ':h\zs\d\+',
-  \ '\=eval(submatch(0)+1)',
-  \ '')<CR>]], options)
-vim.api.nvim_set_keymap("", "<D-->", [[:silent! let &guifont = substitute(
-  \ &guifont,
-  \ ':h\zs\d\+',
-  \ '\=eval(submatch(0)-1)',
-  \ '')<CR>]], options)
-vim.api.nvim_set_keymap("", "<C-->", [[:silent! let &guifont = substitute(
-  \ &guifont,
-  \ ':h\zs\d\+',
-  \ '\=eval(submatch(0)-1)',
-  \ '')<CR>]], options)
-
--- Need to map cmd-c and cmd-v to get natural copy/paste behavior
-vim.api.nvim_set_keymap("n", "<D-v>", '"*p', options)
-vim.api.nvim_set_keymap("v", "<D-v>", '"*p', options)
-vim.api.nvim_set_keymap("!", "<D-v>", "<C-R>*", options)
-vim.api.nvim_set_keymap("c", "<D-v>", "<C-R>*", options)
-vim.api.nvim_set_keymap("v", "<D-c>", '"*y', options)
--- When pasting over selected text, keep original register value
-vim.api.nvim_set_keymap("v", "p", '"_dP', options)
-
--- cmd-w to close the current buffer
-vim.api.nvim_set_keymap("", "<D-w>", ":bd<CR>", options)
-vim.api.nvim_set_keymap("!", "<D-w>", "<ESC>:bd<CR>", options)
-
--- cmd-t or cmd-n to open a new buffer
-vim.api.nvim_set_keymap("", "<D-t>", ":enew<CR>", options)
-vim.api.nvim_set_keymap("!", "<D-t>", "<ESC>:enew<CR>", options)
-vim.api.nvim_set_keymap("", "<D-n>", ":tabnew<CR>", options)
-vim.api.nvim_set_keymap("!", "<D-n>", "<ESC>:tabnew<CR>", options)
-
--- cmd-s to save
-vim.api.nvim_set_keymap("", "<D-s>", ":w<CR>", options)
-vim.api.nvim_set_keymap("!", "<D-s>", "<ESC>:w<CR>", options)
-
--- cmd-q to quit
-vim.api.nvim_set_keymap("", "<D-q>", ":q<CR>", options)
-vim.api.nvim_set_keymap("!", "<D-q>", "<ESC>:q<CR>", options)
-
--- cmd-o to open
--- vim.api.nvim_set_keymap("", "<D-o>", ":Telescope file_browser cmd=%:h<CR>", options)
--- vim.api.nvim_set_keymap("!", "<D-o>", "<ESC>:Telescope file_browser cmd=%:h<CR>", options)
-
--- emacs bindings to jump around in lines
-vim.api.nvim_set_keymap("i", "<C-e>", "<C-o>A", options)
-vim.api.nvim_set_keymap("i", "<C-a>", "<C-o>I", options)
 
 -- Setup tpope unimpaired-like forward/backward shortcuts reminders
 which_key.register({
@@ -458,21 +473,19 @@ which_key.register({
   ["[9"] = {":BufferLineGoToBuffer 9<CR>", "Go to buffer 9"},
   ["]9"] = {":BufferLineGoToBuffer 9<CR>", "Go to buffer 9"},
   ["<S-h>"] = {":BufferLineCyclePrev<CR>", "Go to next buffer"},
-  ["<S-l>"] = {":BufferLineCycleNext<CR>", "Go to prev buffer"}
+  ["<S-l>"] = {":BufferLineCycleNext<CR>", "Go to prev buffer"},
+  f = "Find next char x",
+  F = "Find prev char x",
+  t = "Find before prev char x",
+  T = "Find before prev char x"
 }, {mode = "n", silent = true})
 
--- Close buffer
-vim.api.nvim_set_keymap("", "<D-w>", ":Bdelete<CR>", options)
-vim.api.nvim_set_keymap("!", "<D-w>", "<ESC>:Bdelete<CR>", options)
-vim.api.nvim_set_keymap("", "<A-w>", ":Bdelete<CR>", options)
-vim.api.nvim_set_keymap("!", "<A-w>", "<ESC>:Bdelete<CR>", options)
-vim.api.nvim_set_keymap("", "<M-w>", ":Bdelete<CR>", options)
-vim.api.nvim_set_keymap("!", "<M-w>", "<ESC>:Bdelete<CR>", options)
--- Magic buffer-picking mode
-vim.api.nvim_set_keymap("", "<M-b>", ":BufferLinePick<CR>", options)
-vim.api.nvim_set_keymap("!", "<M-b>", "<ESC>:BufferLinePick<CR>", options)
-vim.api.nvim_set_keymap("", "[0", ":BufferLinePick<CR>", options)
-vim.api.nvim_set_keymap("", "]0", ":BufferLinePick<CR>", options)
+which_key.register({
+  f = "Find next char x",
+  F = "Find prev char x",
+  t = "Find before prev char x",
+  T = "Find before prev char x"
+}, {mode = "o", silent = true})
 
 -- Flash mappings
 -- Note: the regular mappings mess up surround plugin and various modes
@@ -482,6 +495,7 @@ vim.api.nvim_set_keymap("", "]0", ":BufferLinePick<CR>", options)
 which_key.register({
   ["<c-s>"] = {function() require("flash").toggle() end, "Toggle Flash Search"}
 }, {mode = "c"})
+
 -- ctrl-s will do general screen jump otherwise
 which_key.register({
   ["<c-s>"] = {
@@ -495,58 +509,17 @@ which_key.register({
 -- <cname> won't include a backslash in the word
 -- The \< and \> mark word start and end so `*` search for the exact word as a word
 -- and `gv` search for the word even if within other words
-which_key.register({
-  ["*"] = {
-    function()
-      local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "/", "\\/") ..
-                       "\\>"
-      -- vim.cmd("/" .. text) -- works, but doesn't trigger flash
-      vim.api.nvim_feedkeys("/\\V" .. text, 'n', false)
-      -- Can't find a way to have flash jump keep going past what's visible on the screen
-      -- require("flash").jump({
-      --   pattern = vim.fn.expand("<cword>"),
-      --   search = {forward = true, wrap = false, multi_window = false},
-      --   jump = {autojump=true}
-      -- })
-    end, "Find word under cursor forward"
-  },
-  ["#"] = {
-    function()
-      local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "?", "\\?") ..
-                       "\\>"
-      vim.api.nvim_feedkeys("?\\V" .. text, 'n', false)
-    end, "Find word under cursor backward"
-  },
-  g = {
-    ["*"] = {
-      function()
-        -- Same as above, but don't qualify as full word only
-        local text = string.gsub(vim.fn.expand("<cword>"), "/", "\\/")
-        vim.api.nvim_feedkeys("/\\V" .. text, 'n', false)
-      end, "Find partial word under cursor forward"
-    },
-    ["#"] = {
-      function()
-        -- Same as above, but don't qualify as full word only
-        local text = string.gsub(vim.fn.expand("<cword>"), "?", "\\?")
-        vim.api.nvim_feedkeys("?" .. text, 'n', false)
-      end, "Find partial word under cursor backward"
-    }
-  }
-}, {mode = "n"})
--- Send cursor somewhere on screen and pick a text object from it.
--- Uses operator pending mode so you start it with something like `yr` then
--- after jump pick the text object like `iw` and you'll copy that other thing
--- and be back where you were at the start.
-which_key.register({
-  r = {function() require("flash").remote() end, "Remote Flash"},
-  S = {function() require("flash").treesitter() end, "Flash Treesitter"}
-}, {mode = "o"})
+which_key.register({}, {mode = "n"})
 
 -- Start visual mode and then adjust selection by treesitter nodes with s
 -- so `vs` or `vjjs` or whatever should allow selecting a treesitter node
 -- or expanding/contracting it with `;` and `,`
 which_key.register({
-  r = {function() require("flash").jump() end, "Visual Flash Jump"},
-  s = {function() require("flash").treesitter() end, "Visual Flash Treesitter"}
+  ["<c-s>"] = {
+    function() require("flash").jump() end, "Visual Extend via Flash"
+  },
+  r = {
+    function() require("flash").treesitter() end,
+    "Visual Extend to Treesitter block"
+  }
 }, {mode = "x"})
