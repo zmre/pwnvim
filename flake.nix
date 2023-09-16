@@ -23,6 +23,8 @@
     clipboard-image.flake = false;
     vscode-langservers-custom.url = "github:hrsh7th/vscode-langservers-extracted/v4.7.0";
     vscode-langservers-custom.flake = false;
+    conform-nvim.url = "github:stevearc/conform.nvim";
+    conform-nvim.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -44,6 +46,11 @@
                   pname = "clipboard-image.nvim";
                   src = inputs.clipboard-image;
                   # buildInputs = [ super.curl ];
+                };
+                conform-nvim = super.vimUtils.buildVimPluginFrom2Nix {
+                  name = "conform-nvim";
+                  pname = "conform-nvim";
+                  src = inputs.conform-nvim;
                 };
               };
           })
@@ -197,11 +204,13 @@
                 rust-tools-nvim # lsp stuff and more for rust
                 crates-nvim # inline intelligence for Cargo.toml
                 nvim-lspconfig # setup LSP for intelligent coding
-                null-ls-nvim # formatting and linting via lsp system
+                # null-ls-nvim # formatting and linting via lsp system
+                nvim-lint # replace null-ls for linting bits
+                conform-nvim # replace null-ls and lsp-format-nvim for formatting
                 trouble-nvim # navigate all warnings and errors in quickfix-like window
                 #nvim-dap # debugging functionality used by rust-tools-nvim
                 #nvim-dap-ui # ui for debugging
-                lsp-format-nvim
+                #lsp-format-nvim
                 todo-comments-nvim
                 neodev-nvim # help for neovim lua api
                 nvim-nu # support for nushell scripts

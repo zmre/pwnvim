@@ -16,10 +16,22 @@ M.ui = function()
   -- local tree_cb = nvim_tree_config.nvim_tree_callback
   require("pwnvim.plugins.nvim-tree")
 
+  local surround_defaults = require("nvim-surround.config").default_opts
   require("nvim-surround").setup({
     aliases = {
-      ["e"] = "**" -- e for emphasis -- bold in markdown
-    }
+      ["e"] = "**", -- e for emphasis -- bold in markdown
+      ["a"] = ">",
+      ["b"] = ")",
+      ["B"] = "}",
+      ["r"] = "]",
+      ["q"] = { '"', "'", "`" },
+      ["s"] = { "}", "]", ")", ">", '"', "'", "`" },
+    },
+    keymaps = surround_defaults.keymaps,
+    surrounds = surround_defaults.surrounds,
+    highlight = { duration = 1 },
+    move_cursor = "begin",
+    indent_lines = surround_defaults.indent_lines
   })
 
   require("pwnvim.plugins.todo-comments")
@@ -37,8 +49,8 @@ M.ui = function()
         enabled = false, -- actually slowing me down :(
         jump_labels = true,
         autohide = true,
-        keys = {"f", "F", "t", "T", ";"}, -- needed to remove "," as that is our mapleader
-        highlight = {backdrop = false},
+        keys = { "f", "F", "t", "T", ";" }, -- needed to remove "," as that is our mapleader
+        highlight = { backdrop = false },
         char_actions = function(motion)
           return {
             [";"] = "next", -- set to `right` to always go right
@@ -58,7 +70,8 @@ M.diagnostics = function()
   require("neodev").setup({
     -- help for neovim lua api
     override = function(root_dir, library)
-      if string.match(root_dir, "neovim") or string.match(root_dir, "pwnvim") or
+      if string.match(root_dir, "neovim") or
+          string.match(root_dir, "pwnvim") or
           string.match(root_dir, "lua") then
         library.enabled = true
         library.plugins = true
@@ -91,9 +104,9 @@ M.diagnostics = function()
       hover = {
         enabled = true,
         silent = false, -- set to true to not show a message if hover is not available
-        view = nil, -- when nil, use defaults from documentation
+        view = nil,     -- when nil, use defaults from documentation
         ---@type NoiceViewOptions
-        opts = {} -- merged with defaults from documentation
+        opts = {}       -- merged with defaults from documentation
       },
       signature = {
         enabled = true,
@@ -101,11 +114,11 @@ M.diagnostics = function()
           enabled = true,
           trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
           luasnip = true, -- Will open signature help when jumping to Luasnip insert nodes
-          throttle = 50 -- Debounce lsp signature help request by 50ms
+          throttle = 50   -- Debounce lsp signature help request by 50ms
         },
-        view = nil, -- when nil, use defaults from documentation
+        view = nil,       -- when nil, use defaults from documentation
         ---@type NoiceViewOptions
-        opts = {} -- merged with defaults from documentation
+        opts = {}         -- merged with defaults from documentation
       },
       message = {
         -- Messages shown by lsp servers
@@ -116,13 +129,13 @@ M.diagnostics = function()
     },
     -- you can enable a preset for easier configuration
     presets = {
-      bottom_search = true, -- use a classic bottom cmdline for search
-      command_palette = false, -- position the cmdline and popupmenu together
+      bottom_search = true,         -- use a classic bottom cmdline for search
+      command_palette = false,      -- position the cmdline and popupmenu together
       long_message_to_split = true, -- long messages will be sent to a split
-      inc_rename = false, -- enables an input dialog for inc-rename.nvim
-      lsp_doc_border = true -- add a border to hover docs and signature help
+      inc_rename = false,           -- enables an input dialog for inc-rename.nvim
+      lsp_doc_border = true         -- add a border to hover docs and signature help
     },
-    cmdline = {enabled = true, view = "cmdline", format = {conceal = false}},
+    cmdline = { enabled = true, view = "cmdline", format = { conceal = false } },
     messages = {
       enabled = true,
       view = "mini",
@@ -131,7 +144,7 @@ M.diagnostics = function()
       view_history = "messages", -- view for :messages
       view_search = "virtualtext"
     },
-    popupmenu = {enabled = false, backend = "nui"},
+    popupmenu = { enabled = false, backend = "nui" },
     notify = {
       -- Noice can be used as `vim.notify` so you can route any notification like other messages
       -- Notification messages have their level and other properties set.
@@ -145,7 +158,7 @@ M.diagnostics = function()
   require("nu").setup({}) -- support nushell scripts
   vim.diagnostic.config({
     virtual_text = false,
-    signs = {active = {signs.signs}},
+    signs = { active = { signs.signs } },
     update_in_insert = false,
     underline = true,
     severity_sort = true,
@@ -158,13 +171,12 @@ M.diagnostics = function()
       prefix = ""
     }
   })
-  vim.lsp.handlers["textDocument/hover"] =
-      vim.lsp.with(vim.lsp.handlers.hover, {border = "rounded"})
+  vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
+    vim.lsp.handlers.hover,
+    { border = "rounded" })
 
-  vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
-                                                       vim.lsp.handlers
-                                                           .signature_help,
-                                                       {border = "rounded"})
+  vim.lsp.handlers["textDocument/signatureHelp"] =
+      vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
 
   require("trouble").setup({
     group = true, -- group results by file
@@ -184,82 +196,102 @@ M.diagnostics = function()
       vim.api.nvim_buf_set_keymap(bufnr, ...)
     end
 
-    local opts = {noremap = true, silent = false}
-    if client.name == "tsserver" or client.name == "jsonls" or client.name ==
-        "nil" or client.name == "eslint" or client.name == "html" or client.name ==
-        "lua_ls" or client.name == "cssls" or client.name == "tailwindcss" then
+    local opts = { noremap = true, silent = false }
+    --[[ if client.name == "tsserver" or client.name == "jsonls" or client.name ==
+        "nil" or client.name == "eslint" or client.name == "html" or
+        client.name == "cssls" or client.name == "tailwindcss" then
       -- Most of these are being turned off because prettier handles the use case better
       client.server_capabilities.documentFormattingProvider = false
       client.server_capabilities.documentRangeFormattingProvider = false
-    else
-      client.server_capabilities.documentFormattingProvider = true
-      client.server_capabilities.documentRangeFormattingProvider = true
-      require("lsp-format").on_attach(client, bufnr)
-    end
+      -- else
+      --   client.server_capabilities.documentFormattingProvider = true
+      --   client.server_capabilities.documentRangeFormattingProvider = true
+      --   require("lsp-format").on_attach(client, bufnr)
+    end ]]
 
     -- print("LSP attached " .. client.name)
 
     vim.api.nvim_buf_set_option(bufnr, "formatexpr",
-                                "v:lua.vim.lsp.formatexpr()")
+      "v:lua.vim.lsp.formatexpr()")
     vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
     vim.api.nvim_buf_set_option(bufnr, "tagfunc", "v:lua.vim.lsp.tagfunc")
 
     local which_key = require("which-key")
     local local_leader_opts = {
-      mode = "n", -- NORMAL mode
+      mode = "n",     -- NORMAL mode
       prefix = "<leader>",
       buffer = bufnr, -- Local mappings.
-      silent = true, -- use `silent` when creating keymaps
+      silent = true,  -- use `silent` when creating keymaps
       noremap = true, -- use `noremap` when creating keymaps
-      nowait = true -- use `nowait` when creating keymaps
+      nowait = true   -- use `nowait` when creating keymaps
     }
     local local_leader_opts_visual = {
-      mode = "v", -- VISUAL mode
+      mode = "v",     -- VISUAL mode
       prefix = "<leader>",
       buffer = bufnr, -- Local mappings.
-      silent = true, -- use `silent` when creating keymaps
+      silent = true,  -- use `silent` when creating keymaps
       noremap = true, -- use `noremap` when creating keymaps
-      nowait = true -- use `nowait` when creating keymaps
+      nowait = true   -- use `nowait` when creating keymaps
     }
 
-    require("symbols-outline").setup({keymaps = {close = {"<Esc>", "q", "#7"}}})
+    require("symbols-outline").setup({
+      keymaps = { close = { "<Esc>", "q", "#7" } }
+    })
 
     local leader_mappings = {
-      ["q"] = {"<cmd>TroubleToggle<CR>", "Show Trouble list"},
+      ["q"] = { "<cmd>TroubleToggle<CR>", "Show Trouble list" },
       l = {
         name = "Local LSP",
-        s = {"<cmd>SymbolsOutline<CR>", "Show Symbols"},
-        d = {"<Cmd>lua vim.lsp.buf.definition()<CR>", "Go to definition"},
-        D = {"<cmd>lua vim.lsp.buf.implementation()<CR>", "Implementation"},
-        i = {"<Cmd>lua vim.lsp.buf.hover()<CR>", "Info hover"},
-        I = {"<Cmd>Telescope lsp_implementations<CR>", "Implementations"},
-        r = {"<cmd>Telescope lsp_references<CR>", "References"},
-        f = {"<cmd>lua vim.lsp.buf.code_action()<CR>", "Fix Code Actions"},
-        t = {"<cmd>lua vim.lsp.buf.signature_help()<CR>", "Signature"},
-        e = {"<cmd>lua vim.diagnostic.open_float()<CR>", "Show Line Diags"}
+        s = { "<cmd>SymbolsOutline<CR>", "Show Symbols" },
+        d = {
+          "<Cmd>lua vim.lsp.buf.definition()<CR>", "Go to definition"
+        },
+        D = {
+          "<cmd>lua vim.lsp.buf.implementation()<CR>",
+          "Implementation"
+        },
+        i = { "<Cmd>lua vim.lsp.buf.hover()<CR>", "Info hover" },
+        I = {
+          "<Cmd>Telescope lsp_implementations<CR>", "Implementations"
+        },
+        r = { "<cmd>Telescope lsp_references<CR>", "References" },
+        f = {
+          "<cmd>lua vim.lsp.buf.code_action()<CR>", "Fix Code Actions"
+        },
+        t = { "<cmd>lua vim.lsp.buf.signature_help()<CR>", "Signature" },
+        e = {
+          "<cmd>lua vim.diagnostic.open_float()<CR>",
+          "Show Line Diags"
+        }
       },
       f = {
         ["sd"] = {
-          "<cmd>Telescope lsp_document_symbols<CR>", "Find symbol in document"
+          "<cmd>Telescope lsp_document_symbols<CR>",
+          "Find symbol in document"
         },
         ["sw"] = {
-          "<cmd>Telescope lsp_workspace_symbols<CR>", "Find symbol in workspace"
+          "<cmd>Telescope lsp_workspace_symbols<CR>",
+          "Find symbol in workspace"
         }
       }
     }
     which_key.register(leader_mappings, local_leader_opts)
     -- Create a new note after asking for its title.
-    buf_set_keymap("n", "#7", "<cmd>SymbolsOutline<CR>", opts)
-    buf_set_keymap("!", "#7", "<cmd>SymbolsOutline<CR>", opts)
+    buf_set_keymap("", "#7", "<cmd>SymbolsOutline<CR>", opts)
+    buf_set_keymap("i", "#7", "<cmd>SymbolsOutline<CR>", opts)
     buf_set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
     -- override standard tag jump
-    buf_set_keymap("n", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
-    buf_set_keymap("!", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+    buf_set_keymap("", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+    buf_set_keymap("i", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
 
     -- Set some keybinds conditional on server capabilities
     if client.server_capabilities.document_formatting then
       which_key.register({
-        l = {["="] = {"<cmd>lua vim.lsp.buf.formatting_sync()<CR>", "Format"}}
+        l = {
+          ["="] = {
+            "<cmd>lua vim.lsp.buf.formatting_sync()<CR>", "Format"
+          }
+        }
       }, local_leader_opts)
       -- vim.cmd([[
       --       augroup LspFormatting
@@ -271,7 +303,10 @@ M.diagnostics = function()
     if client.server_capabilities.implementation then
       which_key.register({
         l = {
-          ["I"] = {"<cmd>Telescope lsp_implementations<CR>", "Implementations"}
+          ["I"] = {
+            "<cmd>Telescope lsp_implementations<CR>",
+            "Implementations"
+          }
         }
       }, local_leader_opts)
     end
@@ -279,86 +314,99 @@ M.diagnostics = function()
       which_key.register({
         l = {
           ["="] = {
-            "<cmd>lua vim.lsp.buf.range_formatting()<CR>", "Format Range"
+            "<cmd>lua vim.lsp.buf.range_formatting()<CR>",
+            "Format Range"
           }
         }
       }, local_leader_opts_visual)
     end
     if client.server_capabilities.rename then
       which_key.register({
-        l = {["R"] = {"<cmd>lua vim.lsp.buf.rename()<CR>", "Rename"}}
+        l = { ["R"] = { "<cmd>lua vim.lsp.buf.rename()<CR>", "Rename" } }
       }, local_leader_opts)
     end
   end
 
-  -- LSP stuff - minimal with defaults for now
-  local null_ls = require("null-ls")
+  require('lint').linters_by_ft = {
+    markdown = { 'vale' },
+    css = { 'prettier' },
+    svelte = { 'eslint_d' },
+    python = { "mypy", "ruff" },
+    nix = { "statix" },
+    bash = { "shellcheck" },
+    typescript = { "prettier" },
+    javascript = { "prettier" },
+    rust = { "rustfmt" }
+  }
+  require("conform").formatters.lua_format = {
+    command = "lua-format",
+    args = { "-i", "--no-use-tab", "--indent-width=2" },
+    stdin = true
+  }
+  require("conform.formatters.prettier").args = {
+    "--stdin-filepath", "$FILENAME", "--indent", "2"
+  }
 
-  -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
-  local formatting = null_ls.builtins.formatting
-  -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
-  local diagnostics = null_ls.builtins.diagnostics
-  local codeactions = null_ls.builtins.code_actions
-
-  require("lsp-format").setup({})
-
-  null_ls.setup({
-    debug = false,
-    sources = {
-      -- formatting.lua_format,
-      formatting.alejandra, -- for nix
-      formatting.prismaFmt, -- for node prisma db orm
-      -- formatting.stylua, -- disabled because it forces everything to tabs
-      formatting.lua_format.with({
-        args = {"-i", "--indent-width=2", "--no-use-tab"}
-      }), formatting.prettier.with({
-        filetypes = {
-          "javascript", "javascriptreact", "typescript", "typescriptreact",
-          "vue", "scss", "less", "html", "css", "json", "jsonc", "yaml",
-          "graphql", "handlebars", "svelte"
-        },
-        disabled_filetypes = {"markdown"}
-      }), diagnostics.eslint_d.with({
-        args = {"-f", "json", "--stdin", "--stdin-filename", "$FILENAME"}
-      }), -- diagnostics.vale,
-      codeactions.eslint_d, codeactions.gitsigns, codeactions.statix, -- for nix
-      diagnostics.statix, -- for nix
-      diagnostics.mypy, -- static types for python
-      diagnostics.ruff, -- lint for python
-      formatting.black, -- formatter for python
-      null_ls.builtins.hover.dictionary, codeactions.shellcheck,
-      diagnostics.shellcheck
-      -- removed formatting.rustfmt since rust_analyzer seems to do the same thing
+  require("conform").setup({
+    notify_on_error = true,
+    format_on_save = {
+      -- These options will be passed to conform.format()
+      timeout_ms = 500,
+      lsp_fallback = true -- if no defined or available formatter, try lsp formatter
     },
-    on_attach = attached
+    formatters_by_ft = {
+      -- lua = {{"lua_format", "stylua"}},
+      python = { "black" },
+      -- Use a sub-list to run only the first available formatter
+      javascript = { { "prettier", "eslint_d" } },
+      javascriptreact = { { "prettier", "eslint_d" } },
+      typescript = { { "prettier", "eslint_d" } },
+      typescriptreact = { { "prettier", "eslint_d" } },
+      vue = { { "prettier", "eslint_d" } },
+      scss = { { "prettier", "eslint_d" } },
+      html = { { "prettier", "eslint_d" } },
+      css = { { "prettier", "eslint_d" } },
+      json = { { "prettier", "eslint_d" } },
+      jsonc = { { "prettier", "eslint_d" } },
+      yaml = { { "prettier", "eslint_d" } },
+      svelte = { { "prettier", "eslint_d" } },
+      nix = { "alejandra" }
+    }
   })
+  vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+    callback = function() require("lint").try_lint() end
+  })
+
   local lspconfig = require("lspconfig")
   local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
   local capabilities = vim.tbl_extend("keep", vim.lsp.protocol
-                                          .make_client_capabilities(),
-                                      cmp_nvim_lsp.default_capabilities())
+    .make_client_capabilities(),
+    cmp_nvim_lsp.default_capabilities())
 
   require("rust-tools").setup({
     server = {
       on_attach = attached,
       capabilities = capabilities,
       standalone = true,
-      settings = {["rust-analyzer"] = {files = {excludeDirs = {".direnv"}}}}
+      settings = {
+        ["rust-analyzer"] = { files = { excludeDirs = { ".direnv" } } }
+      }
     },
     tools = {
       autoSetHints = true,
-      inlay_hints = {auto = true, only_current_line = true},
-      runnables = {use_telescope = true}
+      inlay_hints = { auto = true, only_current_line = true },
+      runnables = { use_telescope = true }
     }
   })
   require("crates").setup({})
   require("cmp-npm").setup({})
-  lspconfig.tsserver.setup({capabilities = capabilities, on_attach = attached})
+  lspconfig.tsserver
+      .setup({ capabilities = capabilities, on_attach = attached })
   lspconfig.lua_ls.setup({
     on_attach = attached,
     capabilities = capabilities,
-    filetypes = {"lua"},
+    filetypes = { "lua" },
     settings = {
       Lua = {
         runtime = {
@@ -367,61 +415,62 @@ M.diagnostics = function()
         },
         diagnostics = {
           -- Get the language server to recognize the `vim` global
-          globals = {"vim", "string", "require"}
+          globals = { "vim", "string", "require" }
         },
         workspace = {
           -- Make the server aware of Neovim runtime files
-          library = {vim.env.VIMRUNTIME},
+          library = { vim.env.VIMRUNTIME },
           checkThirdParty = false
         },
         -- Do not send telemetry data containing a randomized but unique identifier
-        telemetry = {enable = false},
-        completion = {enable = true, callSnippet = "Replace"}
+        telemetry = { enable = false },
+        completion = { enable = true, callSnippet = "Replace" }
       }
     }
   })
-  lspconfig.svelte.setup({on_attach = attached, capabilities = capabilities})
+  lspconfig.svelte.setup({ on_attach = attached, capabilities = capabilities })
   lspconfig.tailwindcss.setup({
     on_attach = attached,
     capabilities = capabilities,
     settings = {
-      files = {exclude = {"**/.git/**", "**/node_modules/**", "**/*.md"}}
+      files = { exclude = { "**/.git/**", "**/node_modules/**", "**/*.md" } }
     }
   })
   -- nil_ls is a nix lsp
   lspconfig.nil_ls.setup({
     on_attach = attached,
     capabilities = capabilities,
-    settings = {["nil"] = {nix = {flake = {autoArchive = true}}}}
+    settings = { ["nil"] = { nix = { flake = { autoArchive = true } } } }
   })
   lspconfig.cssls.setup({
     on_attach = attached,
     capabilities = capabilities,
-    settings = {css = {lint = {unknownAtRules = "ignore"}}}
+    settings = { css = { lint = { unknownAtRules = "ignore" } } }
   })
-  lspconfig.eslint.setup({on_attach = attached, capabilities = capabilities})
-  lspconfig.html.setup({on_attach = attached, capabilities = capabilities})
-  lspconfig.bashls.setup({on_attach = attached, capabilities = capabilities})
+  lspconfig.eslint.setup({ on_attach = attached, capabilities = capabilities })
+  lspconfig.html.setup({ on_attach = attached, capabilities = capabilities })
+  lspconfig.bashls.setup({ on_attach = attached, capabilities = capabilities })
   -- TODO: investigate nvim-metals and remove line below
-  lspconfig.metals.setup({on_attach = attached, capabilities = capabilities}) -- for scala
+  lspconfig.metals.setup({ on_attach = attached, capabilities = capabilities }) -- for scala
   lspconfig.pyright.setup({
     on_attach = attached,
     capabilities = capabilities,
-    filetypes = {"python"}
+    filetypes = { "python" }
   }) -- for python
   lspconfig.jsonls.setup({
     on_attach = attached,
     settings = {
       json = {
         schemas = require("schemastore").json.schemas(),
-        validate = {enable = true}
+        validate = { enable = true }
       }
     },
     setup = {
       commands = {
         Format = {
           function()
-            vim.lsp.buf.range_formatting({}, {0, 0}, {vim.fn.line("$"), 0})
+            vim.lsp.buf.range_formatting({}, { 0, 0 },
+              { vim.fn.line("$"), 0 })
           end
         }
       }
@@ -445,8 +494,8 @@ M.telescope = function()
     local entry = action_state.get_selected_entry()
     actions.close(prompt_bufnr)
     -- Put it in the unnamed buffer and the system clipboard both
-    vim.api.nvim_call_function("setreg", {'"', entry.value})
-    vim.api.nvim_call_function("setreg", {"*", entry.value})
+    vim.api.nvim_call_function("setreg", { '"', entry.value })
+    vim.api.nvim_call_function("setreg", { "*", entry.value })
   end
 
   local function system_open_selected_entry(prompt_bufnr)
@@ -466,11 +515,11 @@ M.telescope = function()
       path_display = function(_, path)
         local tail = require("telescope.utils").path_tail(path)
         return string.format("%s (%s)", tail,
-                             require("telescope.utils").path_smart(
-                                 path:gsub("/Users/[^/]*/", "~/"):gsub(
-                                     "/[^/]*$", ""):gsub(
-                                     "/Library/Containers/co.noteplan.NotePlan3/Data/Library/Application Support/co.noteplan.NotePlan3",
-                                     "/NotePlan")))
+          require("telescope.utils").path_smart(
+            path:gsub("/Users/[^/]*/", "~/"):gsub(
+              "/[^/]*$", ""):gsub(
+              "/Library/Containers/co.noteplan.NotePlan3/Data/Library/Application Support/co.noteplan.NotePlan3",
+              "/NotePlan")))
       end,
       -- path_display = { "truncate" },
       mappings = {
@@ -497,21 +546,26 @@ M.telescope = function()
       },
       layout_strategy = "flex",
       layout_config = {
-        horizontal = {prompt_position = "bottom", preview_width = 0.55},
-        vertical = {mirror = false},
+        horizontal = { prompt_position = "bottom", preview_width = 0.55 },
+        vertical = { mirror = false },
         width = 0.87,
         height = 0.80,
         preview_cutoff = 1
       },
       color_devicons = not SimpleUI,
-      set_env = {["COLORTERM"] = "truecolor"}, -- default = nil,
+      set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
       file_previewer = require("telescope.previewers").vim_buffer_cat.new,
-      grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
-      qflist_previewer = require("telescope.previewers").vim_buffer_qflist.new
+      grep_previewer = require("telescope.previewers").vim_buffer_vimgrep
+          .new,
+      qflist_previewer = require("telescope.previewers").vim_buffer_qflist
+          .new
     },
 
     extensions = {
-      fzy_native = {override_generic_sorter = true, override_file_sorter = true}
+      fzy_native = {
+        override_generic_sorter = true,
+        override_file_sorter = true
+      }
     }
   })
   require("telescope").load_extension("fzy_native")
@@ -531,7 +585,7 @@ M.completions = function()
   local check_backspace = function()
     local col = vim.fn.col(".") - 1
     return col == 0 or
-               vim.fn.getline(vim.fn.line(".")):sub(col, col):match("%s")
+        vim.fn.getline(vim.fn.line(".")):sub(col, col):match("%s")
   end
   local cmp = require("cmp")
   cmp.setup({
@@ -544,7 +598,7 @@ M.completions = function()
       if vim.api.nvim_get_mode().mode == "c" then return true end
       -- forbid completions in comments
       return not context.in_treesitter_capture("comment") and
-                 not context.in_syntax_group("Comment")
+          not context.in_syntax_group("Comment")
     end,
     mapping = {
       ["<C-p>"] = cmp.mapping.select_prev_item(),
@@ -570,7 +624,7 @@ M.completions = function()
           cmp.mapping.complete({})
           -- fallback()
         end
-      end, {"i", "s"}),
+      end, { "i", "s" }),
       ["<S-Tab>"] = cmp.mapping(function(fallback)
         if cmp.visible() then
           cmp.select_prev_item()
@@ -579,20 +633,22 @@ M.completions = function()
         else
           fallback()
         end
-      end, {"i", "s"})
+      end, { "i", "s" })
     },
-    window = {documentation = cmp.config.window.bordered()},
+    window = { documentation = cmp.config.window.bordered() },
     sources = {
-      {name = "nvim_lsp"}, {name = "nvim_lsp_signature_help"},
-      {name = "nvim_lua"}, {name = "emoji"}, {name = "luasnip"},
-      {name = "path"}, {name = "crates"}, {name = "npm", keyword_length = 3},
-      {name = "buffer", keyword_length = 3}
+      { name = "nvim_lsp" }, { name = "nvim_lsp_signature_help" },
+      { name = "nvim_lua" }, { name = "emoji" }, { name = "luasnip" },
+      { name = "path" }, { name = "crates" },
+      { name = "npm",    keyword_length = 3 },
+      { name = "buffer", keyword_length = 3 }
     },
     formatting = {
-      fields = {"kind", "abbr", "menu"},
+      fields = { "kind", "abbr", "menu" },
       format = function(entry, vim_item)
         -- Kind icons
-        vim_item.kind = string.format("%s", signs.kind_icons[vim_item.kind])
+        vim_item.kind = string.format("%s",
+          signs.kind_icons[vim_item.kind])
         vim_item.menu = ({
           nvim_lsp = "[LSP]",
           nvim_lsp_signature_help = "[LSPS]",
@@ -603,7 +659,7 @@ M.completions = function()
         return vim_item
       end
     },
-    snippet = {expand = function(args) luasnip.lsp_expand(args.body) end}
+    snippet = { expand = function(args) luasnip.lsp_expand(args.body) end }
   })
   --[[ cmp.setup.cmdline("/", {
     mapping = cmp.mapping.preset.cmdline(),
@@ -624,61 +680,79 @@ M.notes = function()
     picker = "telescope",
     -- automatically attach buffers in a zk notebook that match the given filetypes
     lsp = {
-      auto_attach = {enabled = true, filetypes = {"markdown", "vimwiki", "md"}},
+      auto_attach = {
+        enabled = true,
+        filetypes = { "markdown", "vimwiki", "md" }
+      },
       config = {
         on_attach = function(_, bufnr)
           -- print("ZK attached")
 
           local which_key = require("which-key")
           local local_leader_opts = {
-            mode = "n", -- NORMAL mode
+            mode = "n",     -- NORMAL mode
             prefix = "<leader>",
             buffer = bufnr, -- Local mappings.
-            silent = true, -- use `silent` when creating keymaps
+            silent = true,  -- use `silent` when creating keymaps
             noremap = true, -- use `noremap` when creating keymaps
-            nowait = true -- use `nowait` when creating keymaps
+            nowait = true   -- use `nowait` when creating keymaps
           }
           local local_leader_opts_visual = {
-            mode = "v", -- VISUAL mode
+            mode = "v",     -- VISUAL mode
             prefix = "<leader>",
             buffer = bufnr, -- Local mappings.
-            silent = true, -- use `silent` when creating keymaps
+            silent = true,  -- use `silent` when creating keymaps
             noremap = true, -- use `noremap` when creating keymaps
-            nowait = true -- use `nowait` when creating keymaps
+            nowait = true   -- use `nowait` when creating keymaps
           }
 
           local leader_mappings = {
-            K = {"<Cmd>lua vim.lsp.buf.hover()<CR>", "Info preview"},
+            K = { "<Cmd>lua vim.lsp.buf.hover()<CR>", "Info preview" },
             n = {
               -- Create the note in the same directory as the current buffer after asking for title
               p = {
                 "<Cmd>ZkNew { dir = vim.fn.expand('%:p:h'), title = vim.fn.input('Title: ') }<CR>",
                 "New peer note (same dir)"
               },
-              l = {"<Cmd>ZkLinks<CR>", "Show note links"},
+              l = { "<Cmd>ZkLinks<CR>", "Show note links" },
               -- the following duplicate with the ,l_ namespace on purpose because of programming muscle memory
               r = {
-                "<cmd>Telescope lsp_references<CR>", "References to this note"
+                "<cmd>Telescope lsp_references<CR>",
+                "References to this note"
               }
             },
             l = {
               name = "Local LSP",
               -- Open notes linking to the current buffer.
-              l = {"<cmd>lua require('lsp_lines').toggle", "Toggle LSP lines"},
-              r = {
-                "<cmd>Telescope lsp_references<CR>", "References to this note"
+              l = {
+                "<cmd>lua require('lsp_lines').toggle",
+                "Toggle LSP lines"
               },
-              i = {"<Cmd>lua vim.lsp.buf.hover()<CR>", "Info preview"},
-              f = {"<cmd>lua vim.lsp.buf.code_action()<CR>", "Fix Code Actions"},
+              r = {
+                "<cmd>Telescope lsp_references<CR>",
+                "References to this note"
+              },
+              i = {
+                "<Cmd>lua vim.lsp.buf.hover()<CR>",
+                "Info preview"
+              },
+              f = {
+                "<cmd>lua vim.lsp.buf.code_action()<CR>",
+                "Fix Code Actions"
+              },
               e = {
-                "<cmd>lua vim.diagnostic.open_float()<CR>", "Show Line Diags"
+                "<cmd>lua vim.diagnostic.open_float()<CR>",
+                "Show Line Diags"
               }
             }
           }
           which_key.register(leader_mappings, local_leader_opts)
           local leader_mappings_visual = {
             l = {
-              l = {"<cmd>lua require('lsp_lines').toggle", "Toggle LSP lines"}
+              l = {
+                "<cmd>lua require('lsp_lines').toggle",
+                "Toggle LSP lines"
+              }
             },
             n = {
               p = {
@@ -688,20 +762,22 @@ M.notes = function()
               -- Create a new note in the same directory as the current buffer, using the current selection for title.
             }
           }
-          which_key.register(leader_mappings_visual, local_leader_opts_visual)
+          which_key.register(leader_mappings_visual,
+            local_leader_opts_visual)
 
-          local opts = {noremap = true, silent = true}
+          local opts = { noremap = true, silent = true }
 
           -- TODO: Make <CR> magic...
           --   in normal mode, if on a link, it should open the link (note or url)
           --   in visual mode, it should prompt for folder, create a note, and make a link
           -- Meanwhile, just go to definition
           vim.api.nvim_buf_set_keymap(bufnr, "n", "<CR>",
-                                      "<Cmd>lua vim.lsp.buf.definition()<CR>",
-                                      opts)
+            "<Cmd>lua vim.lsp.buf.definition()<CR>",
+            opts)
           -- Preview a linked note.
           vim.api.nvim_buf_set_keymap(bufnr, "n", "K",
-                                      "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
+            "<Cmd>lua vim.lsp.buf.hover()<CR>",
+            opts)
 
           require("pwnvim.options").tabindent()
         end
@@ -735,7 +811,7 @@ M.notes = function()
       -- configurations per mode
       ataraxis = {
         shade = "dark", -- if `dark` then dim the padding windows, otherwise if it's `light` it'll brighten said windows
-        backdrop = 0, -- percentage by which padding windows should be dimmed/brightened. Must be a number between 0 and 1. Set to 0 to keep the same background color
+        backdrop = 0,   -- percentage by which padding windows should be dimmed/brightened. Must be a number between 0 and 1. Set to 0 to keep the same background color
         minimum_writing_area = {
           -- minimum size of main window
           width = 70,
@@ -756,11 +832,13 @@ M.notes = function()
           end,
           open_pos = nil,
           close_pre = nil,
-          close_pos = function() vim.opt.scrolloff = 8 end
+          close_pos = function()
+            vim.opt.scrolloff = 8
+          end
         }
       },
       minimalist = {
-        ignored_buf_types = {"nofile"}, -- save current options from any window except ones displaying these kinds of buffers
+        ignored_buf_types = { "nofile" }, -- save current options from any window except ones displaying these kinds of buffers
         options = {
           -- options to be disabled when entering Minimalist mode
           number = false,
@@ -816,7 +894,7 @@ M.notes = function()
         font = "+2"
       },
       twilight = false, -- enable twilight text dimming outside cursor block
-      lualine = true -- hide nvim-lualine (ataraxis)
+      lualine = true    -- hide nvim-lualine (ataraxis)
     }
   })
 
@@ -828,18 +906,19 @@ M.notes = function()
       "EN_UNPAIRED_BRACKETS", "UPPERCASE_SENTENCE_START",
       "ENGLISH_WORD_REPEAT_BEGINNING_RULE", "DASH_RULE", "PLUS_MINUS",
       "PUNCTUATION_PARAGRAPH_END", "MULTIPLICATION_SIGN", "PRP_CHECKOUT",
-      "CAN_CHECKOUT", "SOME_OF_THE", "DOUBLE_PUNCTUATION", "HELL", "CURRENCY",
-      "POSSESSIVE_APOSTROPHE", "ENGLISH_WORD_REPEAT_RULE", "NON_STANDARD_WORD"
+      "CAN_CHECKOUT", "SOME_OF_THE", "DOUBLE_PUNCTUATION", "HELL",
+      "CURRENCY", "POSSESSIVE_APOSTROPHE", "ENGLISH_WORD_REPEAT_RULE",
+      "NON_STANDARD_WORD"
     }
   }
   -- Grammar stuff
   vim.cmd(
-      [[command StartGrammar2 lua require('pwnvim.plugins').grammar_check()]])
+    [[command StartGrammar2 lua require('pwnvim.plugins').grammar_check()]])
 end -- notes
 
 M.grammar_check = function()
   vim.cmd("packadd vim-grammarous")
-  local opts = {noremap = false, silent = true}
+  local opts = { noremap = false, silent = true }
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(0, ...) end
 
   buf_set_keymap("n", "<leader>gf", "<Plug>(grammarous-fixit)", opts)
@@ -865,7 +944,7 @@ M.misc = function()
     active = true,
     on_config_done = nil,
     manual_mode = false,
-    detection_methods = {"pattern", "lsp"},
+    detection_methods = { "pattern", "lsp" },
     patterns = {
       ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json",
       ".zk", "build.sbt", "Package.swift", "Makefile.in", "README.md",
@@ -882,14 +961,14 @@ M.misc = function()
     ["<leader>c<space>"] = {
       "<Plug>(comment_toggle_linewise_current)", "Toggle comments"
     },
-    ["g/"] = {"<Plug>(comment_toggle_linewise_current)", "Toggle comments"}
-  }, {mode = "n", silent = true, norewrap = true})
+    ["g/"] = { "<Plug>(comment_toggle_linewise_current)", "Toggle comments" }
+  }, { mode = "n", silent = true, norewrap = true })
   require("which-key").register({
     ["<leader>c<space>"] = {
       "<Plug>(comment_toggle_linewise_visual)", "Toggle comments"
     },
-    ["g/"] = {"<Plug>(comment_toggle_linewise_visual)", "Toggle comments"}
-  }, {mode = "v", silent = true, norewrap = true})
+    ["g/"] = { "<Plug>(comment_toggle_linewise_visual)", "Toggle comments" }
+  }, { mode = "v", silent = true, norewrap = true })
 
   require("nvim-autopairs").setup({})
 
@@ -908,8 +987,8 @@ M.misc = function()
   })
   -- vim.api.nvim_set_keymap("t", [[<C-\>]], "<Cmd>ToggleTermToggleAll<cr>", { noremap = true })
   vim.api.nvim_set_keymap("t", [[<C-\>]],
-                          "<Cmd>exe v:count1 . 'ToggleTerm'<cr>",
-                          {noremap = true})
+    "<Cmd>exe v:count1 . 'ToggleTerm'<cr>",
+    { noremap = true })
 end -- misc
 
 return M

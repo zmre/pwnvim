@@ -66,7 +66,6 @@ which_key.register({
   ["<c-l>"] = {"<cmd>TmuxNavigateRight<cr>", "Pane right"},
   ["<D-g>"] = {'"*p', "paste"},
   ["<D-v>"] = {'<cmd>normal "*p<cr>', "paste"},
-  ["<leader>p"] = {'<cmd>normal "*p<cr>', "paste"},
   ["<D-w>"] = {"<cmd>Bdelete<CR>", "Close buffer"},
   ["<A-w>"] = {"<cmd>Bdelete<CR>", "Close buffer"},
   ["<M-w>"] = {"<cmd>Bdelete<CR>", "Close buffer"},
@@ -75,9 +74,7 @@ which_key.register({
   ["<D-s>"] = {"<cmd>write<cr>", "Save buffer"},
   ["<D-q>"] = {"<cmd>quit<cr>", "Quit"},
   -- Magic buffer-picking mode
-  ["<M-b>"] = {"<cmd>BufferLinePick<CR>", "Pick buffer by letter"},
-  ["[0"] = {"<cmd>BufferLinePick<CR>", "Pick buffer by letter"},
-  ["]0"] = {"<cmd>BufferLinePick<CR>", "Pick buffer by letter"}
+  ["<M-b>"] = {"<cmd>BufferLinePick<CR>", "Pick buffer by letter"}
 }, {mode = {"n", "v", "i", "c"}, noremap = true, silent = true})
 
 -- NORMAL AND VISUAL MAPPINGS
@@ -88,8 +85,8 @@ which_key.register({
 
 -- NORMAL MODE ONLY MAPPINGS
 which_key.register({
-  ["A-Up"] = {"[e", "Move line up"},
-  ["A-Down"] = {"]e", "Move line down"},
+  ["<A-Up>"] = {"[e", "Move line up"},
+  ["<A-Down>"] = {"]e", "Move line down"},
   ["zi"] = {
     function() -- override default fold toggle behavior to fix fold columns and scan
       if vim.wo.foldenable then
@@ -184,7 +181,10 @@ which_key.register({
   ["<C-->"] = {
     [[:silent! let &guifont = substitute(&guifont, ':h\zs\d\+',
   \ '\=eval(submatch(0)-1)', '')<CR>]], "Shrink font size"
-  }
+  },
+  ["<leader>p"] = {'<cmd>normal "*p<cr>', "paste"},
+  ["[0"] = {"<cmd>BufferLinePick<CR>", "Pick buffer by letter"},
+  ["]0"] = {"<cmd>BufferLinePick<CR>", "Pick buffer by letter"}
 }, {mode = "n"})
 
 -- VISUAL MODE ONLY MAPPINGS
@@ -199,8 +199,8 @@ which_key.register({
   [">"] = {">gv", "Indent and preserve block"},
   ["<D-[>"] = {"<gv", "Outdent and preserve block"},
   ["<D-]>"] = {">gv", "Indent and preserve block"},
-  ["A-Up"] = {"[egv", "Move line up preserve block"},
-  ["A-Down"] = {"]egv", "Move line down preserve block"}
+  ["<A-Up>"] = {"[egv", "Move line up preserve block"},
+  ["<A-Down>"] = {"]egv", "Move line down preserve block"}
 }, {mode = "v"})
 
 -- OPERATOR PENDING MODE ONLY MAPPINGS
@@ -210,8 +210,8 @@ which_key.register({
   -- emacs bindings to jump around in lines
   ["<C-e>"] = {"<C-o>A", "Jump to end of line"},
   ["<C-a>"] = {"<C-o>I", "Jump to start of line"},
-  ["<D-[>"] = {"<C-o><<", "Outdent"},
-  ["<D-]>"] = {"<C-o>>>", "Indent"}
+  ["<D-[>"] = {"<C-d>", "Outdent"},
+  ["<D-]>"] = {"<C-t>", "Indent"}
 }, {mode = "i"})
 
 -- COMMAND AND INSERT MAPPINGS
@@ -420,7 +420,7 @@ which_key.register({
 -- Make nvim terminal more sane
 which_key.register({
   ["<esc>"] = {[[<C-\><C-n>]], "Get to normal mode in terminal"},
-  ["M-["] = {"<esc>", "Send escape to terminal"},
+  ["<M-[>"] = {"<esc>", "Send escape to terminal"},
   ["<C-v><Esc>"] = {"<esc>", "Send escape to terminal"},
   ["<C-h>"] = {[[<Cmd>wincmd h<CR>]], "Move one window left"},
   ["<C-j>"] = {[[<Cmd>wincmd j<CR>]], "Move one window down"},

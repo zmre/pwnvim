@@ -16,6 +16,22 @@
         "type": "github"
       }
     },
+    "conform-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1694794672,
+        "narHash": "sha256-VkSj+VlGI0agY/UDMEDZyASxegrbowlughKNZGhJI4M=",
+        "owner": "stevearc",
+        "repo": "conform.nvim",
+        "rev": "9e7d1d6e47a8dcc93fac8d83eea74fef7a6b3322",
+        "type": "github"
+      },
+      "original": {
+        "owner": "stevearc",
+        "repo": "conform.nvim",
+        "type": "github"
+      }
+    },
     "fenix": {
       "inputs": {
         "nixpkgs": [
@@ -74,6 +90,7 @@
     "root": {
       "inputs": {
         "clipboard-image": "clipboard-image",
+        "conform-nvim": "conform-nvim",
         "fenix": "fenix",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
