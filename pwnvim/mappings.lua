@@ -216,7 +216,6 @@ which_key.register({
 
 -- COMMAND AND INSERT MAPPINGS
 which_key.register({
-  ["%%"] = { "<c-r>=expand('%:p:h')<cr>/", "Insert current folder for file" },
   ["<F8>"] = { '<C-R>=strftime("%Y-%m-%d")<CR>', "Insert date at cursor" }
 }, { mode = { "c", "i" }, noremap = true, silent = false })
 
@@ -228,6 +227,7 @@ which_key.register({
   -- and be back where you were at the start.
   R = { function() require("flash").remote() end, "Remote operation via Flash" },
   ["<c-s>"] = { function() require("flash").jump() end, "Flash select" },
+  ["%%"] = { "<c-r>=expand('%:p:h')<cr>/", "Insert current folder for file" },
   r = {
     function() require("flash").treesitter() end, "Flash select via Treesitter"
   }
