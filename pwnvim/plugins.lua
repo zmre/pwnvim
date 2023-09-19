@@ -250,19 +250,20 @@ M.diagnostics = function()
           "<cmd>lua vim.lsp.buf.implementation()<CR>",
           "Implementation"
         },
+        e = {
+          "<cmd>lua vim.diagnostic.open_float()<CR>",
+          "Show Line Diags"
+        },
         i = { "<Cmd>lua vim.lsp.buf.hover()<CR>", "Info hover" },
         I = {
           "<Cmd>Telescope lsp_implementations<CR>", "Implementations"
         },
+        l = { require("lsp_lines").toggle, "Toggle virtual text lines" },
         r = { "<cmd>Telescope lsp_references<CR>", "References" },
         f = {
           "<cmd>lua vim.lsp.buf.code_action()<CR>", "Fix Code Actions"
         },
         t = { "<cmd>lua vim.lsp.buf.signature_help()<CR>", "Signature" },
-        e = {
-          "<cmd>lua vim.diagnostic.open_float()<CR>",
-          "Show Line Diags"
-        }
       },
       f = {
         ["sd"] = {
