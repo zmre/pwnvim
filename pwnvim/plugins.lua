@@ -43,6 +43,7 @@ M.ui = function()
   require("pwnvim.plugins.lualine")
   require("pwnvim.plugins.treesitter")
   require("pwnvim.plugins.bufferline")
+  require("pwnvim.plugins.indent-blankline")
   require("flash").setup({
     modes = {
       char = {
@@ -86,8 +87,8 @@ M.diagnostics = function()
     lsp = {
       -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
       override = {
-        ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-        ["vim.lsp.util.stylize_markdown"] = true,
+        -- ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+        -- ["vim.lsp.util.stylize_markdown"] = true,
         ["cmp.entry.get_documentation"] = true
       },
       progress = {
@@ -234,15 +235,11 @@ M.diagnostics = function()
       nowait = true   -- use `nowait` when creating keymaps
     }
 
-    require("symbols-outline").setup({
-      keymaps = { close = { "<Esc>", "q", "#7" } }
-    })
-
     local leader_mappings = {
       ["q"] = { "<cmd>TroubleToggle<CR>", "Show Trouble list" },
       l = {
         name = "Local LSP",
-        s = { "<cmd>SymbolsOutline<CR>", "Show Symbols" },
+        s = { "<cmd>Telescope lsp_document_symbols<CR>", "Show Symbols" },
         d = {
           "<Cmd>lua vim.lsp.buf.definition()<CR>", "Go to definition"
         },
@@ -278,12 +275,12 @@ M.diagnostics = function()
     }
     which_key.register(leader_mappings, local_leader_opts)
     -- Create a new note after asking for its title.
-    buf_set_keymap("", "#7", "<cmd>SymbolsOutline<CR>", opts)
-    buf_set_keymap("i", "#7", "<cmd>SymbolsOutline<CR>", opts)
+    buf_set_keymap("", "<F7>", "<cmd>Telescope lsp_document_symbols<CR>", opts)
+    buf_set_keymap("i", "<F7>", "<cmd>Telescope lsp_document_symbols<CR>", opts)
     buf_set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
     -- override standard tag jump
     buf_set_keymap("", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
-    buf_set_keymap("i", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+    -- buf_set_keymap("i", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
 
     -- Set some keybinds conditional on server capabilities
     if client.server_capabilities.document_formatting then
@@ -772,9 +769,9 @@ M.notes = function()
           --   in normal mode, if on a link, it should open the link (note or url)
           --   in visual mode, it should prompt for folder, create a note, and make a link
           -- Meanwhile, just go to definition
-          vim.api.nvim_buf_set_keymap(bufnr, "n", "<CR>",
-            "<Cmd>lua vim.lsp.buf.definition()<CR>",
-            opts)
+          -- vim.api.nvim_buf_set_keymap(bufnr, "n", "<CR>",
+          --   "<Cmd>lua vim.lsp.buf.definition()<CR>",
+          --   opts)
           -- Preview a linked note.
           vim.api.nvim_buf_set_keymap(bufnr, "n", "K",
             "<Cmd>lua vim.lsp.buf.hover()<CR>",

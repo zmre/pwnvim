@@ -1,33 +1,44 @@
 require("nvim-treesitter.configs").setup({
   sync_install = false,
   modules = {},
+  disable = { "markdown" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
   ensure_installed = {},
-  ignore_install = {"all"},
+  ignore_install = { "all" },
   auto_install = false,
-  autotag = {enable = true},
-  highlight = {enable = true, additional_vim_regex_highlighting = false},
-  indent = {enable = true, disable = {"yaml"}},
+  autotag = { enable = true },
+  highlight = {
+    enable = true,
+    disable = { "markdown" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
+
+    additional_vim_regex_highlighting = false
+  },
+  indent = { enable = true, disable = { "yaml", "markdown" } },
   incremental_selection = {
     enable = true,
+    disable = { "markdown" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
     is_supported = function()
       -- disable in command window
       local mode = vim.api.nvim_get_mode().mode
       return mode ~= "c"
     end
   },
-  context_commentstring = {enable = true},
+  context_commentstring = {
+    enable = true,
+    disable = { "markdown" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
+  },
   textobjects = {
+    disable = { "markdown" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
     select = {
       enable = true,
       lookahead = true,
       keymaps = {
         -- You can use the capture groups defined in textobjects.scm
-        ["af"] = {query = "@function.outer", desc = "Select outer function"},
-        ["if"] = {query = "@function.inner", desc = "Select inner function"},
-        ["ac"] = {query = "@class.outer", desc = "Select outer class"},
-        ["ic"] = {query = "@class.inner", desc = "Select inner class"},
-        ["im"] = {query = "@block.inner", desc = "Select inner block"},
-        ["am"] = {query = "@block.outer", desc = "Select outer block"}
+        ["af"] = { query = "@function.outer", desc = "Select outer function" },
+        ["if"] = { query = "@function.inner", desc = "Select inner function" },
+        ["ac"] = { query = "@class.outer", desc = "Select outer class" },
+        ["ic"] = { query = "@class.inner", desc = "Select inner class" },
+        ["im"] = { query = "@block.inner", desc = "Select inner block" },
+        ["am"] = { query = "@block.outer", desc = "Select outer block" }
         -- ["il"] = { query = "@list.inner", desc = "Select inner list" },
         -- ["al"] = { query = "@list.outer", desc = "Select outer list" },
         -- ["ih"] = { query = "@section.inner", desc = "Select inner section" },
@@ -39,14 +50,14 @@ require("nvim-treesitter.configs").setup({
       set_jumps = true, -- khether to set jumps in the jumplist
       goto_next_start = {
         ["]m"] = "@function.outer",
-        ["]]"] = {query = "@class.outer", desc = "Next class start"}
+        ["]]"] = { query = "@class.outer", desc = "Next class start" }
       },
-      goto_next_end = {["]M"] = "@function.outer", ["]["] = "@class.outer"},
+      goto_next_end = { ["]M"] = "@function.outer", ["]["] = "@class.outer" },
       goto_previous_start = {
         ["[m"] = "@function.outer",
         ["[["] = "@class.outer"
       },
-      goto_previous_end = {["[M"] = "@function.outer", ["[]"] = "@class.outer"}
+      goto_previous_end = { ["[M"] = "@function.outer", ["[]"] = "@class.outer" }
     },
     lsp_interop = {
       enable = true,
@@ -68,5 +79,5 @@ require("treesitter-context").setup({
   min_window_height = 0,
   line_numbers = true,
   max_lines = 4, -- no max window height
-  patterns = {markdown = {"atx_heading"}}
+  patterns = { markdown = { "atx_heading" } }
 })
