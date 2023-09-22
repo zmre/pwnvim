@@ -7,7 +7,7 @@ M.mdFoldLevel = function(lnum)
   if heading then
     return ">" .. (string.len(heading) - 1) -- start off fold
   else
-    return "=" -- continue previous fold level
+    return "="                              -- continue previous fold level
   end
 end
 
@@ -35,12 +35,13 @@ M.setup = function()
   vim.bo.suffixesadd = '.md'
 
   vim.bo.syntax = "off" -- we use treesitter exclusively on markdown now
+  -- except temp off until https://github.com/MDeiml/tree-sitter-markdown/issues/114
 
   require('pwnvim.markdown').markdownsyntax()
 
   -- normal mode mappings
   require("which-key").register({
-    m = {':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview"}
+    m = { ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview" }
   }, {
     mode = "n",
     prefix = "<leader>",
@@ -65,28 +66,28 @@ M.setup = function()
       "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>",
       "Convert URL to link"
     },
-    ["gp"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"},
-    ["<C-M-v>"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"},
-    ["<D-b>"] = {'ysiwe', "Bold"},
-    ["<leader>b"] = {'ysiwe', "Bold"},
-    ["<D-i>"] = {'ysiw_', "Italic"},
-    ["<leader>i"] = {'ysiw_', "Italic"},
-    ["<D-1>"] = {'ysiw`', "Code block"},
-    ["<leader>`"] = {'ysiw`', "Code block"},
-    ["<D-l>"] = {'ysiW]%a(`', "Link"}
-  }, {mode = "n", buffer = bufnr, silent = true, noremap = true})
+    ["gp"] = { require('pwnvim.markdown').pasteUrl, "Paste URL as link" },
+    ["<C-M-v>"] = { require('pwnvim.markdown').pasteUrl, "Paste URL as link" },
+    ["<D-b>"] = { 'ysiwe', "Bold" },
+    ["<leader>b"] = { 'ysiwe', "Bold" },
+    ["<D-i>"] = { 'ysiw_', "Italic" },
+    ["<leader>i"] = { 'ysiw_', "Italic" },
+    ["<D-1>"] = { 'ysiw`', "Code block" },
+    ["<leader>`"] = { 'ysiw`', "Code block" },
+    ["<D-l>"] = { 'ysiW]%a(`', "Link" }
+  }, { mode = "n", buffer = bufnr, silent = true, noremap = true })
 
   -- insert mode mappings
   require("which-key").register({
-    ["<C-M-v>"] = {require('pwnvim.markdown').pasteUrl, "Paste URL as link"},
-    ["<D-b>"] = {"****<C-O>h", "Bold"},
-    ["<D-i>"] = {[[__<C-O>h]], "Italic"},
-    ["<D-1>"] = {[[``<C-O>h]], "Code block"},
-    ["<tab>"] = {function() require('pwnvim.markdown').indent() end, "Indent"},
+    ["<C-M-v>"] = { require('pwnvim.markdown').pasteUrl, "Paste URL as link" },
+    ["<D-b>"] = { "****<C-O>h", "Bold" },
+    ["<D-i>"] = { [[__<C-O>h]], "Italic" },
+    ["<D-1>"] = { [[``<C-O>h]], "Code block" },
+    ["<tab>"] = { function() require('pwnvim.markdown').indent() end, "Indent" },
     ["<s-tab>"] = {
       function() require('pwnvim.markdown').outdent() end, "Outdent"
     }
-  }, {mode = "i", buffer = bufnr, silent = true, noremap = true})
+  }, { mode = "i", buffer = bufnr, silent = true, noremap = true })
 
   -- visual mode mappings
   require("which-key").register({
@@ -106,14 +107,14 @@ M.setup = function()
       "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>",
       "Convert URL to link"
     },
-    ["<D-b>"] = {"Se", "Bold"},
-    ["<leader>b"] = {"Se", "Bold"},
-    ["<D-i>"] = {"S_", "Italic"},
-    ["<leader>i"] = {"S_", "Italic"},
-    ["<D-1>"] = {"S`", "Code ticks"},
-    ["<leader>`"] = {"S_", "Code ticks"},
-    ["<D-l>"] = {"S]%a(", "Code ticks"}
-  }, {mode = "v", buffer = bufnr, silent = true, noremap = true})
+    ["<D-b>"] = { "Se", "Bold" },
+    ["<leader>b"] = { "Se", "Bold" },
+    ["<D-i>"] = { "S_", "Italic" },
+    ["<leader>i"] = { "S_", "Italic" },
+    ["<D-1>"] = { "S`", "Code ticks" },
+    ["<leader>`"] = { "S_", "Code ticks" },
+    ["<D-l>"] = { "S]%a(", "Code ticks" }
+  }, { mode = "v", buffer = bufnr, silent = true, noremap = true })
 
   -- no idea why the lua version of adding the command is failing
   -- vim.api.nvim_buf_add_user_command(0, 'PasteUrl', function(opts) require('pwnvim.markdown').pasteUrl() end, {})
@@ -130,16 +131,16 @@ M.setup = function()
   --   }
   -- end
   vim.cmd('packadd clipboard-image.nvim')
-  require'clipboard-image'.setup {
+  require 'clipboard-image'.setup {
     default = {
       img_name = function()
         vim.fn.inputsave()
-        local name = vim.fn.input({prompt = "Name: "})
+        local name = vim.fn.input({ prompt = "Name: " })
         -- TODO: swap spaces out for dashes
         vim.fn.inputrestore()
         return os.date('%Y-%m-%d') .. "-" .. name
       end,
-      img_dir = {"%:p:h", "%:t:r:s?$?_attachments?"},
+      img_dir = { "%:p:h", "%:t:r:s?$?_attachments?" },
       img_dir_txt = "%:t:r:s?$?_attachments?",
       -- TODO: can I put the name as the title somehow?
       affix = "![image](%s)"
@@ -153,7 +154,7 @@ M.setup = function()
   -- UPDATE 2023-08-18: going to do ugly stateful things and check the CWD and only
   --         use tabs when in a Notes directory so I stop screwing up READMEs.
   if (string.find(vim.fn.getcwd(), "Notes") or
-      string.find(vim.fn.getcwd(), "noteplan")) then
+        string.find(vim.fn.getcwd(), "noteplan")) then
     require('pwnvim.options').tabindent()
     require('pwnvim.options').retab() -- turn spaces to tabs when markdown file is opened
   else
@@ -196,7 +197,7 @@ M.indent = function()
     -- send through regular tab character at current position
     vim.api.nvim_feedkeys("\t", "n", false)
   else
-    require'cmp'.mapping.complete({})
+    require 'cmp'.mapping.complete({})
   end
 end
 
@@ -217,7 +218,7 @@ M.getTitleFor = function(url)
     url = url,
     method = "get",
     accept = "text/html",
-    raw = {"-L"} -- follow redirects
+    raw = { "-L" } -- follow redirects
   }
   local title = ""
   if res then

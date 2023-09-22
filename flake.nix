@@ -228,7 +228,7 @@
                 nvim-web-devicons # makes things pretty; used by many plugins below
                 nvim-tree-lua # file navigator
                 gitsigns-nvim # git status in gutter
-                symbols-outline-nvim # navigate the current file better
+                # symbols-outline-nvim # navigate the current file better
                 lualine-nvim # nice status bar at bottom
                 vim-bbye # fix bdelete buffer stuff needed with bufferline
                 bufferline-nvim

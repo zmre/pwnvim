@@ -19,7 +19,7 @@ M.defaults = function()
   vim.g.loaded_python3_provider = 0
   vim.g.loaded_ruby_provider = 0
   -- vim.g.loaded_matchit = 0
-  -- vim.g.loaded_matchparen = 0
+  -- vim.g.loaded_matchparen = 1 -- to disable built in paren matching
   vim.g.loaded_spec = 0
   vim.g.vim_markdown_no_default_key_mappings = 1
   -- vim.g.markdown_folding = 1
@@ -69,7 +69,7 @@ M.defaults = function()
   vim.opt.hidden = true
   vim.opt.cf = true -- jump to errors based on error files
   vim.o.listchars =
-  "tab:⇥ ,trail:␣,multispace:␣,extends:⇉,precedes:⇇,nbsp:·"
+  "tab:⇥ ,trail:␣,multispace:␣,extends:⇉,precedes:⇇,nbsp:·,eol:↴" -- ,space:⋅"
   vim.opt.list = false -- render special chars (tabs, trails, ...)
   vim.opt.ttyfast = true
   vim.opt.expandtab = true
@@ -299,7 +299,7 @@ M.defaults = function()
   vim.api.nvim_exec([[
     filetype plugin indent on
     syntax on
-    syntax sync minlines=5000
+    syntax sync minlines=2000
   ]], false)
 
   -- Brief highlight on yank

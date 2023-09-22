@@ -12,7 +12,7 @@ which_key.setup({
     -- the presets plugin, adds help for a bunch of default keybindings in Neovim
     -- No actual key bindings are created
     presets = {
-      operators = true,    -- adds help for operators like d, y, ... and registers them for motion / text object completion
+      operators = false,   -- adds help for operators like d, y, ... and registers them for motion / text object completion
       motions = false,     -- adds help for motions
       text_objects = true, -- help for text objects triggered after entering an operator
       windows = true,      -- default bindings on <c-w>
@@ -45,9 +45,11 @@ which_key.register({
       if vim.opt_local.list:get() then
         vim.opt_local.list = false
         vim.opt_local.conceallevel = 2
+        vim.cmd("IndentBlanklineEnable")
       else
         vim.opt_local.list = true
         vim.opt_local.conceallevel = 0
+        vim.cmd("IndentBlanklineDisable") -- indent lines hide some chars like tab
       end
     end, "Toggle show invisible chars"
   },
