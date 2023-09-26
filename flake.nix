@@ -226,7 +226,8 @@
                 #dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope
                 nvim-colorizer-lua # color over CSS like #00ff00
                 nvim-web-devicons # makes things pretty; used by many plugins below
-                nvim-tree-lua # file navigator
+                #nvim-tree-lua # file navigator
+                oil-nvim
                 gitsigns-nvim # git status in gutter
                 # symbols-outline-nvim # navigate the current file better
                 lualine-nvim # nice status bar at bottom
@@ -234,7 +235,7 @@
                 bufferline-nvim
                 indent-blankline-nvim # visual indent
                 toggleterm-nvim # better terminal management
-                nvim-treesitter.withAllGrammars # better code coloring (not sure withAllGrammars works anymore)
+                nvim-treesitter.withAllGrammars
                 #(nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
                 playground # treesitter playground
                 nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)

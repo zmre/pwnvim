@@ -98,7 +98,14 @@ local function on_attach(bufnr)
   vim.keymap.set('n', 'v', api.node.open.vertical, opts('Open: Vertical Split'))
 end
 
-require 'nvim-tree'.setup {
+
+require("oil").setup({
+  -- Oil will take over directory buffers (e.g. `vim .` or `:e src/`)
+  -- Set to false if you still want to use netrw.
+  default_file_explorer = true,
+})
+
+--[[ require 'nvim-tree'.setup {
   on_attach = on_attach,
   renderer = {
     icons = {
@@ -135,9 +142,9 @@ require 'nvim-tree'.setup {
     }
   },
   -- disables netrw completely
-  disable_netrw = true,
+  disable_netrw = false,
   -- hijack netrw window on startup
-  hijack_netrw = true,
+  hijack_netrw = false,
   update_cwd = true,
   -- update_to_buf_dir = { enable = true, auto_open = true },
   update_focused_file = { enable = true, update_cwd = true },
@@ -159,4 +166,4 @@ require 'nvim-tree'.setup {
     number = false,
     relativenumber = false
   }
-}
+} ]]

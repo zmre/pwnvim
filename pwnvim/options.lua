@@ -283,7 +283,12 @@ M.defaults = function()
         highlight_inactive_windows = true
       },
       colors = {
-        onedark = { telescope_prompt = "#2e323a", telescope_results = "#21252d" },
+        onedark = {
+          -- Make neovide have a more distinctive blue bg color
+          bg = (vim.g.neovide and "#16233B" or "#282c34"),
+          telescope_prompt = "#2e323a",
+          telescope_results = "#21252d"
+        },
         onelight = { telescope_prompt = "#f5f5f5", telescope_results = "#eeeeee" }
       }
     })

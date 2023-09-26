@@ -38,7 +38,7 @@ which_key.register({
   -- Make F1 act like escape for accidental hits
   ["<F1>"] = { "<Esc>", "Escape" },
   -- Make F2 bring up a file browser
-  ["<F2>"] = { "<cmd>NvimTreeToggle<cr>", "Toggle file browser" },
+  ["<F2>"] = { "<cmd>Oil .<cr>", "Toggle file browser" },
   -- Make F4 toggle invisible characters (locally)
   ["<F4>"] = {
     function()
@@ -416,7 +416,9 @@ which_key.register({
   ["gV"] = { "`[v`]", "Visually select the text last edited (after paste)" },
   -- Have ctrl-l continue to do what it did, but also temp clear search match highlighting
   Y = { "y$", "Yank to end of line" },
-  ["-"] = { "<cmd>NvimTreeFindFile<cr>", "Find current file in file browser" }
+  --["-"] = { "<cmd>NvimTreeFindFile<cr>", "Find current file in file browser" }
+  ["-"] = { "<cmd>Oil<cr>", "Find current file in file browser" },
+  ["_"] = { "<cmd>Oil .<cr>", "File browser from project root" }
 }, { mode = "n", noremap = true, silent = true })
 
 -- Make nvim terminal more sane
@@ -511,6 +513,10 @@ which_key.register({
   ["<c-s>"] = {
     function() require("flash").jump({ jump = { autojump = true } }) end,
     "Flash Search"
+  },
+  ["<leader>fj"] = {
+    function() require("flash").jump({ jump = { autojump = true } }) end,
+    "Jump"
   }
 }, { mode = "n" })
 
@@ -519,7 +525,7 @@ which_key.register({
 -- <cname> won't include a backslash in the word
 -- The \< and \> mark word start and end so `*` search for the exact word as a word
 -- and `gv` search for the word even if within other words
-which_key.register({}, { mode = "n" })
+-- which_key.register({}, { mode = "n" })
 
 -- Start visual mode and then adjust selection by treesitter nodes with s
 -- so `vs` or `vjjs` or whatever should allow selecting a treesitter node
