@@ -279,7 +279,7 @@ M.defaults = function()
         underline = not SimpleUI,
         undercurl = not SimpleUI,
         cursorline = true,
-        transparency = vim.g.neovide, -- only in neovide
+        transparency = false, -- only in neovide
         terminal_colors = false,
         highlight_inactive_windows = true
       },
@@ -332,8 +332,8 @@ M.gui = function()
 
   -- g:neovide_transparency should be 0 to unify transparency of content and title bar
   vim.g.neovide_transparency = 0.0
+  -- vim.g.neovide_transparency = 0.92
   vim.g.transparency = 0.92
-  vim.g.neovide_transparency = 0.92
   vim.g.neovide_cursor_animation_length = 0.01
   vim.g.neovide_cursor_trail_length = 0.1
   vim.g.neovide_cursor_antialiasing = true

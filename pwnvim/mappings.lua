@@ -89,7 +89,7 @@ which_key.register({
 }, { mode = "v", noremap = true, silent = true })
 which_key.register({
   ["<D-v>"] = { '<c-r>+', "Paste" },
-}, { mode = { "i", "c" }, noremap = true, silent = true })
+}, { mode = { "i", "c" }, noremap = true, silent = false })
 which_key.register({
   ["<D-v>"] = { '<C-\\><C-n>"+pa', "Paste" },
 }, { mode = "t", noremap = true, silent = true })
