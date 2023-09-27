@@ -330,6 +330,13 @@ M.gui = function()
     vim.opt.guifont = "Hasklug Nerd Font:h9"
   end
 
+  -- Helper function for transparency formatting
+  local alpha = function()
+    return string.format("%x", math.floor(255 * 0.92))
+  end
+  -- g:neovide_transparency should be 0 to unify transparency of content and title bar
+  vim.g.neovide_transparency = 0.0
+  vim.g.transparency = 0.92
   vim.g.neovide_transparency = 0.92
   vim.g.neovide_cursor_animation_length = 0.01
   vim.g.neovide_cursor_trail_length = 0.1
@@ -338,7 +345,7 @@ M.gui = function()
   vim.g.neovide_remember_window_size = true
   vim.g.neovide_input_macos_alt_is_meta = false
   vim.g.neovide_hide_mouse_when_typing = false
-  vim.g.neovide_background_color = "#16233B"
+  vim.g.neovide_background_color = "#131F34" .. alpha()
   vim.g.neovide_input_use_logo = true -- enable cmd key on mac; is this needed now?
 
   vim.opt.mouse = "nv"                -- only use mouse in normal and visual modes (notably not insert and command)
