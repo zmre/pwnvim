@@ -268,7 +268,6 @@ M.defaults = function()
         TelescopeMatching = { fg = "${blue}" },
         TelescopeNormal = { bg = "${telescope_results}" },
         TelescopeSelection = { bg = "${telescope_prompt}" },
-        CursorLine = { bg = (vim.g.neovide and "#131F34" or "#2d313b") }
       },
       styles = {                -- Choose from "bold,italic,underline"
         virtual_text = "italic" -- Style that is applied to virtual text
@@ -288,6 +287,7 @@ M.defaults = function()
         onedark = {
           -- Make neovide have a more distinctive blue bg color
           bg = (vim.g.neovide and "#16233B" or "#282c34"),
+          cursorline = (vim.g.neovide and "#131F34" or "#2d313b"),
           telescope_prompt = "#2e323a",
           telescope_results = "#21252d"
         },
