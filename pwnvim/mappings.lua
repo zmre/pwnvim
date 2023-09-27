@@ -66,8 +66,7 @@ which_key.register({
   ["<c-j>"] = { "<cmd>TmuxNavigateDown<cr>", "Pane down" },
   ["<c-k>"] = { "<cmd>TmuxNavigateUp<cr>", "Pane up" },
   ["<c-l>"] = { "<cmd>TmuxNavigateRight<cr>", "Pane right" },
-  ["<D-g>"] = { '"*p', "paste" },
-  ["<D-v>"] = { '<cmd>normal "*p<cr>', "paste" },
+  -- ["<D-g>"] = { '"*p', "paste" },
   ["<D-w>"] = { "<cmd>Bdelete<CR>", "Close buffer" },
   ["<A-w>"] = { "<cmd>Bdelete<CR>", "Close buffer" },
   ["<M-w>"] = { "<cmd>Bdelete<CR>", "Close buffer" },
@@ -78,6 +77,23 @@ which_key.register({
   -- Magic buffer-picking mode
   ["<M-b>"] = { "<cmd>BufferLinePick<CR>", "Pick buffer by letter" }
 }, { mode = { "n", "v", "i", "c" }, noremap = true, silent = true })
+
+-- Copy and paste ops mainly for neovide / gui apps
+which_key.register({
+  ["<D-v>"] = { '"+p', "Paste" },
+  -- ["<D-v>"] = { '<cmd>normal "*p<cr>', "paste" },
+}, { mode = "n", noremap = true, silent = true })
+which_key.register({
+  ["<D-c>"] = { '"+y', "Copy" },
+  ["<D-v>"] = { '"+p', "Paste" },
+}, { mode = "v", noremap = true, silent = true })
+which_key.register({
+  ["<D-v>"] = { '<c-r>+', "Paste" },
+}, { mode = { "i", "c" }, noremap = true, silent = true })
+which_key.register({
+  ["<D-v>"] = { '<C-\\><C-n>"+pa', "Paste" },
+}, { mode = "t", noremap = true, silent = true })
+
 
 -- NORMAL AND VISUAL MAPPINGS
 -- which_key.register({
@@ -270,7 +286,7 @@ local leader_mappings = {
       '<cmd>lua require(\'telescope.builtin\').grep_string{search = "^\\\\s*[*-] \\\\[ \\\\]", previewer = false, glob_pattern = "*.md", use_regex = true, disable_coordinates=true}<cr>',
       "Todos"
     },
-    n = { "<Cmd>ZkNotes { match = {vim.fn.input('Search: ')} }<CR>", "Find" }
+    n = { "<Cmd>ZkNotes { match = {vim.ui.input('Search: ')} }<CR>", "Find" }
   },
   -- Quickly change indent defaults in a file
   i = {
@@ -300,14 +316,14 @@ local leader_mappings = {
   n = {
     name = "Notes",
     d = {
-      "<cmd>ZkNew { dir = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar', title = os.date('%Y%m%d') }<CR>",
+      function() require("pwnvim.markdown").newDailyNote() end,
       "New diary"
     },
     e = {
       '<cmd>!mv "<cfile>" "<c-r>=expand(\'%:p:h\')<cr>/"<cr>',
       "Embed file moving to current file's folder"
     },
-    f = { "<Cmd>ZkNotes { match = {vim.fn.input('Search: ') }}<CR>", "Find" },
+    f = { "<Cmd>ZkNotes { match = {vim.ui.input('Search: ') }}<CR>", "Find" },
     g = {
       "<cmd>lua require('pwnvim.plugins').grammar_check()<cr>", "Check Grammar"
     },
@@ -324,11 +340,11 @@ local leader_mappings = {
       }
     },
     m = {
-      "<cmd>lua require('zk.commands').get('ZkNew')({ dir = vim.fn.input({prompt='Folder: ',default=vim.env.ZK_NOTEBOOK_DIR .. '/Notes/meetings',completion='dir'}), title = vim.fn.input('Title: ') })<CR>",
+      function() require("pwnvim.markdown").newMeetingNote() end,
       "New meeting"
     },
     n = {
-      "<Cmd>ZkNew { dir = vim.fn.input({prompt='Folder: ',default=vim.env.ZK_NOTEBOOK_DIR .. '/Notes',completion='dir'}), title = vim.fn.input('Title: ') }<CR>",
+      function() require("pwnvim.markdown").newGeneralNote() end,
       "New"
     },
     o = { "<cmd>ZkNotes<CR>", "Open" },

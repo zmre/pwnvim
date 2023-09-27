@@ -45,8 +45,9 @@ M.defaults = function()
   "*/node_modules/*,_site,*/__pycache__/,*/venv/*,*/target/*,*/.vim$,\\~$,*/.log,*/.aux,*/.cls,*/.aux,*/.bbl,*/.blg,*/.fls,*/.fdb*/,*/.toc,*/.out,*/.glo,*/.log,*/.ist,*/.fdb_latexmk,*.bak,*.o,*.a,*.sw?,.git/,*.class,.direnv/,.DS_Store,*/Backups/*"
   vim.opt.wildmenu = true           -- cmd line completion a-la zsh
   vim.opt.wildmode = "list:longest" -- matches mimic that of bash or zsh
+
   vim.opt.cmdheight = 1
-  vim.opt.cmdwinheight = 1
+  vim.opt.cmdwinheight = 5
 
   vim.opt.swapfile = true -- I've lived without them for years, but recent crashes have me reconsidering
   -- The swap files will be wiped on reboot (cuz /tmp), which could mean lost work on system crash; nvim will create
@@ -266,7 +267,8 @@ M.defaults = function()
 
         TelescopeMatching = { fg = "${blue}" },
         TelescopeNormal = { bg = "${telescope_results}" },
-        TelescopeSelection = { bg = "${telescope_prompt}" }
+        TelescopeSelection = { bg = "${telescope_prompt}" },
+        CursorLine = { bg = (vim.g.neovide and "#131F34" or "#2d313b") }
       },
       styles = {                -- Choose from "bold,italic,underline"
         virtual_text = "italic" -- Style that is applied to virtual text
@@ -336,8 +338,10 @@ M.gui = function()
   vim.g.neovide_remember_window_size = true
   vim.g.neovide_input_macos_alt_is_meta = false
   vim.g.neovide_hide_mouse_when_typing = false
+  vim.g.neovide_background_color = "#16233B"
+  vim.g.neovide_input_use_logo = true -- enable cmd key on mac; is this needed now?
 
-  vim.opt.mouse = "nv" -- only use mouse in normal and visual modes (notably not insert and command)
+  vim.opt.mouse = "nv"                -- only use mouse in normal and visual modes (notably not insert and command)
   vim.opt.mousemodel = "popup_setpos"
   -- use the system clipboard for all unnamed yank operations
   vim.opt.clipboard = "unnamedplus"

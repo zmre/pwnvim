@@ -51,7 +51,7 @@ M.setup = function()
   })
   require("which-key").register({
     ["gl*"] = {
-      [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],
+      [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],
       "Add bullets"
     },
     ["gl>"] = {
@@ -59,7 +59,7 @@ M.setup = function()
       "Add quotes"
     },
     ["gl["] = {
-      [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>5l]],
+      [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>5l]],
       "Add task"
     },
     ["gt"] = {
@@ -92,7 +92,7 @@ M.setup = function()
   -- visual mode mappings
   require("which-key").register({
     ["gl*"] = {
-      [[<cmd>let p=getcurpos('.')<cr>:s/^/* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
+      [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
       "Add bullets"
     },
     ["gl>"] = {
@@ -100,7 +100,7 @@ M.setup = function()
       "Add quotes"
     },
     ["gl["] = {
-      [[<cmd>let p=getcurpos('.')<cr>:s/^/* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
+      [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*)/\1* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
       "Add task"
     },
     ["gt"] = {
@@ -245,6 +245,80 @@ M.pasteUrl = function()
   -- cursor ends up one to the left, so move over right one if possible
   local right = vim.api.nvim_replace_termcodes("<right>", true, false, true)
   vim.api.nvim_feedkeys(right, "n", false)
+end
+
+M.newMeetingNote = function()
+  local zk = require("zk.commands")
+  M.telescope_get_folder_and_title(vim.env.ZK_NOTEBOOK_DIR, 'Notes/meetings', function(folder, title)
+    zk.get('ZkNew')({ dir = folder, title = title })
+  end)
+end
+
+M.newGeneralNote = function()
+  local zk = require("zk.commands")
+  M.telescope_get_folder_and_title(vim.env.ZK_NOTEBOOK_DIR, 'Notes', function(folder, title)
+    zk.get('ZkNew')({ dir = folder, title = title })
+  end)
+end
+
+M.newDailyNote = function()
+  local zk = require("zk.commands")
+  zk.get("ZkNew")({ dir = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar', title = os.date("%Y%m%d") })
+end
+
+M.telescope_get_folder_and_title = function(base, subdir, callback)
+  local pickers = require "telescope.pickers"
+  local finders = require "telescope.finders"
+  local sorters = require "telescope.sorters"
+  local themes = require "telescope.themes"
+  local action_state = require "telescope.actions.state"
+  local actions = require "telescope.actions"
+
+  local entry = function(a)
+    local display = (string.gsub(a, base .. '/' .. subdir, ''))
+    if (display == '') then display = '/' end
+    return {
+      value = a,
+      display = display,
+      ordinal = a
+    }
+  end
+  local scan = require 'plenary.scandir'
+  local full_path_folders = scan.scan_dir(base .. '/' .. subdir, {
+    add_dirs = true,
+    only_dirs = true,
+    respect_gitignore = true,
+    depth = 3,
+  })
+  table.insert(full_path_folders, 1, base .. '/' .. subdir)
+
+  local finder = finders.new_table({
+    results = full_path_folders,
+    entry_maker = entry
+  })
+  pickers.new({}, {
+    cwd = base,
+    prompt_title = "Pick Folder",
+    finder = finder,
+    sorter = sorters.fuzzy_with_index_bias(),
+    theme = themes.get_dropdown(),
+    attach_mappings =
+        function(prompt_bufnr)
+          actions.select_default:replace(function()
+            local folder = action_state.get_selected_entry()
+            -- print(vim.inspect(folder))
+            if folder ~= nil then
+              actions.close(prompt_bufnr)
+              vim.ui.input({ prompt = 'Title: ', default = '' }, function(input)
+                if input ~= nil then
+                  callback(folder["value"], input)
+                end
+              end)
+            end
+          end)
+          return true
+        end
+  }):find()
 end
 
 return M
