@@ -291,7 +291,7 @@
                 vim-tmux-navigator # navigate vim and tmux panes together
                 impatient-nvim # speeds startup times by caching lua bytecode
                 which-key-nvim
-                #vim-startuptime
+                vim-startuptime
               ]
               ++ pkgs.lib.optionals (!pkgs.stdenv.isDarwin) [
                 telescope-media-files-nvim # only works on linux, requires ueberzug, but gives image preview

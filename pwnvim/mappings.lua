@@ -1,6 +1,52 @@
 -- We use which-key in mappings, which is loaded before plugins, so set up here
 local which_key = require("which-key")
 local enter = vim.api.nvim_replace_termcodes("<cr>", true, false, true)
+
+local function map(mode, lhs, rhs, desc, opts)
+  opts = opts or { silent = true, noremap = true }
+  opts["desc"] = desc or ""
+  vim.keymap.set(
+    mode or "n", -- can also be a map like {"n", "c"}
+    lhs,         -- key to bind
+    rhs,         -- string or function
+    opts
+  )
+end
+local function mapn(lhs, rhs, desc, opts)
+  map("n", lhs,
+    type(rhs) == "string" and ("<cmd>%s<cr>"):format(rhs) or rhs,
+    desc, opts)
+end
+local function mapv(lhs, rhs, desc, opts)
+  map("v", lhs,
+    type(rhs) == "string" and ("<cmd>%s<cr>"):format(rhs) or rhs,
+    desc, opts)
+end
+local function mapnv(lhs, rhs, desc, opts)
+  map({ "n", "v" }, lhs,
+    type(rhs) == "string" and ("<cmd>%s<cr>"):format(rhs) or rhs,
+    desc, opts)
+end
+local function mapic(lhs, rhs, desc, opts)
+  map({ "i", "c" }, lhs, rhs, desc, opts)
+end
+local function mapnvic(lhs, rhs, desc, opts)
+  map({ "n", "v", "i", "c" }, lhs,
+    type(rhs) == "string" and ("<cmd>%s<cr>"):format(rhs) or rhs,
+    desc, opts)
+end
+local function mapi(lhs, rhs, desc, opts)
+  map("i", lhs, rhs, desc, opts)
+end
+local function mapc(lhs, rhs, desc, opts)
+  map("c", lhs, rhs, desc, opts)
+end
+local function maplocal(mode, lhs, rhs, opts)
+  opts = opts or { silent = true, noremap = true }
+  opts["buffer"] = true
+  map(mode, lhs, rhs, opts)
+end
+
 which_key.setup({
   plugins = {
     marks = true,      -- shows a list of your marks on ' and `
@@ -31,158 +77,131 @@ which_key.setup({
   -- triggers_nowait = {"'", '"', "y", "d"}
 })
 
+which_key.register({
+  mode = { "n", "v" },
+  ["]"] = { name = "+next" },
+  ["["] = { name = "+prev" },
+  ["<leader>f"] = { name = "+find" },
+  ["<leader>g"] = { name = "+git" },
+  ["<leader>h"] = { name = "+hunk" },
+  ["<leader>i"] = { name = "+indent" },
+  ["<leader>l"] = { name = "+lsp" },
+  ["<leader>n"] = { name = "+notes" },
+  ["<leader>t"] = { name = "+tasks" },
+})
+
 -- This file is for mappings that will work regardless of filetype. Always available.
 
 -- ALL MODE (EXCEPT OPERATOR) MAPPINGS
-which_key.register({
-  -- Make F1 act like escape for accidental hits
-  ["<F1>"] = { "<Esc>", "Escape" },
-  -- Make F2 bring up a file browser
-  ["<F2>"] = { "<cmd>Oil .<cr>", "Toggle file browser" },
-  -- Make F4 toggle invisible characters (locally)
-  ["<F4>"] = {
-    function()
-      if vim.opt_local.list:get() then
-        vim.opt_local.list = false
-        vim.opt_local.conceallevel = 2
-        vim.cmd("IndentBlanklineEnable")
-      else
-        vim.opt_local.list = true
-        vim.opt_local.conceallevel = 0
-        vim.cmd("IndentBlanklineDisable") -- indent lines hide some chars like tab
-      end
-    end, "Toggle show invisible chars"
-  },
-  -- Make ctrl-p open a file finder
-  -- When using ctrl-p, screen out media files that we probably don't want
-  -- to open in vim. And if we really want, then we can use ,ff
-  ["<c-p>"] = { "<cmd>silent Telescope find_files<cr>", "Find files" },
-  ["<F9>"] = { '<cmd>TZAtaraxis<cr>', "Focus mode" },
-  -- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
-  ["<F10>"] = { '<cmd>silent !qlmanage -p "%"<cr>', "Quicklook (mac)" },
-  ["<F12>"] = { '<cmd>syntax sync fromstart<cr>', "Restart highlighting" },
-  -- Pane navigation integrated with tmux
-  ["<c-h>"] = { "<cmd>TmuxNavigateLeft<cr>", "Pane left" },
-  ["<c-j>"] = { "<cmd>TmuxNavigateDown<cr>", "Pane down" },
-  ["<c-k>"] = { "<cmd>TmuxNavigateUp<cr>", "Pane up" },
-  ["<c-l>"] = { "<cmd>TmuxNavigateRight<cr>", "Pane right" },
-  -- ["<D-g>"] = { '"*p', "paste" },
-  ["<D-w>"] = { "<cmd>Bdelete<CR>", "Close buffer" },
-  ["<A-w>"] = { "<cmd>Bdelete<CR>", "Close buffer" },
-  ["<M-w>"] = { "<cmd>Bdelete<CR>", "Close buffer" },
-  ["<D-n>"] = { "<cmd>enew<cr>", "New buffer" },
-  ["<D-t>"] = { "<cmd>tabnew<cr>", "New tab" },
-  ["<D-s>"] = { "<cmd>write<cr>", "Save buffer" },
-  ["<D-q>"] = { "<cmd>quit<cr>", "Quit" },
-  -- Magic buffer-picking mode
-  ["<M-b>"] = { "<cmd>BufferLinePick<CR>", "Pick buffer by letter" }
-}, { mode = { "n", "v", "i", "c" }, noremap = true, silent = true })
+-- Make F1 act like escape for accidental hits
+map({ "n", "v", "i", "c" }, "<F1>", "<Esc>", "Escape")
+-- Make F2 bring up a file browser
+mapnvic("<F2>", "Oil .", "Toggle file browser")
+-- Make F4 toggle invisible characters (locally)
+mapnvic("<F4>", function()
+  if vim.opt_local.list:get() then
+    vim.opt_local.list = false
+    vim.opt_local.conceallevel = 2
+    vim.cmd("IndentBlanklineEnable")
+  else
+    vim.opt_local.list = true
+    vim.opt_local.conceallevel = 0
+    vim.cmd("IndentBlanklineDisable") -- indent lines hide some chars like tab
+  end
+end, "Toggle show invisible chars")
+-- Make ctrl-p open a file finder
+-- When using ctrl-p, screen out media files that we probably don't want
+-- to open in vim. And if we really want, then we can use ,ff
+mapnvic("<c-p>", "silent Telescope find_files", "Find files")
+mapnvic("<F9>", "TZAtaraxis", "Focus mode")
+-- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
+mapnvic("<F10>", 'silent !qlmanage -p "%"', "Quicklook (mac)")
+mapnvic("<F12>", 'syntax sync fromstart', "Restart highlighting")
+-- Pane navigation integrated with tmux
+mapnvic("<c-h>", "TmuxNavigateLeft", "Pane left")
+mapnvic("<c-j>", "TmuxNavigateDown", "Pane down")
+mapnvic("<c-k>", "TmuxNavigateUp", "Pane up")
+mapnvic("<c-l>", "TmuxNavigateRight", "Pane right")
+mapnvic("<D-w>", "Bdelete", "Close buffer")
+mapnvic("<A-w>", "Bdelete", "Close buffer")
+mapnvic("<M-w>", "Bdelete", "Close buffer")
+mapnvic("<D-n>", "enew", "New buffer")
+mapnvic("<D-t>", "tabnew", "New tab")
+mapnvic("<D-s>", "write", "Save buffer")
+mapnvic("<D-q>", "quit", "Quit")
+-- Magic buffer-picking mode
+mapnvic("<M-b>", "BufferLinePick", "Pick buffer by letter")
 
 -- Copy and paste ops mainly for neovide / gui apps
-which_key.register({
-  ["<D-v>"] = { '"+p', "Paste" },
-  -- ["<D-v>"] = { '<cmd>normal "*p<cr>', "paste" },
-}, { mode = "n", noremap = true, silent = true })
-which_key.register({
-  ["<D-c>"] = { '"+y', "Copy" },
-  ["<D-v>"] = { '"+p', "Paste" },
-}, { mode = "v", noremap = true, silent = true })
-which_key.register({
-  ["<D-v>"] = { '<c-r>+', "Paste" },
-}, { mode = { "i", "c" }, noremap = true, silent = false })
-which_key.register({
-  ["<D-v>"] = { '<C-\\><C-n>"+pa', "Paste" },
-}, { mode = "t", noremap = true, silent = true })
-
-
--- NORMAL AND VISUAL MAPPINGS
--- which_key.register({
--- },{mode={"n","v"}})
-
--- NORMAL AND VISUAL AND COMMAND MAPPINGS
+mapn("<D-v>", 'normal "+p', "Paste")
+mapv("<D-c>", 'normal "+ygv', "Copy")
+mapv("<D-v>", 'normal "+p', "Paste")
+mapic("<D-v>", '<c-r>+', "Paste", { noremap = true, silent = false })
+map("t", "<D-v>", '<C-\\><C-n>"+pa', "Paste")
 
 -- NORMAL MODE ONLY MAPPINGS
+map("n", "<A-up>", "[e", "Move line up")
+map("n", "<A-down>", "]e", "Move line down")
+mapn("zi", function() -- override default fold toggle behavior to fix fold columns and scan
+  if vim.wo.foldenable then
+    -- Disable completely
+    vim.wo.foldenable = false
+    vim.wo.foldcolumn = "0"
+  else
+    vim.wo.foldenable = true
+    vim.wo.foldcolumn = "auto:4"
+    vim.cmd("normal zx") -- reset folds
+  end
+end, "Toggle folding"
+)
+map("n", "<F8>", '"=strftime("%Y-%m-%d")<CR>P', "Insert date")
+mapic("<F8>", '<C-R>=strftime("%Y-%m-%d")<CR>', "Insert date at cursor", { noremap = true, silent = false })
+map("n", "<D-[>", "<<", "Outdent")
+map("n", "<D-]>", ">>", "Indent")
+map("n", "n", "nzzzv", "Center search hits vertically on screen and expand folds if hit is inside")
+map("n", "N", "Nzzzv", "Center search hits vertically on screen and expand folds if hit is inside")
+map("n", "<c-d>", "<c-d>zz", "Half scroll down keep cursor center screen")
+map("n", "<c-u>", "<c-u>zz", "Half scroll up keep cursor center screen")
+-- gx is a built-in to open URLs under the cursor, but when
+-- not using netrw, it doesn't work right. Or maybe it's just me
+-- but anyway this command works great.
+-- /Users/pwalsh/Documents/md2rtf-style.html
+-- ../README.md
+-- ~/Desktop/Screen Shot 2018-04-06 at 5.19.32 PM.png
+-- [abc](https://github.com/adsr/mle/commit/e4dc4314b02a324701d9ae9873461d34cce041e5.patch)
+mapn("gx", 'silent !open "<c-r><c-f>" || xdg-open "<c-r><c-f>"', "Launch URL or path")
+mapn("*",
+  function()
+    local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "/", "\\/") ..
+        "\\>"
+    -- Can't find a way to have flash jump keep going past what's visible on the screen
+    vim.api.nvim_feedkeys("/\\V" .. text .. enter, 'n', false)
+  end, "Find word under cursor forward"
+)
+mapn("#",
+  function()
+    local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "?", "\\?") ..
+        "\\>"
+    vim.api.nvim_feedkeys("?\\V" .. text .. enter, 'n', false)
+  end, "Find word under cursor backward"
+)
+mapn("g*",
+  function()
+    -- Same as above, but don't qualify as full word only
+    local text = string.gsub(vim.fn.expand("<cword>"), "/", "\\/")
+    vim.api.nvim_feedkeys("/\\V" .. text .. enter, 'n', false)
+  end, "Find partial word under cursor forward"
+)
+mapn("g#",
+  function()
+    -- Same as above, but don't qualify as full word only
+    local text = string.gsub(vim.fn.expand("<cword>"), "?", "\\?")
+    vim.api.nvim_feedkeys("?" .. text .. enter, 'n', false)
+    -- vim.cmd("?\\V" .. text) -- works, but doesn't trigger flash
+  end, "Find partial word under cursor backward"
+)
+map("n", "<space>", [[@=(foldlevel('.')?'za':"\<Space>")<CR>]], "Toggle folds if enabled")
 which_key.register({
-  ["<A-Up>"] = { "[e", "Move line up" },
-  ["<A-Down>"] = { "]e", "Move line down" },
-  ["zi"] = {
-    function() -- override default fold toggle behavior to fix fold columns and scan
-      if vim.wo.foldenable then
-        -- Disable completely
-        vim.wo.foldenable = false
-        vim.wo.foldcolumn = "0"
-      else
-        vim.wo.foldenable = true
-        vim.wo.foldcolumn = "auto:4"
-        vim.cmd("normal zx") -- reset folds
-      end
-    end, "Toggle folding"
-  },
-  ["<F8>"] = { '"=strftime("%Y-%m-%d")<CR>P', "Insert date" },
-  ["<D-[>"] = { '<<', "Outdent" },
-  ["<D-]>"] = { '>>', "Indent" },
-  n = {
-    "nzzzv",
-    "Center search hits vertically on screen and expand folds if hit is inside"
-  },
-  N = {
-    "Nzzzv",
-    "Center search hits vertically on screen and expand folds if hit is inside"
-  },
-  ["<c-d>"] = { "<c-d>zz" },
-  ["<c-u>"] = { "<c-u>zz" },
-  -- gx is a built-in to open URLs under the cursor, but when
-  -- not using netrw, it doesn't work right. Or maybe it's just me
-  -- but anyway this command works great.
-  -- /Users/pwalsh/Documents/md2rtf-style.html
-  -- ../README.md
-  -- ~/Desktop/Screen Shot 2018-04-06 at 5.19.32 PM.png
-  -- [abc](https://github.com/adsr/mle/commit/e4dc4314b02a324701d9ae9873461d34cce041e5.patch)
-  ["gx"] = {
-    ':silent !open "<c-r><c-f>" || xdg-open "<c-r><c-f>"<cr>',
-    "Launch URL or path"
-  },
-  ["*"] = {
-    function()
-      local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "/", "\\/") ..
-          "\\>"
-      -- vim.cmd("/\\V" .. text) -- works, but doesn't trigger flash
-      vim.api.nvim_feedkeys("/\\V" .. text .. enter, 'n', false)
-      -- Can't find a way to have flash jump keep going past what's visible on the screen
-      -- require("flash").jump({
-      --   pattern = vim.fn.expand("<cword>"),
-      --   search = {forward = true, wrap = false, multi_window = false},
-      --   jump = {autojump=true}
-      -- })
-    end, "Find word under cursor forward"
-  },
-  ["#"] = {
-    function()
-      local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "?", "\\?") ..
-          "\\>"
-      vim.api.nvim_feedkeys("?\\V" .. text .. enter, 'n', false)
-      -- vim.cmd("?\\V" .. text) -- works, but doesn't trigger flash
-    end, "Find word under cursor backward"
-  },
-  ["g*"] = {
-    function()
-      -- Same as above, but don't qualify as full word only
-      local text = string.gsub(vim.fn.expand("<cword>"), "/", "\\/")
-      vim.api.nvim_feedkeys("/\\V" .. text .. enter, 'n', false)
-      -- vim.cmd("/\\V" .. text) -- works, but doesn't trigger flash
-    end, "Find partial word under cursor forward"
-  },
-  ["g#"] = {
-    function()
-      -- Same as above, but don't qualify as full word only
-      local text = string.gsub(vim.fn.expand("<cword>"), "?", "\\?")
-      vim.api.nvim_feedkeys("?" .. text .. enter, 'n', false)
-      -- vim.cmd("?\\V" .. text) -- works, but doesn't trigger flash
-    end, "Find partial word under cursor backward"
-  },
-  ["<space>"] = {
-    [[@=(foldlevel('.')?'za':"\<Space>")<CR>]], "Toggle folds if enabled"
-  },
   -- Adjust font sizes
   ["<D-=>"] = {
     [[:silent! let &guifont = substitute(&guifont, ':h\zs\d\+',
@@ -205,60 +224,37 @@ which_key.register({
   ["]0"] = { "<cmd>BufferLinePick<CR>", "Pick buffer by letter" }
 }, { mode = "n" })
 
--- VISUAL MODE ONLY MAPPINGS
-which_key.register({
-  ["gx"] = {
-    '"0y:silent !open "<c-r>0" || xdg-open "<c-r>0"<cr>gv', "Launch URL or path"
-  },
-  -- When pasting over selected text, keep original register value
-  ["p"] = { '"_dP', "Paste over selected no store register" },
-  -- keep visual block so you can move things repeatedly
-  ["<"] = { "<gv", "Outdent and preserve block" },
-  [">"] = { ">gv", "Indent and preserve block" },
-  ["<D-[>"] = { "<gv", "Outdent and preserve block" },
-  ["<D-]>"] = { ">gv", "Indent and preserve block" },
-  ["<A-Up>"] = { "[egv", "Move line up preserve block" },
-  ["<A-Down>"] = { "]egv", "Move line down preserve block" }
-}, { mode = "v" })
+map("v", "gx", '"0y:silent !open "<c-r>0" || xdg-open "<c-r>0"<cr>gv', "Launch URL or path")
+-- When pasting over selected text, keep original register value
+map("v", "p", '"_dP', "Paste over selected no store register")
+-- keep visual block so you can move things repeatedly
+map("v", "<", "<gv", "Outdent and preserve block")
+map("v", ">", ">gv", "Indent and preserve block")
+mapi("<D-[>", "<C-d>", "Outdent")
+mapi("<D-]>", "<C-t>", "Indent")
+map("v", "<D-[>", "<gv", "Outdent and preserve block")
+map("v", "<D-]>", ">gv", "Indent and preserve block")
+map("v", "<A-Up>", "[egv", "Move line up preserve block")
+map("v", "<A-Down>", "]egv", "Move line down preserve block")
 
--- OPERATOR PENDING MODE ONLY MAPPINGS
+-- emacs bindings to jump around in lines
+mapi("<C-e>", "<C-o>A", "Jump to end of line")
+mapi("<C-a>", "<C-o>I", "Jump to start of line")
 
--- INSERT MODE ONLY MAPPINGS
-which_key.register({
-  -- emacs bindings to jump around in lines
-  ["<C-e>"] = { "<C-o>A", "Jump to end of line" },
-  ["<C-a>"] = { "<C-o>I", "Jump to start of line" },
-  ["<D-[>"] = { "<C-d>", "Outdent" },
-  ["<D-]>"] = { "<C-t>", "Indent" }
-}, { mode = "i" })
-
--- COMMAND AND INSERT MAPPINGS
-which_key.register({
-  ["<F8>"] = { '<C-R>=strftime("%Y-%m-%d")<CR>', "Insert date at cursor" }
-}, { mode = { "c", "i" }, noremap = true, silent = false })
-
--- COMMAND MODE ONLY MAPPINGS
-which_key.register({
-  -- Send cursor somewhere on screen and pick a text object from it.
-  -- Uses operator pending mode so you start it with something like `yr` then
-  -- after jump pick the text object like `iw` and you'll copy that other thing
-  -- and be back where you were at the start.
-  R = { function() require("flash").remote() end, "Remote operation via Flash" },
-  ["<c-s>"] = { function() require("flash").jump() end, "Flash select" },
-  ["%%"] = { "<c-r>=expand('%:p:h')<cr>/", "Insert current folder for file" },
-  r = {
-    function() require("flash").treesitter() end, "Flash select via Treesitter"
-  }
-}, { mode = "o" })
-
-local options = {}
-
+-- Send cursor somewhere on screen and pick a text object from it.
+-- Uses operator pending mode so you start it with something like `yr` then
+-- after jump pick the text object like `iw` and you'll copy that other thing
+-- and be back where you were at the start.
+map("o", "R", require("flash").remote, "Remote operation via Flash")
+map("o", "<c-s>", require("flash").jump, "Flash select")
+map("o", "r", require("flash").treesitter, "Flash select")
+--
 -- Move visually selected lines up and down
 -- vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 -- vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
 local leader_mappings = {
-  e = { "<cmd>NvimTreeToggle<cr>", "Explorer" },
+  e = { "<cmd>Oil<cr>", "Find current file in file browser" },
   ["/"] = { "<cmd>nohlsearch<CR>", "Clear Highlight" },
   x = { "<cmd>Bdelete!<CR>", "Close Buffer" },
   q = {
@@ -316,7 +312,7 @@ local leader_mappings = {
   n = {
     name = "Notes",
     d = {
-      function() require("pwnvim.markdown").newDailyNote() end,
+      require("pwnvim.markdown").newDailyNote,
       "New diary"
     },
     e = {
@@ -358,13 +354,13 @@ local leader_mappings = {
   t = {
     name = "Tasks",
     -- d = { "<cmd>lua require('pwnvim.tasks').completeTask()<cr>", "Done" },
-    d = { function() require("pwnvim.tasks").completeTaskDirect() end, "Done" },
-    c = { function() require("pwnvim.tasks").createTaskDirect() end, "Create" },
+    d = { function() require("pwnvim.tasks").completeTaskDirect() end, "Task done" },
+    c = { function() require("pwnvim.tasks").createTaskDirect() end, "Task create" },
     s = {
-      function() require("pwnvim.tasks").scheduleTaskPrompt() end, "Schedule"
+      function() require("pwnvim.tasks").scheduleTaskPrompt() end, "Task schedule"
     },
     t = {
-      function() require("pwnvim.tasks").scheduleTaskTodayDirect() end, "Today"
+      function() require("pwnvim.tasks").scheduleTaskTodayDirect() end, "Task move today"
     }
   },
   -- Set cwd to current file's dir

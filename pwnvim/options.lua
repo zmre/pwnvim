@@ -33,6 +33,9 @@ M.defaults = function()
 
   vim.g.db_ui_use_nerd_fonts = true
 
+  -- my shada is so large it takes up half of startup time to process; constraining what it keeps here
+  -- previous value: !,'100,<50,s10,h'
+  vim.opt.shada = { "'0", "<0", ":0", "/0", '"0', "f0", "h" }
   -- this would allow spaces in filenames for commands like `gf` but results are really mixed.
   -- commenting for now 2022-12-22
   -- vim.opt.isfname:append { "32" }

@@ -1,7 +1,7 @@
 if not SimpleUI then
   require('indent_blankline').setup({
     enabled = true,
-    show_current_context = true,
+    show_current_context = false,
     use_treesitter = true,
     use_treesitter_scope = true,
     filetype_exclude = { 'help', 'markdown', 'nofile', 'help', 'packer', 'Trouble',
