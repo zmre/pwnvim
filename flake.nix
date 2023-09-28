@@ -223,6 +223,7 @@
                 telescope-nvim # da best popup fuzzy finder
                 telescope-fzy-native-nvim # with fzy gives better results
                 telescope-frecency-nvim # and frecency comes in handy too
+                #sqlite-lua # needed by frecency plugin -- beta support to remove dep
                 dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope
                 nvim-colorizer-lua # color over CSS like #00ff00
                 nvim-web-devicons # makes things pretty; used by many plugins below

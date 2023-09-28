@@ -126,9 +126,9 @@ M.diagnostics = function()
         hover = {
           enabled = true,
           silent = false, -- set to true to not show a message if hover is not available
-          view = nil,   -- when nil, use defaults from documentation
+          view = nil,     -- when nil, use defaults from documentation
           ---@type NoiceViewOptions
-          opts = {}     -- merged with defaults from documentation
+          opts = {}       -- merged with defaults from documentation
         },
         documentation = {
           view = "hover",
@@ -139,11 +139,11 @@ M.diagnostics = function()
             enabled = true,
             trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
             luasnip = true, -- Will open signature help when jumping to Luasnip insert nodes
-            throttle = 50 -- Debounce lsp signature help request by 50ms
+            throttle = 50   -- Debounce lsp signature help request by 50ms
           },
-          view = nil,     -- when nil, use defaults from documentation
+          view = nil,       -- when nil, use defaults from documentation
           ---@type NoiceViewOptions
-          opts = {}       -- merged with defaults from documentation
+          opts = {}         -- merged with defaults from documentation
         },
         message = {
           -- Messages shown by lsp servers
@@ -154,11 +154,11 @@ M.diagnostics = function()
       },
       -- you can enable a preset for easier configuration
       presets = {
-        bottom_search = true,       -- use a classic bottom cmdline for search
-        command_palette = false,    -- position the cmdline and popupmenu together
+        bottom_search = true,         -- use a classic bottom cmdline for search
+        command_palette = false,      -- position the cmdline and popupmenu together
         long_message_to_split = true, -- long messages will be sent to a split
-        inc_rename = false,         -- enables an input dialog for inc-rename.nvim
-        lsp_doc_border = true       -- add a border to hover docs and signature help
+        inc_rename = false,           -- enables an input dialog for inc-rename.nvim
+        lsp_doc_border = true         -- add a border to hover docs and signature help
       },
       cmdline = { enabled = true, view = "cmdline", format = { conceal = false } },
       messages = {
@@ -590,12 +590,20 @@ M.telescope = function()
       fzy_native = {
         override_generic_sorter = true,
         override_file_sorter = true
+      },
+      frecency = {
+        ignore_patterns = { "*.git/*", "*/tmp/*", ".*ignore",".DS_Store", "Caches","Backups"},
+        -- show the tail for "LSP", "CWD" and "FOO"
+        show_filter_column = { "LSP", "CWD" },
+        show_scores = true,
+        use_sqlite = false
       }
     }
   })
   require("telescope").load_extension("fzy_native")
   require("telescope").load_extension("zk")
   require("telescope").load_extension("noice")
+  require("telescope").load_extension("frecency")
   if vim.fn.has("mac") ~= 1 then
     -- doesn't currently work on mac
     require("telescope").load_extension("media_files")

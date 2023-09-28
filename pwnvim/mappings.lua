@@ -273,9 +273,10 @@ local leader_mappings = {
       "<cmd>silent Telescope lsp_document_symbols<cr>",
       "Document symbols search"
     },
-    h = { "<cmd>lua require('telescope.builtin').oldfiles()<cr>", "History" },
+    h = { "<cmd>Telescope frecency workspace=CWD theme=dropdown<cr>", "History Local" },
     q = { "<cmd>lua require('telescope.builtin').quickfix()<cr>", "Quickfix" },
     l = { "<cmd>lua require('telescope.builtin').loclist()<cr>", "Loclist" },
+    o = { "<cmd>lua require('telescope.builtin').oldfiles()<cr>", "Old File History Global" },
     p = { "<cmd>Telescope projects<cr>", "Projects" },
     k = { "<cmd>Telescope keymaps<cr>", "Keymaps" },
     t = {
