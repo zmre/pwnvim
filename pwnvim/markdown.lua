@@ -267,6 +267,15 @@ M.newDailyNote = function()
 end
 
 M.telescope_get_folder_and_title = function(base, subdir, callback)
+  M.telescope_get_folder(base, subdir, function(folder)
+    vim.ui.input({ prompt = 'Title: ', default = '' }, function(input)
+      if input ~= nil then
+        callback(folder["value"], input)
+      end
+    end)
+  end)
+end
+M.telescope_get_folder = function(base, subdir, callback)
   local pickers = require "telescope.pickers"
   local finders = require "telescope.finders"
   local sorters = require "telescope.sorters"
@@ -309,11 +318,7 @@ M.telescope_get_folder_and_title = function(base, subdir, callback)
             -- print(vim.inspect(folder))
             if folder ~= nil then
               actions.close(prompt_bufnr)
-              vim.ui.input({ prompt = 'Title: ', default = '' }, function(input)
-                if input ~= nil then
-                  callback(folder["value"], input)
-                end
-              end)
+              callback(folder["value"])
             end
           end)
           return true

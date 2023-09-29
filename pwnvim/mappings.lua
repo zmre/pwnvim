@@ -273,7 +273,7 @@ local leader_mappings = {
     h = { "<cmd>Telescope frecency workspace=CWD theme=dropdown<cr>", "History Local" },
     k = { require('telescope.builtin').keymaps, "Keymaps" },
     l = { require('telescope.builtin').loclist, "Loclist" },
-    n = { "<Cmd>ZkNotes { match = {vim.ui.input('Search: ')} }<CR>", "Find" },
+    n = { function() require('zk.commands').get("ZkNotes")({ sort = { 'modified' } }) end, "Find notes" },
     o = { require('telescope.builtin').oldfiles, "Old File History Global" },
     p = { "<cmd>Telescope projects<cr>", "Projects" },
     q = { require('telescope.builtin').quickfix, "Quickfix" },
@@ -289,7 +289,7 @@ local leader_mappings = {
         "Notes", "Notes/Notes", "Notes/Notes/meetings"
       }, 1, function(folder)
         vim.cmd.lcd(folder)
-        require("oil").open(folder)
+        require("oil").open(folder) -- if we bail on picking a file, we have the file browser as fallback
         require("telescope.builtin").find_files()
       end)
     end, "Open folder" },
@@ -319,7 +319,7 @@ local leader_mappings = {
       '<cmd>!mv "<cfile>" "<c-r>=expand(\'%:p:h\')<cr>/"<cr>',
       "Embed file moving to current file's folder"
     },
-    f = { "<Cmd>ZkNotes { match = {vim.ui.input('Search: ') }}<CR>", "Find" },
+    f = { "<Cmd>ZkNotes { sort = { 'modified' }}<CR>", "Find" },
     g = { require('pwnvim.plugins').grammar_check, "Check Grammar" },
     h = { "<cmd>edit ~/Notes/Notes/HotSheet.md<CR>", "Open HotSheet" },
     i = {
@@ -335,7 +335,6 @@ local leader_mappings = {
     },
     m = { require("pwnvim.markdown").newMeetingNote, "New meeting" },
     n = { require("pwnvim.markdown").newGeneralNote, "New" },
-    o = { "<cmd>ZkNotes<CR>", "Open" },
     t = { "<cmd>ZkTags<CR>", "Open by tag" }
     -- in open note (defined in plugins.lua as local-only shortcuts):
     -- p: new peer note
