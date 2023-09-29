@@ -555,6 +555,7 @@ M.telescope = function()
           ["q"] = require("telescope.actions").close
         },
         i = {
+          ["<c-h>"] = "which_key",
           ["<C-y>"] = yank_selected_entry,
           ["<F10>"] = quicklook_selected_entry,
           ["<C-o>"] = system_open_selected_entry
@@ -592,7 +593,7 @@ M.telescope = function()
         override_file_sorter = true
       },
       frecency = {
-        ignore_patterns = { "*.git/*", "*/tmp/*", ".*ignore",".DS_Store", "Caches","Backups"},
+        ignore_patterns = { "*.git/*", "*/tmp/*", ".*ignore", ".DS_Store", "Caches", "Backups" },
         -- show the tail for "LSP", "CWD" and "FOO"
         show_filter_column = { "LSP", "CWD" },
         show_scores = true,
@@ -1024,5 +1025,77 @@ M.misc = function()
     "<Cmd>exe v:count1 . 'ToggleTerm'<cr>",
     { noremap = true })
 end -- misc
+
+M.telescope_get_folder_common_folders = function(search_folders, depth, callback)
+  local pickers = require "telescope.pickers"
+  local finders = require "telescope.finders"
+  local sorters = require "telescope.sorters"
+  local themes = require "telescope.themes"
+  local action_state = require "telescope.actions.state"
+  local actions = require "telescope.actions"
+  local Job = require 'plenary.job'
+
+  local entry = function(a)
+    local value = vim.env.HOME .. "/" .. a
+    local display = "~/" .. a -- (string.gsub(a, vim.env.HOME, '~'))
+    return {
+      value = value,
+      display = display,
+      ordinal = a
+    }
+  end
+
+  local full_path_folders = search_folders
+  local args = { '--base-directory', vim.env.HOME, "--min-depth", 1, "--max-depth", depth, "-t", "d", "-L" }
+  for _, f in ipairs(search_folders) do
+    table.insert(args, "--search-path")
+    table.insert(args, f)
+  end
+
+  Job:new({
+    command = 'fd',
+    args = args,
+    cwd = vim.env.HOME,
+    env = { ['PATH'] = vim.env.PATH },
+    on_stderr = function(err, data)
+      vim.notify("stderr err: " .. vim.inspect(err) .. " data: " .. vim.inspect(data))
+    end,
+    on_stdout = function(err, data)
+      if (err ~= nil) then
+        vim.notify("stdout err: " .. vim.inspect(err) .. " data: " .. vim.inspect(data))
+      else
+        table.insert(full_path_folders, data)
+      end
+    end,
+    -- on_exit = function(job,code)
+    --
+    -- end
+  }):sync() -- or start()
+
+  local finder = finders.new_table({
+    results = full_path_folders,
+    entry_maker = entry
+  })
+  pickers.new({}, {
+    cwd = vim.env.HOME,
+    prompt_title = "Pick Folder",
+    finder = finder,
+    sorter = sorters.fuzzy_with_index_bias(),
+    theme = themes.get_dropdown(),
+    attach_mappings =
+        function(prompt_bufnr)
+          actions.select_default:replace(function()
+            local folder = action_state.get_selected_entry()
+            -- print(vim.inspect(folder))
+            if folder ~= nil then
+              actions.close(prompt_bufnr)
+              callback(folder["value"])
+            end
+          end)
+          return true
+        end
+  }):find()
+end
+
 
 return M

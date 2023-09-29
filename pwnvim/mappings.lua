@@ -112,7 +112,7 @@ end, "Toggle show invisible chars")
 -- Make ctrl-p open a file finder
 -- When using ctrl-p, screen out media files that we probably don't want
 -- to open in vim. And if we really want, then we can use ,ff
-mapnvic("<c-p>", "silent Telescope find_files", "Find files")
+mapnvic("<c-p>", require("telescope.builtin").find_files, "Find files")
 mapnvic("<F9>", "TZAtaraxis", "Focus mode")
 -- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
 mapnvic("<F10>", 'silent !qlmanage -p "%"', "Quicklook (mac)")
@@ -263,67 +263,64 @@ local leader_mappings = {
   },
   f = {
     name = "Find",
-    f = { "<cmd>lua require('telescope.builtin').find_files()<CR>", "Files" },
-    g = { "<cmd>lua require('telescope.builtin').live_grep()<CR>", "Grep" },
     b = {
       "<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown{previewer = false})<cr>",
       "Buffers"
     },
-    d = {
-      "<cmd>silent Telescope lsp_document_symbols<cr>",
-      "Document symbols search"
-    },
+    d = { require('telescope.builtin').lsp_document_symbols, "Document symbols search" },
+    f = { require('telescope.builtin').find_files, "Files" },
+    g = { require('telescope.builtin').live_grep, "Grep" },
     h = { "<cmd>Telescope frecency workspace=CWD theme=dropdown<cr>", "History Local" },
-    q = { "<cmd>lua require('telescope.builtin').quickfix()<cr>", "Quickfix" },
-    l = { "<cmd>lua require('telescope.builtin').loclist()<cr>", "Loclist" },
-    o = { "<cmd>lua require('telescope.builtin').oldfiles()<cr>", "Old File History Global" },
+    k = { require('telescope.builtin').keymaps, "Keymaps" },
+    l = { require('telescope.builtin').loclist, "Loclist" },
+    n = { "<Cmd>ZkNotes { match = {vim.ui.input('Search: ')} }<CR>", "Find" },
+    o = { require('telescope.builtin').oldfiles, "Old File History Global" },
     p = { "<cmd>Telescope projects<cr>", "Projects" },
-    k = { "<cmd>Telescope keymaps<cr>", "Keymaps" },
+    q = { require('telescope.builtin').quickfix, "Quickfix" },
     t = {
       '<cmd>lua require(\'telescope.builtin\').grep_string{search = "^\\\\s*[*-] \\\\[ \\\\]", previewer = false, glob_pattern = "*.md", use_regex = true, disable_coordinates=true}<cr>',
       "Todos"
     },
-    n = { "<Cmd>ZkNotes { match = {vim.ui.input('Search: ')} }<CR>", "Find" }
+    z = { function()
+      require("pwnvim.plugins").telescope_get_folder_common_folders({
+        ".config", "src/sideprojects", "src/icl", "src/icl/website.worktree", "src/personal", "src/gh",
+        "Sync/Private", "Sync/Private/Finances", "Sync/IronCore Docs", "Sync/IronCore Docs/Legal",
+        "Sync/IronCore Docs/Finances", "Sync/IronCore Docs/Design",
+        "Notes", "Notes/Notes", "Notes/Notes/meetings"
+      }, 1, function(folder)
+        vim.cmd.lcd(folder)
+        require("oil").open(folder)
+        require("telescope.builtin").find_files()
+      end)
+    end, "Open folder" },
   },
   -- Quickly change indent defaults in a file
   i = {
     name = "Indent",
-    ["1"] = { "<cmd>lua require('pwnvim.options').tabindent()<CR>", "Tab" },
-    ["2"] = {
-      "<cmd>lua require('pwnvim.options').twospaceindent()<CR>", "Two Space"
-    },
-    ["4"] = {
-      "<cmd>lua require('pwnvim.options').fourspaceindent()<CR>", "Four Space"
-    },
+    ["1"] = { require('pwnvim.options').tabindent, "Tab" },
+    ["2"] = { require('pwnvim.options').twospaceindent, "Two Space" },
+    ["4"] = { require('pwnvim.options').fourspaceindent, "Four Space" },
     r = { "<cmd>%retab!<cr>", "Change existing indent to current with retab" }
   },
   g = {
     name = "Git",
-    s = { "<cmd>lua require('telescope.builtin').git_status()<cr>", "Status" },
-    b = { "<cmd>lua require('telescope.builtin').git_branches()<cr>", "Branches" },
-    c = { "<cmd>lua require('telescope.builtin').git_commits()<cr>", "Commits" },
-    h = {
-      "<cmd>lua require 'gitsigns'.toggle_current_line_blame<cr>",
-      "Toggle Blame"
-    },
-    ["-"] = { "<cmd>lua require 'gitsigns'.reset_hunk()<cr>", "Reset Hunk" },
-    ["+"] = { "<cmd>lua require 'gitsigns'.stage_hunk()<cr>", "Stage Hunk" }
+    s = { require('telescope.builtin').git_status, "Status" },
+    b = { require('telescope.builtin').git_branches, "Branches" },
+    c = { require('telescope.builtin').git_commits, "Commits" },
+    h = { require('gitsigns').toggle_current_line_blame, "Toggle Blame" },
+    ["-"] = { require('gitsigns').reset_hunk, "Reset Hunk" },
+    ["+"] = { require('gitsigns').stage_hunk, "Stage Hunk" }
   },
   ["lcd"] = { "<cmd>lcd %:h<cr>", "Change local dir to path of current file" },
   n = {
     name = "Notes",
-    d = {
-      require("pwnvim.markdown").newDailyNote,
-      "New diary"
-    },
+    d = { require("pwnvim.markdown").newDailyNote, "New diary" },
     e = {
       '<cmd>!mv "<cfile>" "<c-r>=expand(\'%:p:h\')<cr>/"<cr>',
       "Embed file moving to current file's folder"
     },
     f = { "<Cmd>ZkNotes { match = {vim.ui.input('Search: ') }}<CR>", "Find" },
-    g = {
-      "<cmd>lua require('pwnvim.plugins').grammar_check()<cr>", "Check Grammar"
-    },
+    g = { require('pwnvim.plugins').grammar_check, "Check Grammar" },
     h = { "<cmd>edit ~/Notes/Notes/HotSheet.md<CR>", "Open HotSheet" },
     i = {
       c = {
@@ -336,14 +333,8 @@ local leader_mappings = {
         "Insert joke"
       }
     },
-    m = {
-      function() require("pwnvim.markdown").newMeetingNote() end,
-      "New meeting"
-    },
-    n = {
-      function() require("pwnvim.markdown").newGeneralNote() end,
-      "New"
-    },
+    m = { require("pwnvim.markdown").newMeetingNote, "New meeting" },
+    n = { require("pwnvim.markdown").newGeneralNote, "New" },
     o = { "<cmd>ZkNotes<CR>", "Open" },
     t = { "<cmd>ZkTags<CR>", "Open by tag" }
     -- in open note (defined in plugins.lua as local-only shortcuts):
@@ -355,14 +346,10 @@ local leader_mappings = {
   t = {
     name = "Tasks",
     -- d = { "<cmd>lua require('pwnvim.tasks').completeTask()<cr>", "Done" },
-    d = { function() require("pwnvim.tasks").completeTaskDirect() end, "Task done" },
-    c = { function() require("pwnvim.tasks").createTaskDirect() end, "Task create" },
-    s = {
-      function() require("pwnvim.tasks").scheduleTaskPrompt() end, "Task schedule"
-    },
-    t = {
-      function() require("pwnvim.tasks").scheduleTaskTodayDirect() end, "Task move today"
-    }
+    d = { require("pwnvim.tasks").completeTaskDirect, "Task done" },
+    c = { require("pwnvim.tasks").createTaskDirect, "Task create" },
+    s = { require("pwnvim.tasks").scheduleTaskPrompt, "Task schedule" },
+    t = { require("pwnvim.tasks").scheduleTaskTodayDirect, "Task move today" }
   },
   -- Set cwd to current file's dir
   ["cd"] = { "<cmd>cd %:h<cr>", "Change dir to path of current file" },
@@ -529,7 +516,7 @@ which_key.register({
   },
   ["<leader>fj"] = {
     function() require("flash").jump({ jump = { autojump = true } }) end,
-    "Jump"
+    "Jump on screen"
   }
 }, { mode = "n" })
 
@@ -544,11 +531,6 @@ which_key.register({
 -- so `vs` or `vjjs` or whatever should allow selecting a treesitter node
 -- or expanding/contracting it with `;` and `,`
 which_key.register({
-  ["<c-s>"] = {
-    function() require("flash").jump() end, "Visual Extend via Flash"
-  },
-  r = {
-    function() require("flash").treesitter() end,
-    "Visual Extend to Treesitter block"
-  }
+  ["<c-s>"] = { require("flash").jump, "Visual Extend via Flash" },
+  r = { require("flash").treesitter, "Visual Extend to Treesitter block" }
 }, { mode = "x" })
