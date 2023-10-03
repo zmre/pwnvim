@@ -41,13 +41,13 @@
             vimPlugins =
               super.vimPlugins
               // {
-                clipboard-image = super.vimUtils.buildVimPluginFrom2Nix {
+                clipboard-image = super.vimUtils.buildVimPlugin {
                   name = "clipboard-image.nvim";
                   pname = "clipboard-image.nvim";
                   src = inputs.clipboard-image;
                   # buildInputs = [ super.curl ];
                 };
-                conform-nvim = super.vimUtils.buildVimPluginFrom2Nix {
+                conform-nvim = super.vimUtils.buildVimPlugin {
                   name = "conform-nvim";
                   pname = "conform-nvim";
                   src = inputs.conform-nvim;

@@ -1,16 +1,23 @@
 if not SimpleUI then
-  require('indent_blankline').setup({
+  require('ibl').setup({ -- indent-blankline
     enabled = true,
-    show_current_context = false,
-    use_treesitter = true,
-    use_treesitter_scope = true,
-    filetype_exclude = { 'help', 'markdown', 'nofile', 'help', 'packer', 'Trouble',
-      "startify", "dashboard", "neogitstatus", "lspinfo", "checkhealth", "man", "", "NvimTree",
+    indent = {
+      --char = '┊',
+      char = '▏',
     },
-    buftype_exclude = { 'terminal', 'help', 'markdown', 'nofile', 'help', 'quickfix', 'prompt' },
-    char = '┊',
-    context_char = "▏",
-    context_highlight_list = { 'VertSplit' },
-    show_trailing_blankline_indent = false,
+    exclude = {
+      buftypes = { 'terminal', 'help', 'markdown', 'nofile', 'help', 'quickfix', 'prompt' },
+      filetypes = { 'help', 'markdown', 'nofile', 'help', 'packer', 'Trouble',
+        "startify", "dashboard", "neogitstatus", "lspinfo", "checkhealth", "man", "", "NvimTree",
+      },
+
+    },
+    scope = {
+      enabled = false,
+      char = '▍',
+      show_start = false,
+      show_end = false,
+      highlight = "VertSplit",
+    },
   })
 end

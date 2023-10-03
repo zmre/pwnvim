@@ -102,11 +102,11 @@ mapnvic("<F4>", function()
   if vim.opt_local.list:get() then
     vim.opt_local.list = false
     vim.opt_local.conceallevel = 2
-    vim.cmd("IndentBlanklineEnable")
+    vim.cmd("IBLEnable")
   else
     vim.opt_local.list = true
     vim.opt_local.conceallevel = 0
-    vim.cmd("IndentBlanklineDisable") -- indent lines hide some chars like tab
+    vim.cmd("IBLDisable") -- indent lines hide some chars like tab
   end
 end, "Toggle show invisible chars")
 -- Make ctrl-p open a file finder
