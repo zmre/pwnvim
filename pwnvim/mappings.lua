@@ -133,11 +133,46 @@ mapnvic("<D-q>", "quit", "Quit")
 mapnvic("<M-b>", "BufferLinePick", "Pick buffer by letter")
 
 -- Copy and paste ops mainly for neovide / gui apps
-mapn("<D-v>", 'normal "+p', "Paste")
-mapv("<D-c>", 'normal "+ygv', "Copy")
-mapv("<D-v>", 'normal "+p', "Paste")
-mapic("<D-v>", '<c-r>+', "Paste", { noremap = true, silent = false })
-map("t", "<D-v>", '<C-\\><C-n>"+pa', "Paste")
+if require("pwnvim.options").isGuiRunning() then
+  mapn("<D-v>", 'normal "+p', "Paste")
+  mapv("<D-c>", 'normal "+ygv', "Copy")
+  mapv("<D-v>", 'normal "+p', "Paste")
+  mapic("<D-v>", '<c-r>+', "Paste", { noremap = true, silent = false })
+  map("t", "<D-v>", '<C-\\><C-n>"+pa', "Paste")
+
+  -- Adjust font sizes
+  local function get_font()
+    local guifont = vim.api.nvim_get_option("guifont")
+    local curr_font = {}
+    curr_font.name = guifont:match("^(.*)%:")
+    curr_font.size = tonumber(guifont:match("%:h(%d+)"))
+    return curr_font
+  end
+  local function change_font(name, size)
+    vim.opt.guifont = name .. ":h" .. size
+  end
+  local function increase_font()
+    local curr_font = get_font()
+    local new_size = tostring(curr_font.size + 1)
+    change_font(curr_font.name, new_size)
+  end
+  local function decrease_font()
+    local curr_font = get_font()
+    local new_size = tostring(curr_font.size - 1)
+    change_font(curr_font.name, new_size)
+  end
+  local function reset_font()
+    local curr_font = get_font()
+    local new_size = require("pwnvim.options").defaultFontSize()
+    change_font(curr_font.name, new_size)
+  end
+  mapnvic("<D-=>", increase_font, "Increase font size")
+  mapnvic("<D-->", decrease_font, "Decrease font size")
+  mapnvic("<D-0>", reset_font, "Reset font size")
+  mapnvic("<C-=>", increase_font, "Increase font size")
+  mapnvic("<C-->", decrease_font, "Decrease font size")
+  mapnvic("<C-0>", reset_font, "Reset font size")
+end
 
 -- NORMAL MODE ONLY MAPPINGS
 map("n", "<A-up>", "[e", "Move line up")
@@ -201,28 +236,11 @@ mapn("g#",
   end, "Find partial word under cursor backward"
 )
 map("n", "<space>", [[@=(foldlevel('.')?'za':"\<Space>")<CR>]], "Toggle folds if enabled")
-which_key.register({
-  -- Adjust font sizes
-  ["<D-=>"] = {
-    [[:silent! let &guifont = substitute(&guifont, ':h\zs\d\+',
-  \ '\=eval(submatch(0)+1)', '')<CR>]], "Increase font size"
-  },
-  ["<C-=>"] = {
-    [[:silent! let &guifont = substitute(&guifont, ':h\zs\d\+',
-  \ '\=eval(submatch(0)+1)', '')<CR>]], "Increase font size"
-  },
-  ["<D-->"] = {
-    [[:silent! let &guifont = substitute(&guifont, ':h\zs\d\+',
-  \ '\=eval(submatch(0)-1)', '')<CR>]], "Shrink font size"
-  },
-  ["<C-->"] = {
-    [[:silent! let &guifont = substitute(&guifont, ':h\zs\d\+',
-  \ '\=eval(submatch(0)-1)', '')<CR>]], "Shrink font size"
-  },
-  ["<leader>p"] = { '<cmd>normal "*p<cr>', "paste" },
-  ["[0"] = { "<cmd>BufferLinePick<CR>", "Pick buffer by letter" },
-  ["]0"] = { "<cmd>BufferLinePick<CR>", "Pick buffer by letter" }
-}, { mode = "n" })
+
+
+mapn("<leader>p", 'normal "*p', "Paste")
+mapn("[0", "BufferLinePick", "Pick buffer by letter")
+mapn("]0", "BufferLinePick", "Pick buffer by letter")
 
 map("v", "gx", '"0y:silent !open "<c-r>0" || xdg-open "<c-r>0"<cr>gv', "Launch URL or path")
 -- When pasting over selected text, keep original register value

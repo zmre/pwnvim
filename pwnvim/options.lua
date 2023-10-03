@@ -321,17 +321,25 @@ M.defaults = function()
     ]], false)
 end
 
+M.defaultFontSize = function()
+  if vim.fn.has('mac') == 1 then
+    return "18"
+  else
+    return "9"
+  end
+end
+
+M.isGuiRunning = function()
+  return vim.fn.has('gui_running') > 0 or vim.g.neovide or vim.g.GuiLoaded ~= nil or vim.fn.has('gui') > 0
+end
+
 M.gui = function()
   vim.opt.title = true
   vim.opt.switchbuf = "useopen,usetab,newtab"
   -- vim.opt.guifont = "Liga DejaVuSansMono Nerd Font:h16"
   -- vim.opt.guifont = "FiraCode Nerd Font:h16" -- no italics
   -- if vim.loop.os_uname().sysname == "Darwin" then
-  if vim.fn.has('mac') == 1 then
-    vim.opt.guifont = "Hasklug Nerd Font:h18"
-  else
-    vim.opt.guifont = "Hasklug Nerd Font:h9"
-  end
+  vim.opt.guifont = "Hasklug Nerd Font:h" .. M.defaultFontSize()
 
   -- g:neovide_transparency should be 0 to unify transparency of content and title bar
   vim.g.neovide_transparency = 0.0

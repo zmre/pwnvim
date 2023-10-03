@@ -270,11 +270,12 @@ M.telescope_get_folder_and_title = function(base, subdir, callback)
   M.telescope_get_folder(base, subdir, function(folder)
     vim.ui.input({ prompt = 'Title: ', default = '' }, function(input)
       if input ~= nil then
-        callback(folder["value"], input)
+        callback(folder, input)
       end
     end)
   end)
 end
+
 M.telescope_get_folder = function(base, subdir, callback)
   local pickers = require "telescope.pickers"
   local finders = require "telescope.finders"
