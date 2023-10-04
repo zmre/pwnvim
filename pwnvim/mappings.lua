@@ -288,7 +288,15 @@ local leader_mappings = {
     d = { require('telescope.builtin').lsp_document_symbols, "Document symbols search" },
     f = { require('telescope.builtin').find_files, "Files" },
     g = { require('telescope.builtin').live_grep, "Grep" },
-    h = { "<cmd>Telescope frecency workspace=CWD theme=dropdown<cr>", "History Local" },
+    h = { function()
+      -- if CWD has a .git dir, then specify workspace=CWD
+      if vim.fn.isdirectory('.git') ~= 0 then
+        require("telescope").extensions.frecency.frecency({ workspace = "CWD", theme = "dropdown" })
+      else
+        require("telescope").extensions.frecency.frecency({ theme = "dropdown" })
+      end
+    end, "History local" },
+    --h = { "<cmd>Telescope frecency workspace=CWD theme=dropdown<cr>", "History Local" },
     k = { require('telescope.builtin').keymaps, "Keymaps" },
     l = { require('telescope.builtin').loclist, "Loclist" },
     n = { function() require('zk.commands').get("ZkNotes")({ sort = { 'modified' } }) end, "Find notes" },

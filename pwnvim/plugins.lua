@@ -593,7 +593,8 @@ M.telescope = function()
         override_file_sorter = true
       },
       frecency = {
-        ignore_patterns = { "*.git/*", "*/tmp/*", ".*ignore", ".DS_Store", "Caches", "Backups" },
+        ignore_patterns = { "*.git/*", "*/tmp/*", ".*ignore", "*.DS_Store*", "Caches", "Backups", "/Applications",
+          "/bin", "*/.localized" },
         -- show the tail for "LSP", "CWD" and "FOO"
         show_filter_column = { "LSP", "CWD" },
         show_scores = true,
