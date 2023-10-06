@@ -181,9 +181,13 @@ mapn("zi", function() -- override default fold toggle behavior to fix fold colum
   if vim.wo.foldenable then
     -- Disable completely
     vim.wo.foldenable = false
+    vim.wo.foldmethod =
+    "manual"                     -- seeing weird things where folds are off, but expression being run anyway. this should fix.
     vim.wo.foldcolumn = "0"
   else
     vim.wo.foldenable = true
+    -- TODO: maybe save this value above and set back to last value?
+    vim.wo.foldmethod = "expr"
     vim.wo.foldcolumn = "auto:4"
     vim.cmd("normal zx") -- reset folds
   end
@@ -293,7 +297,8 @@ local leader_mappings = {
       if vim.fn.isdirectory('.git') ~= 0 then
         require("telescope").extensions.frecency.frecency({ workspace = "CWD", theme = "dropdown" })
       else
-        require("telescope").extensions.frecency.frecency({ theme = "dropdown" })
+        -- path_display only works when workspace isn't specified :(
+        require("telescope").extensions.frecency.frecency({ theme = "dropdown", path_display = { "truncate" } })
       end
     end, "History local" },
     --h = { "<cmd>Telescope frecency workspace=CWD theme=dropdown<cr>", "History Local" },
@@ -463,16 +468,28 @@ which_key.register({
 
 -- Setup tpope unimpaired-like forward/backward shortcuts reminders
 which_key.register({
+  ["[A"] = "First file arg",
   ["[a"] = "Prev file arg",
   ["]a"] = "Next file arg",
+  ["]A"] = "Last file arg",
+  ["[B"] = "First buffer",
+  ["]B"] = "Last buffer",
   ["[b"] = { "<Cmd>BufferLineCyclePrev<CR>", "Prev buffer" },
   ["]b"] = { "<Cmd>BufferLineCycleNext<CR>", "Next buffer" },
   ["[c"] = "Prev git hunk",
   ["]c"] = "Next git hunk",
+  ["[f"] = "Prev file in dir of cur file",
+  ["]f"] = "Next file in dir of cur file",
+  ["[L"] = "First loclist item",
   ["[l"] = "Prev loclist item",
   ["]l"] = "Next loclist item",
+  ["]L"] = "Last loclist item",
+  ["[Q"] = "First quicklist item",
   ["[q"] = "Prev quicklist item",
   ["]q"] = "Next quicklist item",
+  ["]Q"] = "Last quicklist item",
+  ["]p"] = "Put below",
+  ["]P"] = "Put below",
   ["[t"] = { "<Cmd>tabprevious<cr>", "Prev tab" },
   ["[T"] = { "<Cmd>tabprevious<cr>", "First tab" },
   ["]t"] = { "<Cmd>tabnext<cr>", "Next tab" },

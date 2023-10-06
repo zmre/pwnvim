@@ -4,6 +4,7 @@ if vim.fn.has('mac') == 1 then
 else
   vim.opt.guifont = "Hasklug Nerd Font:h9"
 end
+vim.g.loaded_matchit = 1 -- disable early
 require('impatient')
 require('impatient').enable_profile()
 require('pwnvim.filetypes').config()

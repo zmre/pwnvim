@@ -26,6 +26,10 @@ require("nvim-treesitter.configs").setup({
     enable = true,
     disable = { "markdown" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
   },
+  matchup = {
+    enable = true,
+    include_match_words = true
+  },
   textobjects = {
     disable = { "markdown" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
     select = {

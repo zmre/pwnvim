@@ -408,7 +408,8 @@ M.programming = function()
   vim.wo.relativenumber = false
   vim.wo.cursorline = true -- add indicator for current line
   vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-  vim.wo.foldmethod = "expr"
+  vim.wo.foldmethod =
+  "manual"                  -- seeing weird treesitter cpu spikes when folds are off
   vim.wo.foldenable = false -- zi will turn it on
   vim.wo.foldcolumn = "0"
 

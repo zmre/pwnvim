@@ -138,6 +138,7 @@
           nodePackages.typescript-language-server
           nodePackages.bash-language-server
           nodePackages."@tailwindcss/language-server"
+          yaml-language-server
           mypy # static typing for python used by null-ls
           ruff # python linter used by null-ls
           black # python formatter
@@ -215,6 +216,7 @@
                 neodev-nvim # help for neovim lua api
                 nvim-nu # support for nushell scripts
                 SchemaStore-nvim # json schemas
+                vim-matchup # replaces built-in matchit and matchparen with better matching and faster
 
                 # UI #################################################
                 onedarkpro-nvim # colorscheme

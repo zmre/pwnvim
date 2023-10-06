@@ -266,56 +266,37 @@ M.diagnostics = function()
       ["q"] = { "<cmd>TroubleToggle<CR>", "Show Trouble list" },
       l = {
         name = "Local LSP",
-        s = { "<cmd>Telescope lsp_document_symbols<CR>", "Show Symbols" },
-        d = {
-          "<Cmd>lua vim.lsp.buf.definition()<CR>", "Go to definition"
+        s = { require("telescope.builtin").lsp_document_symbols, "Show Symbols" },
+        d = { vim.lsp.buf.definition, "Go to definition" },
+        D = { vim.lsp.buf.implementation, "Implementation" },
+        e = { vim.diagnostic.open_float, "Show Line Diags"
         },
-        D = {
-          "<cmd>lua vim.lsp.buf.implementation()<CR>",
-          "Implementation"
-        },
-        e = {
-          "<cmd>lua vim.diagnostic.open_float()<CR>",
-          "Show Line Diags"
-        },
-        i = { "<Cmd>lua vim.lsp.buf.hover()<CR>", "Info hover" },
-        I = {
-          "<Cmd>Telescope lsp_implementations<CR>", "Implementations"
-        },
+        i = { vim.lsp.buf.hover, "Info hover" },
+        I = { require("telescope.builtin").lsp_implementations, "Implementations" },
         l = { require("lsp_lines").toggle, "Toggle virtual text lines" },
-        r = { "<cmd>Telescope lsp_references<CR>", "References" },
-        f = {
-          "<cmd>lua vim.lsp.buf.code_action()<CR>", "Fix Code Actions"
-        },
-        t = { "<cmd>lua vim.lsp.buf.signature_help()<CR>", "Signature" },
+        r = { require("telescope.builtin").lsp_references, "References" },
+        f = { vim.lsp.buf.code_action, "Fix Code Actions" },
+        t = { vim.lsp.buf.signature_help, "Signature" },
       },
       f = {
-        ["sd"] = {
-          "<cmd>Telescope lsp_document_symbols<CR>",
-          "Find symbol in document"
-        },
-        ["sw"] = {
-          "<cmd>Telescope lsp_workspace_symbols<CR>",
-          "Find symbol in workspace"
-        }
+        ["sd"] = { require("telescope.builtin").lsp_document_symbols, "Find symbol in document" },
+        ["sw"] = { require("telescope.builtin").lsp_workspace_symbols, "Find symbol in workspace" }
       }
     }
     which_key.register(leader_mappings, local_leader_opts)
     -- Create a new note after asking for its title.
-    buf_set_keymap("", "<F7>", "<cmd>Telescope lsp_document_symbols<CR>", opts)
-    buf_set_keymap("i", "<F7>", "<cmd>Telescope lsp_document_symbols<CR>", opts)
-    buf_set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
+    buf_set_keymap("", "<F7>", require("telescope.builtin").lsp_document_symbols, opts)
+    buf_set_keymap("i", "<F7>", require("telescope.builtin").lsp_document_symbols, opts)
+    buf_set_keymap("n", "K", vim.lsp.buf.hover, opts)
     -- override standard tag jump
-    buf_set_keymap("", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+    buf_set_keymap("", "C-]", vim.lsp.buf.definition, opts)
     -- buf_set_keymap("i", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
 
     -- Set some keybinds conditional on server capabilities
     if client.server_capabilities.document_formatting then
       which_key.register({
         l = {
-          ["="] = {
-            "<cmd>lua vim.lsp.buf.formatting_sync()<CR>", "Format"
-          }
+          ["="] = { vim.lsp.buf.formatting_sync, "Format" }
         }
       }, local_leader_opts)
       -- vim.cmd([[
@@ -328,26 +309,20 @@ M.diagnostics = function()
     if client.server_capabilities.implementation then
       which_key.register({
         l = {
-          ["I"] = {
-            "<cmd>Telescope lsp_implementations<CR>",
-            "Implementations"
-          }
+          ["I"] = { require("telescope.builtin").lsp_implementations, "Implementations" }
         }
       }, local_leader_opts)
     end
     if client.server_capabilities.document_range_formatting then
       which_key.register({
         l = {
-          ["="] = {
-            "<cmd>lua vim.lsp.buf.range_formatting()<CR>",
-            "Format Range"
-          }
+          ["="] = { vim.lsp.buf.range_formatting, "Format Range" }
         }
       }, local_leader_opts_visual)
     end
     if client.server_capabilities.rename then
       which_key.register({
-        l = { ["R"] = { "<cmd>lua vim.lsp.buf.rename()<CR>", "Rename" } }
+        l = { ["R"] = { vim.lsp.buf.rename, "Rename" } }
       }, local_leader_opts)
     end
   end
@@ -426,6 +401,19 @@ M.diagnostics = function()
   })
   require("crates").setup({})
   require("cmp-npm").setup({})
+  lspconfig.yamlls.setup {
+    settings = {
+      yaml = {
+        format = { enable = true },
+        schemaStore = {
+          enable = true
+        },
+        schemas = {
+          ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+        },
+      },
+    }
+  }
   lspconfig.tsserver
       .setup({ capabilities = capabilities, on_attach = attached })
   lspconfig.lua_ls.setup({
@@ -598,6 +586,7 @@ M.telescope = function()
         -- show the tail for "LSP", "CWD" and "FOO"
         show_filter_column = { "LSP", "CWD" },
         show_scores = true,
+        show_unindexed = false,
         use_sqlite = false
       }
     }
@@ -792,7 +781,7 @@ M.notes = function()
             },
             n = {
               p = {
-                ":'<,'>ZkNewFromTitleSelection { dir = vim.fn.expand('%:p:h') }<CR>",
+                ":'<,'>ZkNewFromTitleSelection { dir = vim.fn.expand(':p:h') }<CR>",
                 "New peer note (same dir) selection for title"
               }
               -- Create a new note in the same directory as the current buffer, using the current selection for title.
@@ -965,9 +954,14 @@ M.grammar_check = function()
 end
 
 ----------------------- MISC --------------------------------
--- rooter, kommentary, autopairs, tmux, toggleterm
+-- rooter, kommentary, autopairs, tmux, toggleterm, matchup
 M.misc = function()
-  vim.g.lf_map_keys = 0 -- lf.vim disable default keymapping
+  vim.g.lf_map_keys = 0              -- lf.vim disable default keymapping
+  vim.g.matchup_surround_enabled = 0 -- disallows ds type selections
+  vim.g.matchup_matchparen_offscreen = { method = 'popup' }
+  vim.g.matchup_matchparen_deferred = 1
+  vim.g.matchup_motion_override_Npercent = 100
+  vim.g.matchup_text_obj_linewise_operators = { 'd', 'y', 'c', 'v' }
 
   -- Change project directory using local cd only
   -- vim.g.rooter_cd_cmd = 'lcd'
