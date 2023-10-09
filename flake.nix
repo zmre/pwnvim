@@ -166,7 +166,16 @@
         ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
         [pngpaste]; # needed by vim clipboard-image plugin
       neovim-augmented = recursiveMerge [
-        pkgs.neovim-unwrapped
+        (pkgs.neovim-unwrapped.overrideAttrs (oldAddrs: {
+          # This should help compile dependencies with debug symbols
+          preConfigure =
+            ''
+              export DEBUG=1
+            ''
+            + oldAddrs.preConfigure;
+          # Options for built type are: RelWithDebInfo, Release, and Debug
+          cmakeFlags = oldAddrs.cmakeFlags ++ ["-DCMAKE_BUILD_TYPE=RelWithDebInfo"];
+        }))
         {buildInputs = dependencies;}
       ];
       packages.pwnvim = pkgs.wrapNeovim neovim-augmented {
