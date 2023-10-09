@@ -16,6 +16,10 @@ M.ui = function()
   -- local tree_cb = nvim_tree_config.nvim_tree_callback
   require("pwnvim.plugins.nvim-tree")
 
+  -- dadbod-ui
+  vim.g.db_ui_use_nerd_fonts = not SimpleUI
+  vim.g.db_ui_use_nvim_notify = true
+
   local surround_defaults = require("nvim-surround.config").default_opts
   require("nvim-surround").setup({
     aliases = {
@@ -698,6 +702,7 @@ M.completions = function()
   }) ]]
 end -- completions
 
+
 ----------------------- NOTES --------------------------------
 -- zk (zettelkasten lsp), taskwiki, focus mode, grammar
 M.notes = function()
@@ -781,7 +786,7 @@ M.notes = function()
             },
             n = {
               p = {
-                ":'<,'>ZkNewFromTitleSelection { dir = vim.fn.expand(':p:h') }<CR>",
+                ":'<,'>ZkNewFromTitleSelection { dir = vim.fn.expand('%:p:h') }<CR>",
                 "New peer note (same dir) selection for title"
               }
               -- Create a new note in the same directory as the current buffer, using the current selection for title.

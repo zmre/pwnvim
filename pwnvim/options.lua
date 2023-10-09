@@ -31,8 +31,6 @@ M.defaults = function()
   vim.g.vim_markdown_conceal_code_blocks = 0
   vim.g.vim_markdown_frontmatter = 1
 
-  vim.g.db_ui_use_nerd_fonts = true
-
   -- my shada is so large it takes up half of startup time to process; constraining what it keeps here
   -- previous value: !,'100,<50,s10,h'
   vim.opt.shada = { "'25", "<0", ":5", "/0", '"0', "@5", "f10", "h", "s10" }
@@ -147,13 +145,8 @@ M.defaults = function()
   vim.api.nvim_set_keymap('n', ',', '', {}) -- first unset it though
   vim.g.mapleader = ','                     -- Namespace for custom shortcuts
 
-  if not SimpleUI then
-    vim.g.termguicolors = true
-    vim.o.termguicolors = true
-  else
-    vim.g.termguicolors = false
-    vim.o.termguicolors = false
-  end
+  vim.g.termguicolors = not SimpleUI
+  vim.o.termguicolors = not SimpleUI
   vim.o.background = "dark"
 
   if not SimpleUI then
