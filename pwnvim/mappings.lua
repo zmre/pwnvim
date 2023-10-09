@@ -182,7 +182,7 @@ mapn("zi", function() -- override default fold toggle behavior to fix fold colum
     -- Disable completely
     vim.wo.foldenable = false
     vim.wo.foldmethod =
-    "manual"                     -- seeing weird things where folds are off, but expression being run anyway. this should fix.
+    "manual" -- seeing weird things where folds are off, but expression being run anyway. this should fix.
     vim.wo.foldcolumn = "0"
   else
     vim.wo.foldenable = true
@@ -289,9 +289,12 @@ local leader_mappings = {
       "<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown{previewer = false})<cr>",
       "Buffers"
     },
+    c = { function() require('telescope.builtin').live_grep({ search_dirs = { vim.fn.expand('%:p:h') } }) end,
+      "Grep from dir of current file" },
     d = { require('telescope.builtin').lsp_document_symbols, "Document symbols search" },
     f = { require('telescope.builtin').find_files, "Files" },
     g = { require('telescope.builtin').live_grep, "Grep" },
+
     h = { function()
       -- if CWD has a .git dir, then specify workspace=CWD
       if vim.fn.isdirectory('.git') ~= 0 then
