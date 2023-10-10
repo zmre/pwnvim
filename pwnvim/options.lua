@@ -31,12 +31,15 @@ M.defaults = function()
   vim.g.vim_markdown_conceal_code_blocks = 0
   vim.g.vim_markdown_frontmatter = 1
 
+
   -- my shada is so large it takes up half of startup time to process; constraining what it keeps here
   -- previous value: !,'100,<50,s10,h'
   vim.opt.shada = { "'25", "<0", ":5", "/0", '"0', "@5", "f10", "h", "s10" }
   -- this would allow spaces in filenames for commands like `gf` but results are really mixed.
   -- commenting for now 2022-12-22
   -- vim.opt.isfname:append { "32" }
+
+  vim.opt.foldenable = false
 
   vim.opt.grepprg = "rg --vimgrep --no-heading --smart-case --color never"
   vim.opt.grepformat = "%f:%l:%c:%m,%f:%l:%m,%f"

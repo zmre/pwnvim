@@ -8,7 +8,7 @@ if not SimpleUI then
     exclude = {
       buftypes = { 'terminal', 'help', 'markdown', 'nofile', 'help', 'quickfix', 'prompt' },
       filetypes = { 'help', 'markdown', 'nofile', 'help', 'packer', 'Trouble',
-        "startify", "dashboard", "neogitstatus", "lspinfo", "checkhealth", "man", "", "NvimTree",
+        "startify", "dashboard", "neogitstatus", "lspinfo", "checkhealth", "man", "", "NvimTree", "dbout"
       },
 
     },

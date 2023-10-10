@@ -12,7 +12,7 @@ require("nvim-treesitter.configs").setup({
 
     additional_vim_regex_highlighting = false
   },
-  indent = { enable = true, disable = { "yaml", "markdown" } },
+  indent = { enable = true, disable = { "yaml", "markdown", "dbout" } },
   incremental_selection = {
     enable = true,
     disable = { "markdown" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
@@ -24,10 +24,11 @@ require("nvim-treesitter.configs").setup({
   },
   context_commentstring = {
     enable = true,
-    disable = { "markdown" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
+    disable = { "markdown", "dbout" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
   },
   matchup = {
     enable = true,
+    disable = { "dbout" },
     include_match_words = true
   },
   textobjects = {

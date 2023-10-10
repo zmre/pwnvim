@@ -17,8 +17,8 @@ M.ui = function()
   require("pwnvim.plugins.nvim-tree")
 
   -- dadbod-ui
-  vim.g.db_ui_use_nerd_fonts = not SimpleUI
-  vim.g.db_ui_use_nvim_notify = true
+  -- vim.g.db_ui_use_nerd_fonts = not SimpleUI
+  -- vim.g.db_ui_use_nvim_notify = true
 
   local surround_defaults = require("nvim-surround.config").default_opts
   require("nvim-surround").setup({
@@ -41,6 +41,13 @@ M.ui = function()
   require("pwnvim.plugins.todo-comments")
   require("pwnvim.plugins.gitsigns")
   require("diffview").setup({})
+  require("git-worktree").setup({
+    change_directory_command = "lcd",
+    update_on_change = true,
+    update_on_change_command = "e .",
+    clearjumps_on_change = true,
+    autopush = false
+  })
 
   if not SimpleUI then
     require("colorizer").setup({})
@@ -599,6 +606,7 @@ M.telescope = function()
   require("telescope").load_extension("zk")
   require("telescope").load_extension("noice")
   require("telescope").load_extension("frecency")
+  require("telescope").load_extension("git_worktree")
   if vim.fn.has("mac") ~= 1 then
     -- doesn't currently work on mac
     require("telescope").load_extension("media_files")

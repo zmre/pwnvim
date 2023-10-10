@@ -240,6 +240,7 @@
                 nvim-web-devicons # makes things pretty; used by many plugins below
                 #nvim-tree-lua # file navigator
                 oil-nvim
+                git-worktree-nvim # jump between worktrees
                 gitsigns-nvim # git status in gutter
                 # symbols-outline-nvim # navigate the current file better
                 lualine-nvim # nice status bar at bottom
@@ -270,9 +271,9 @@
                 flash-nvim
 
                 # Database interactions
-                vim-dadbod
-                vim-dadbod-ui
-                vim-dadbod-completion
+                # vim-dadbod
+                # vim-dadbod-ui
+                # vim-dadbod-completion
 
                 # Autocompletion
                 nvim-cmp # generic autocompleter

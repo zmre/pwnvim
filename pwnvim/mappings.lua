@@ -342,6 +342,8 @@ local leader_mappings = {
     b = { require('telescope.builtin').git_branches, "Branches" },
     c = { require('telescope.builtin').git_commits, "Commits" },
     h = { require('gitsigns').toggle_current_line_blame, "Toggle Blame" },
+    w = { require('telescope').extensions.git_worktree.git_worktrees, "Switch worktree" },
+    n = { require('telescope').extensions.git_worktree.create_git_worktree, "New worktree" },
     ["-"] = { require('gitsigns').reset_hunk, "Reset Hunk" },
     ["+"] = { require('gitsigns').stage_hunk, "Stage Hunk" }
   },
