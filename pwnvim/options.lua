@@ -431,6 +431,20 @@ M.programming = function(ev)
   -- might not otherwise fire.
   vim.g.direnv_auto = 0
   vim.cmd('packadd direnv.vim')
+  local direnvgroup = vim.api.nvim_create_augroup("direnv", { clear = true })
+  -- Function below makes direnv impure by design. We need to keep the LSP servers and other nvim dependencies
+  -- in our path even after direnv overwrites the path. Whatever direnv puts in place will take precedence, but
+  -- we fall back to the various language tools installed with pwnvim using this hack
+  local initial_path = vim.env.PATH
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "DirenvLoaded",
+    callback = function()
+      if not string.find(vim.env.PATH, initial_path, 0, true) then
+        vim.env.PATH = vim.env.PATH .. ":" .. initial_path
+      end
+    end,
+    group = direnvgroup
+  })
   vim.cmd('DirenvExport')
 
   -- commenting

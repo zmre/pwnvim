@@ -3,19 +3,6 @@ local M = {}
 M.config = function()
   local filetypes = vim.api.nvim_create_augroup("filetypes", { clear = true })
   local autocmd = vim.api.nvim_create_autocmd
-  -- Function below makes direnv impure by design. We need to keep the LSP servers and other nvim dependencies
-  -- in our path even after direnv overwrites the path. Whatever direnv puts in place will take precedence, but
-  -- we fall back to the various language tools installed with pwnvim using this hack
-  local initial_path = vim.env.PATH
-  autocmd("User DirenvLoaded", {
-    callback = function()
-      if not string.find(vim.env.PATH, initial_path, 0, true) then
-        vim.env.PATH = vim.env.PATH .. ":" .. initial_path
-      end
-    end,
-    group = filetypes
-  })
-
   autocmd("BufRead", {
     pattern = { "*.markdown", "*.md" },
     command = "setlocal filetype=markdown",
