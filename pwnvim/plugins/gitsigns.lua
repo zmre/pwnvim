@@ -34,66 +34,41 @@ require("gitsigns").setup {
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns
 
-    local function map(mode, l, r, opts)
-      opts = opts or {}
-      opts.buffer = bufnr
-      vim.keymap.set(mode, l, r, opts)
-    end
+    local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
+    local mapoxlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapox)
+    local mapleadernvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadernv)
+    local mapleadernlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadern)
+    local mapleadervlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleaderv)
 
     -- Navigation
-    map('n', ']c', function()
+    mapnlocal(']c', function()
       if vim.wo.diff then return ']c' end
       vim.schedule(function() gs.next_hunk() end)
       return '<Ignore>'
-    end, { expr = true })
-
-    map('n', '[c', function()
+    end, "Next hunk", { expr = true })
+    mapnlocal('[c', function()
       if vim.wo.diff then return '[c' end
       vim.schedule(function() gs.prev_hunk() end)
       return '<Ignore>'
-    end, { expr = true })
+    end, "Prev hunk", { expr = true })
 
+    -- DO NOT USE gs, gb, gc, gw as these are more global and not gitsigns specific
+    -- Git toggles
+    mapleadernvlocal("gtb", gs.toggle_current_line_blame, "Toggle current line blame")
+    mapleadernvlocal("gtd", gs.toggle_deleted, "Toggle deleted")
     -- Actions -- normal mode
-    require("which-key").register(
-      {
-        ["<leader>"] = {
-          h = {
-            name = "hunk (git)",
-            s = { ':Gitsigns stage_hunk<CR>', "Stage hunk" },
-            r = { ':Gitsigns reset_hunk<CR>', "Reset hunk" },
-            S = { gs.stage_buffer, "Stage buffer" },
-            u = { gs.undo_stage_hunk, "Undo stage hunk" },
-            R = { gs.reset_buffer, "Reset buffer" },
-            p = { gs.preview_hunk, "Preview hunk" },
-            b = { function() gs.blame_line { full = true } end, "Blame hunk" },
-            d = { gs.diffthis, "Diff this to index" },
-            D = { function() gs.diffthis('~') end, "Diff this to previous" },
-          },
-          t = {
-            name = "git toggles",
-            b = { gs.toggle_current_line_blame, "Toggle current line blame" },
-            d = { gs.toggle_deleted, "Toggle deleted" },
-          }
-        }
-      }, { mode = "n", buffer = bufnr, silent = true, norewrap = true }
-    )
-    -- Actions -- visual and select mode
-    require("which-key").register(
-      {
-        ["<leader>"] = {
-          h = {
-            name = "hunk (git)",
-            s = { ':Gitsigns stage_hunk<CR>', "Stage hunk" },
-            r = { ':Gitsigns reset_hunk<CR>', "Reset hunk" },
-          }
-        }
-      }, { mode = "v", buffer = bufnr, silent = true, norewrap = true }
-    )
-    -- Actions -- operator pending mode
-    require("which-key").register(
-      {
-        ["ih"] = { ':<C-U>Gitsigns select_hunk<CR>', "Select git hunk" }
-      }, { mode = "o", buffer = bufnr, silent = true, norewrap = true }
-    )
+    mapleadernlocal("g-", gs.reset_hunk, "Reset hunk")
+    mapleadernlocal("g+", gs.stage_hunk, "Stage hunk")
+    mapleadervlocal("g-", function() gs.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end, "Reset hunk")
+    mapleadervlocal("g+", function() gs.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end, "Stage hunk")
+    mapleadernvlocal("gu", gs.undo_stage_hunk, "Undo stage hunk")
+    mapleadernvlocal("gS", gs.stage_buffer, "Stage buffer")
+    mapleadernvlocal("gR", gs.reset_buffer, "Reset buffer")
+    mapleadernlocal("gp", gs.preview_hunk, "Preview hunk")
+    mapleadernvlocal("gB", function() gs.blame_line { full = true } end, "Blame hunk popup")
+    mapleadernlocal("gd", gs.diffthis, "Diff this to index")
+    mapleadernlocal("gD", function() gs.diffthis('~') end, "Diff this to previous")
+    -- text object for hunks
+    mapoxlocal("ih", ':<C-U>Gitsigns select_hunk<CR>', "Select git hunk")
   end
 }

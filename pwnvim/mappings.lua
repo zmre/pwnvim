@@ -1,8 +1,18 @@
--- We use which-key in mappings, which is loaded before plugins, so set up here
-local which_key = require("which-key")
-local enter = vim.api.nvim_replace_termcodes("<cr>", true, false, true)
+local M = {}
 
-local function map(mode, lhs, rhs, desc, opts)
+local startswith = function(haystack, prefix)
+  return string.sub(string.lower(haystack), 1, #prefix) == string.lower(prefix)
+end
+
+local addcommand = function(rhs)
+  -- the string.sub trick avoids searching the entire string to figure out startswith; see https://programming-idioms.org/idiom/96/check-string-prefix/1882/lua
+  -- purpose here is to add the "<cmd>" prefix and "<cr>" as best practice, but only if "<cmd>" wasn't already provided
+  if type(rhs) == "string" and not startswith(rhs, "<cmd>") and not startswith(rhs, ":") and not startswith(rhs, "<plug>") then
+    rhs = ("<cmd>%s<cr>"):format(rhs)
+  end
+  return rhs
+end
+M.map = function(mode, lhs, rhs, desc, opts)
   opts = opts or { silent = true, noremap = true }
   opts["desc"] = desc or ""
   vim.keymap.set(
@@ -12,572 +22,500 @@ local function map(mode, lhs, rhs, desc, opts)
     opts
   )
 end
-local function mapn(lhs, rhs, desc, opts)
-  map("n", lhs,
-    type(rhs) == "string" and ("<cmd>%s<cr>"):format(rhs) or rhs,
-    desc, opts)
+M.mapn = function(lhs, rhs, desc, opts)
+  M.map("n", lhs, addcommand(rhs), desc, opts)
 end
-local function mapv(lhs, rhs, desc, opts)
-  map("v", lhs,
-    type(rhs) == "string" and ("<cmd>%s<cr>"):format(rhs) or rhs,
-    desc, opts)
+M.mapv = function(lhs, rhs, desc, opts)
+  M.map("v", lhs, addcommand(rhs), desc, opts)
 end
-local function mapnv(lhs, rhs, desc, opts)
-  map({ "n", "v" }, lhs,
-    type(rhs) == "string" and ("<cmd>%s<cr>"):format(rhs) or rhs,
-    desc, opts)
+M.mapnv = function(lhs, rhs, desc, opts)
+  M.map({ "n", "v" }, lhs, addcommand(rhs), desc, opts)
 end
-local function mapic(lhs, rhs, desc, opts)
-  map({ "i", "c" }, lhs, rhs, desc, opts)
+M.mapic = function(lhs, rhs, desc, opts)
+  -- in insert/command mode, don't assume <cmd> as we might be using keystrokes in insert mode on purpose
+  M.map({ "i", "c" }, lhs, rhs, desc, opts)
 end
-local function mapnvic(lhs, rhs, desc, opts)
-  map({ "n", "v", "i", "c" }, lhs,
-    type(rhs) == "string" and ("<cmd>%s<cr>"):format(rhs) or rhs,
-    desc, opts)
+M.mapnvic = function(lhs, rhs, desc, opts)
+  M.map({ "n", "v", "i", "c" }, lhs, addcommand(rhs), desc, opts)
 end
-local function mapi(lhs, rhs, desc, opts)
-  map("i", lhs, rhs, desc, opts)
+M.mapi = function(lhs, rhs, desc, opts)
+  -- in insert mode, don't assume <cmd> as we might be using keystrokes in insert mode on purpose
+  M.map("i", lhs, rhs, desc, opts)
 end
-local function mapc(lhs, rhs, desc, opts)
-  map("c", lhs, rhs, desc, opts)
+M.mapox = function(lhs, rhs, desc, opts)
+  -- in operator pending mode, don't assume <cmd> as we might be using keystrokes in insert mode on purpose
+  M.map({ "o", "x" }, lhs, rhs, desc, opts)
 end
-local function maplocal(mode, lhs, rhs, opts)
-  opts = opts or { silent = true, noremap = true }
-  opts["buffer"] = true
-  map(mode, lhs, rhs, opts)
+M.mapt = function(lhs, rhs, desc, opts)
+  M.map("t", lhs, addcommand(rhs), desc, opts)
+end
+M.mapleadern = function(lhs, rhs, desc, opts)
+  M.mapn("<leader>" .. lhs, rhs, desc, opts)
+end
+M.mapleaderv = function(lhs, rhs, desc, opts)
+  M.mapv("<leader>" .. lhs, rhs, desc, opts)
+end
+M.mapleadernv = function(lhs, rhs, desc, opts)
+  M.mapnv("<leader>" .. lhs, rhs, desc, opts)
 end
 
-which_key.setup({
-  plugins = {
-    marks = true,      -- shows a list of your marks on ' and `
-    registers = true,  -- shows your registers on " in NORMAL or <C-r> in INSERT mode
-    spelling = {
-      enabled = true,  -- enabling this will show WhichKey when pressing z= to select spelling suggestions
-      suggestions = 20 -- how many suggestions should be shown in the list?
-    },
-    -- the presets plugin, adds help for a bunch of default keybindings in Neovim
-    -- No actual key bindings are created
-    presets = {
-      operators = false,   -- adds help for operators like d, y, ... and registers them for motion / text object completion
-      motions = false,     -- adds help for motions
-      text_objects = true, -- help for text objects triggered after entering an operator
-      windows = true,      -- default bindings on <c-w>
-      nav = true,          -- misc bindings to work with windows
-      z = true,            -- bindings for folds, spelling and others prefixed with z
-      g = true             -- bindings for prefixed with g
-    }
-  },
-  -- hidden = {
-  --   "<silent>", "<CMD>", "<cmd>", "<Cmd>", "<cr>", "<CR>", "call", "lua", "^:",
-  --   "^ "
-  -- }, -- hide mapping boilerplate
-  show_help = true, -- show help message on the command line when the popup is visible
-  triggers = "auto" -- automatically setup triggers
-  -- triggers = {"<leader>"}
-  -- triggers_nowait = {"'", '"', "y", "d"}
-})
-
-which_key.register({
-  mode = { "n", "v" },
-  ["]"] = { name = "+next" },
-  ["["] = { name = "+prev" },
-  ["<leader>f"] = { name = "+find" },
-  ["<leader>g"] = { name = "+git" },
-  ["<leader>h"] = { name = "+hunk" },
-  ["<leader>i"] = { name = "+indent" },
-  ["<leader>l"] = { name = "+lsp" },
-  ["<leader>n"] = { name = "+notes" },
-  ["<leader>t"] = { name = "+tasks" },
-})
-
--- This file is for mappings that will work regardless of filetype. Always available.
-
--- ALL MODE (EXCEPT OPERATOR) MAPPINGS
--- Make F1 act like escape for accidental hits
-map({ "n", "v", "i", "c" }, "<F1>", "<Esc>", "Escape")
--- Make F2 bring up a file browser
-mapnvic("<F2>", "Oil .", "Toggle file browser")
--- Make F4 toggle invisible characters (locally)
-mapnvic("<F4>", function()
-  if vim.opt_local.list:get() then
-    vim.opt_local.list = false
-    vim.opt_local.conceallevel = 2
-    vim.cmd("IBLEnable")
-  else
-    vim.opt_local.list = true
-    vim.opt_local.conceallevel = 0
-    vim.cmd("IBLDisable") -- indent lines hide some chars like tab
+M.makelocalmap = function(bufnr, mapfunc)
+  return function(lhs, rhs, desc, opts)
+    opts = opts or { silent = true, noremap = true }
+    opts["buffer"] = bufnr
+    mapfunc(lhs, rhs, desc, opts)
   end
-end, "Toggle show invisible chars")
--- Make ctrl-p open a file finder
--- When using ctrl-p, screen out media files that we probably don't want
--- to open in vim. And if we really want, then we can use ,ff
-mapnvic("<c-p>", require("telescope.builtin").find_files, "Find files")
-mapnvic("<F9>", "TZAtaraxis", "Focus mode")
--- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
-mapnvic("<F10>", 'silent !qlmanage -p "%"', "Quicklook (mac)")
-mapnvic("<F12>", 'syntax sync fromstart', "Restart highlighting")
--- Pane navigation integrated with tmux
-mapnvic("<c-h>", "TmuxNavigateLeft", "Pane left")
-mapnvic("<c-j>", "TmuxNavigateDown", "Pane down")
-mapnvic("<c-k>", "TmuxNavigateUp", "Pane up")
-mapnvic("<c-l>", "TmuxNavigateRight", "Pane right")
-mapnvic("<D-w>", "Bdelete", "Close buffer")
-mapnvic("<A-w>", "Bdelete", "Close buffer")
-mapnvic("<M-w>", "Bdelete", "Close buffer")
-mapnvic("<D-n>", "enew", "New buffer")
-mapnvic("<D-t>", "tabnew", "New tab")
-mapnvic("<D-s>", "write", "Save buffer")
-mapnvic("<D-q>", "quit", "Quit")
--- Magic buffer-picking mode
-mapnvic("<M-b>", "BufferLinePick", "Pick buffer by letter")
-
--- Copy and paste ops mainly for neovide / gui apps
-if require("pwnvim.options").isGuiRunning() then
-  mapn("<D-v>", 'normal "+p', "Paste")
-  mapv("<D-c>", 'normal "+ygv', "Copy")
-  mapv("<D-v>", 'normal "+p', "Paste")
-  mapic("<D-v>", '<c-r>+', "Paste", { noremap = true, silent = false })
-  map("t", "<D-v>", '<C-\\><C-n>"+pa', "Paste")
-
-  -- Adjust font sizes
-  local function get_font()
-    local guifont = vim.api.nvim_get_option("guifont")
-    local curr_font = {}
-    curr_font.name = guifont:match("^(.*)%:")
-    curr_font.size = tonumber(guifont:match("%:h(%d+)"))
-    return curr_font
-  end
-  local function change_font(name, size)
-    vim.opt.guifont = name .. ":h" .. size
-  end
-  local function increase_font()
-    local curr_font = get_font()
-    local new_size = tostring(curr_font.size + 1)
-    change_font(curr_font.name, new_size)
-  end
-  local function decrease_font()
-    local curr_font = get_font()
-    local new_size = tostring(curr_font.size - 1)
-    change_font(curr_font.name, new_size)
-  end
-  local function reset_font()
-    local curr_font = get_font()
-    local new_size = require("pwnvim.options").defaultFontSize()
-    change_font(curr_font.name, new_size)
-  end
-  mapnvic("<D-=>", increase_font, "Increase font size")
-  mapnvic("<D-->", decrease_font, "Decrease font size")
-  mapnvic("<D-0>", reset_font, "Reset font size")
-  mapnvic("<C-=>", increase_font, "Increase font size")
-  mapnvic("<C-->", decrease_font, "Decrease font size")
-  mapnvic("<C-0>", reset_font, "Reset font size")
 end
 
--- NORMAL MODE ONLY MAPPINGS
-map("n", "<A-up>", "[e", "Move line up")
-map("n", "<A-down>", "]e", "Move line down")
-mapn("zi", function() -- override default fold toggle behavior to fix fold columns and scan
-  if vim.wo.foldenable then
-    -- Disable completely
-    vim.wo.foldenable = false
-    vim.wo.foldmethod =
-    "manual" -- seeing weird things where folds are off, but expression being run anyway. this should fix.
-    vim.wo.foldcolumn = "0"
-  else
-    vim.wo.foldenable = true
-    -- TODO: maybe save this value above and set back to last value?
-    vim.wo.foldmethod = "expr"
-    vim.wo.foldcolumn = "auto:4"
-    vim.cmd("normal zx") -- reset folds
-  end
-end, "Toggle folding"
-)
-map("n", "<F8>", '"=strftime("%Y-%m-%d")<CR>P', "Insert date")
-mapic("<F8>", '<C-R>=strftime("%Y-%m-%d")<CR>', "Insert date at cursor", { noremap = true, silent = false })
-map("n", "<D-[>", "<<", "Outdent")
-map("n", "<D-]>", ">>", "Indent")
-map("n", "n", "nzzzv", "Center search hits vertically on screen and expand folds if hit is inside")
-map("n", "N", "Nzzzv", "Center search hits vertically on screen and expand folds if hit is inside")
-map("n", "<c-d>", "<c-d>zz", "Half scroll down keep cursor center screen")
-map("n", "<c-u>", "<c-u>zz", "Half scroll up keep cursor center screen")
--- gx is a built-in to open URLs under the cursor, but when
--- not using netrw, it doesn't work right. Or maybe it's just me
--- but anyway this command works great.
--- /Users/pwalsh/Documents/md2rtf-style.html
--- ../README.md
--- ~/Desktop/Screen Shot 2018-04-06 at 5.19.32 PM.png
--- [abc](https://github.com/adsr/mle/commit/e4dc4314b02a324701d9ae9873461d34cce041e5.patch)
-mapn("gx", 'silent !open "<c-r><c-f>" || xdg-open "<c-r><c-f>"', "Launch URL or path")
-mapn("*",
-  function()
-    local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "/", "\\/") ..
-        "\\>"
-    -- Can't find a way to have flash jump keep going past what's visible on the screen
-    vim.api.nvim_feedkeys("/\\V" .. text .. enter, 'n', false)
-  end, "Find word under cursor forward"
-)
-mapn("#",
-  function()
-    local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "?", "\\?") ..
-        "\\>"
-    vim.api.nvim_feedkeys("?\\V" .. text .. enter, 'n', false)
-  end, "Find word under cursor backward"
-)
-mapn("g*",
-  function()
-    -- Same as above, but don't qualify as full word only
-    local text = string.gsub(vim.fn.expand("<cword>"), "/", "\\/")
-    vim.api.nvim_feedkeys("/\\V" .. text .. enter, 'n', false)
-  end, "Find partial word under cursor forward"
-)
-mapn("g#",
-  function()
-    -- Same as above, but don't qualify as full word only
-    local text = string.gsub(vim.fn.expand("<cword>"), "?", "\\?")
-    vim.api.nvim_feedkeys("?" .. text .. enter, 'n', false)
-    -- vim.cmd("?\\V" .. text) -- works, but doesn't trigger flash
-  end, "Find partial word under cursor backward"
-)
-map("n", "<space>", [[@=(foldlevel('.')?'za':"\<Space>")<CR>]], "Toggle folds if enabled")
+M.config = function()
+  -- We use which-key in mappings, which is loaded before plugins, so set up here
+  local which_key = require("which-key")
+  local enter = vim.api.nvim_replace_termcodes("<cr>", true, false, true)
 
 
-mapn("<leader>p", 'normal "*p', "Paste")
-mapn("[0", "BufferLinePick", "Pick buffer by letter")
-mapn("]0", "BufferLinePick", "Pick buffer by letter")
-
-map("v", "gx", '"0y:silent !open "<c-r>0" || xdg-open "<c-r>0"<cr>gv', "Launch URL or path")
--- When pasting over selected text, keep original register value
-map("v", "p", '"_dP', "Paste over selected no store register")
--- keep visual block so you can move things repeatedly
-map("v", "<", "<gv", "Outdent and preserve block")
-map("v", ">", ">gv", "Indent and preserve block")
-mapi("<D-[>", "<C-d>", "Outdent")
-mapi("<D-]>", "<C-t>", "Indent")
-map("v", "<D-[>", "<gv", "Outdent and preserve block")
-map("v", "<D-]>", ">gv", "Indent and preserve block")
-map("v", "<A-Up>", "[egv", "Move line up preserve block")
-map("v", "<A-Down>", "]egv", "Move line down preserve block")
-
--- emacs bindings to jump around in lines
-mapi("<C-e>", "<C-o>A", "Jump to end of line")
-mapi("<C-a>", "<C-o>I", "Jump to start of line")
-
--- Send cursor somewhere on screen and pick a text object from it.
--- Uses operator pending mode so you start it with something like `yr` then
--- after jump pick the text object like `iw` and you'll copy that other thing
--- and be back where you were at the start.
-map("o", "R", require("flash").remote, "Remote operation via Flash")
-map("o", "<c-s>", require("flash").jump, "Flash select")
-map("o", "r", require("flash").treesitter, "Flash select")
---
--- Move visually selected lines up and down
--- vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
--- vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
-
-local leader_mappings = {
-  e = { "<cmd>Oil<cr>", "Find current file in file browser" },
-  ["/"] = { "<cmd>nohlsearch<CR>", "Clear Highlight" },
-  x = { "<cmd>Bdelete!<CR>", "Close Buffer" },
-  q = {
-    [["<cmd>".(get(getqflist({"winid": 1}), "winid") != 0? "cclose" : "botright copen")."<cr>"]],
-    "Toggle Quicklist"
-  },
-  f = {
-    name = "Find",
-    b = {
-      "<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown{previewer = false})<cr>",
-      "Buffers"
-    },
-    c = { function() require('telescope.builtin').live_grep({ search_dirs = { vim.fn.expand('%:p:h') } }) end,
-      "Grep from dir of current file" },
-    d = { require('telescope.builtin').lsp_document_symbols, "Document symbols search" },
-    f = { require('telescope.builtin').find_files, "Files" },
-    g = { require('telescope.builtin').live_grep, "Grep" },
-
-    h = { function()
-      -- if CWD has a .git dir, then specify workspace=CWD
-      if vim.fn.isdirectory('.git') ~= 0 then
-        require("telescope").extensions.frecency.frecency({ workspace = "CWD", theme = "dropdown" })
-      else
-        -- path_display only works when workspace isn't specified :(
-        require("telescope").extensions.frecency.frecency({ theme = "dropdown", path_display = { "truncate" } })
-      end
-    end, "History local" },
-    --h = { "<cmd>Telescope frecency workspace=CWD theme=dropdown<cr>", "History Local" },
-    k = { require('telescope.builtin').keymaps, "Keymaps" },
-    l = { require('telescope.builtin').loclist, "Loclist" },
-    n = { function() require('zk.commands').get("ZkNotes")({ sort = { 'modified' } }) end, "Find notes" },
-    o = { require('telescope.builtin').oldfiles, "Old File History Global" },
-    p = { "<cmd>Telescope projects<cr>", "Projects" },
-    q = { require('telescope.builtin').quickfix, "Quickfix" },
-    t = {
-      '<cmd>lua require(\'telescope.builtin\').grep_string{search = "^\\\\s*[*-] \\\\[ \\\\]", previewer = false, glob_pattern = "*.md", use_regex = true, disable_coordinates=true}<cr>',
-      "Todos"
-    },
-    z = { function()
-      require("pwnvim.plugins").telescope_get_folder_common_folders({
-        ".config", "src/sideprojects", "src/icl", "src/icl/website.worktree", "src/personal", "src/gh",
-        "Sync/Private", "Sync/Private/Finances", "Sync/IronCore Docs", "Sync/IronCore Docs/Legal",
-        "Sync/IronCore Docs/Finances", "Sync/IronCore Docs/Design",
-        "Notes", "Notes/Notes", "Notes/Notes/meetings"
-      }, 1, function(folder)
-        vim.cmd.lcd(folder)
-        require("oil").open(folder) -- if we bail on picking a file, we have the file browser as fallback
-        require("telescope.builtin").find_files()
-      end)
-    end, "Open folder" },
-  },
-  -- Quickly change indent defaults in a file
-  i = {
-    name = "Indent",
-    ["1"] = { require('pwnvim.options').tabindent, "Tab" },
-    ["2"] = { require('pwnvim.options').twospaceindent, "Two Space" },
-    ["4"] = { require('pwnvim.options').fourspaceindent, "Four Space" },
-    r = { "<cmd>%retab!<cr>", "Change existing indent to current with retab" }
-  },
-  g = {
-    name = "Git",
-    s = { require('telescope.builtin').git_status, "Status" },
-    b = { require('telescope.builtin').git_branches, "Branches" },
-    c = { require('telescope.builtin').git_commits, "Commits" },
-    h = { require('gitsigns').toggle_current_line_blame, "Toggle Blame" },
-    w = { require('telescope').extensions.git_worktree.git_worktrees, "Switch worktree" },
-    n = { require('telescope').extensions.git_worktree.create_git_worktree, "New worktree" },
-    ["-"] = { require('gitsigns').reset_hunk, "Reset Hunk" },
-    ["+"] = { require('gitsigns').stage_hunk, "Stage Hunk" }
-  },
-  ["lcd"] = { "<cmd>lcd %:h<cr>", "Change local dir to path of current file" },
-  n = {
-    name = "Notes",
-    d = { require("pwnvim.markdown").newDailyNote, "New diary" },
-    e = {
-      '<cmd>!mv "<cfile>" "<c-r>=expand(\'%:p:h\')<cr>/"<cr>',
-      "Embed file moving to current file's folder"
-    },
-    f = { "<Cmd>ZkNotes { sort = { 'modified' }}<CR>", "Find" },
-    g = { require('pwnvim.plugins').grammar_check, "Check Grammar" },
-    h = { "<cmd>edit ~/Notes/Notes/HotSheet.md<CR>", "Open HotSheet" },
-    i = {
-      c = {
-        "<cmd>r!/opt/homebrew/bin/icalBuddy --bullet '* ' --timeFormat '\\%H:\\%M' --dateFormat '' --noPropNames --noCalendarNames --excludeAllDayEvents --includeCals 'IC - Work' --includeEventProps datetime,title,attendees,location --propertyOrder datetime,title,attendees,location --propertySeparators '| |\\n    * |\\n    * | |' eventsToday<cr>",
-        "Insert today's calendar"
+  which_key.setup({
+    plugins = {
+      marks = true,      -- shows a list of your marks on ' and `
+      registers = true,  -- shows your registers on " in NORMAL or <C-r> in INSERT mode
+      spelling = {
+        enabled = true,  -- enabling this will show WhichKey when pressing z= to select spelling suggestions
+        suggestions = 20 -- how many suggestions should be shown in the list?
       },
-      o = { "<cmd>r!gtm-okr goals<cr>", "Insert OKRs" },
-      j = {
-        "<cmd>r!( (curl -s https://icanhazdadjoke.com/ | grep '\\\"subtitle\\\"') || curl -s https://icanhazdadjoke.com/ ) | sed 's/<[^>]*>//g' | sed -z 's/\\n/ /'<cr>",
-        "Insert joke"
+      -- the presets plugin, adds help for a bunch of default keybindings in Neovim
+      -- No actual key bindings are created
+      presets = {
+        operators = false,   -- adds help for operators like d, y, ... and registers them for motion / text object completion
+        motions = false,     -- adds help for motions
+        text_objects = true, -- help for text objects triggered after entering an operator
+        windows = true,      -- default bindings on <c-w>
+        nav = true,          -- misc bindings to work with windows
+        z = true,            -- bindings for folds, spelling and others prefixed with z
+        g = true             -- bindings for prefixed with g
       }
     },
-    m = { require("pwnvim.markdown").newMeetingNote, "New meeting" },
-    n = { require("pwnvim.markdown").newGeneralNote, "New" },
-    t = { "<cmd>ZkTags<CR>", "Open by tag" }
-    -- in open note (defined in plugins.lua as local-only shortcuts):
-    -- p: new peer note
-    -- l: show outbound links
-    -- r: show outbound links
-    -- i: info preview
-  },
-  t = {
-    name = "Tasks",
-    -- d = { "<cmd>lua require('pwnvim.tasks').completeTask()<cr>", "Done" },
-    d = { require("pwnvim.tasks").completeTaskDirect, "Task done" },
-    c = { require("pwnvim.tasks").createTaskDirect, "Task create" },
-    s = { require("pwnvim.tasks").scheduleTaskPrompt, "Task schedule" },
-    t = { require("pwnvim.tasks").scheduleTaskTodayDirect, "Task move today" }
-  },
+    -- hidden = {
+    --   "<silent>", "<CMD>", "<cmd>", "<Cmd>", "<cr>", "<CR>", "call", "lua", "^:",
+    --   "^ "
+    -- }, -- hide mapping boilerplate
+    show_help = true, -- show help message on the command line when the popup is visible
+    triggers = "auto" -- automatically setup triggers
+    -- triggers = {"<leader>"}
+    -- triggers_nowait = {"'", '"', "y", "d"}
+  })
+
+  which_key.register({
+    mode = { "n", "v" },
+    ["]"] = { name = "+next" },
+    ["["] = { name = "+prev" },
+    ["<leader>f"] = { name = "+find" },
+    ["<leader>g"] = { name = "+git" },
+    ["<leader>gt"] = { name = "+git toggle" },
+    ["<leader>h"] = { name = "+hunk" },
+    ["<leader>i"] = { name = "+indent" },
+    ["<leader>l"] = { name = "+lsp" },
+    ["<leader>n"] = { name = "+notes" },
+    ["<leader>t"] = { name = "+tasks" },
+  })
+
+  -- This file is for mappings that will work regardless of filetype. Always available.
+
+  -- ALL MODE (EXCEPT OPERATOR) MAPPINGS
+  -- Make F1 act like escape for accidental hits
+  M.map({ "n", "v", "i", "c" }, "<F1>", "<Esc>", "Escape")
+  -- Make F2 bring up a file browser
+  M.mapnvic("<F2>", "Oil .", "Toggle file browser")
+  -- Make F4 toggle invisible characters (locally)
+  M.mapnvic("<F4>", function()
+    if vim.opt_local.list:get() then
+      vim.opt_local.list = false
+      vim.opt_local.conceallevel = 2
+      vim.cmd("IBLEnable")
+    else
+      vim.opt_local.list = true
+      vim.opt_local.conceallevel = 0
+      vim.cmd("IBLDisable") -- indent lines hide some chars like tab
+    end
+  end, "Toggle show invisible chars")
+  -- Make ctrl-p open a file finder
+  -- When using ctrl-p, screen out media files that we probably don't want
+  -- to open in vim. And if we really want, then we can use ,ff
+  M.mapnvic("<c-p>", require("telescope.builtin").find_files, "Find files")
+  M.mapnvic("<F9>", "TZAtaraxis", "Focus mode")
+  -- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
+  M.mapnvic("<F10>", 'silent !qlmanage -p "%"', "Quicklook (mac)")
+  M.mapnvic("<F12>", 'syntax sync fromstart', "Restart highlighting")
+  -- Pane navigation integrated with tmux
+  M.mapnvic("<c-h>", "TmuxNavigateLeft", "Pane left")
+  M.mapnvic("<c-j>", "TmuxNavigateDown", "Pane down")
+  M.mapnvic("<c-k>", "TmuxNavigateUp", "Pane up")
+  M.mapnvic("<c-l>", "TmuxNavigateRight", "Pane right")
+  M.mapnvic("<D-w>", "Bdelete", "Close buffer")
+  M.mapnvic("<A-w>", "Bdelete", "Close buffer")
+  M.mapnvic("<M-w>", "Bdelete", "Close buffer")
+  M.mapnvic("<D-n>", "enew", "New buffer")
+  M.mapnvic("<D-t>", "tabnew", "New tab")
+  M.mapnvic("<D-s>", "write", "Save buffer")
+  M.mapnvic("<D-q>", "quit", "Quit")
+  -- Magic buffer-picking mode
+  M.mapnvic("<M-b>", "BufferLinePick", "Pick buffer by letter")
+
+  -- Copy and paste ops mainly for neovide / gui apps
+  if require("pwnvim.options").isGuiRunning() then
+    M.mapn("<D-v>", 'normal "+p', "Paste")
+    M.mapv("<D-c>", 'normal "+ygv', "Copy")
+    M.mapv("<D-v>", 'normal "+p', "Paste")
+    M.mapic("<D-v>", '<c-r>+', "Paste", { noremap = true, silent = false })
+    M.map("t", "<D-v>", '<C-\\><C-n>"+pa', "Paste")
+
+    -- Adjust font sizes
+    local function get_font()
+      local guifont = vim.api.nvim_get_option("guifont")
+      local curr_font = {}
+      curr_font.name = guifont:match("^(.*)%:")
+      curr_font.size = tonumber(guifont:match("%:h(%d+)"))
+      return curr_font
+    end
+    local function change_font(name, size)
+      vim.opt.guifont = name .. ":h" .. size
+    end
+    local function increase_font()
+      local curr_font = get_font()
+      local new_size = tostring(curr_font.size + 1)
+      change_font(curr_font.name, new_size)
+    end
+    local function decrease_font()
+      local curr_font = get_font()
+      local new_size = tostring(curr_font.size - 1)
+      change_font(curr_font.name, new_size)
+    end
+    local function reset_font()
+      local curr_font = get_font()
+      local new_size = require("pwnvim.options").defaultFontSize()
+      change_font(curr_font.name, new_size)
+    end
+    M.mapnvic("<D-=>", increase_font, "Increase font size")
+    M.mapnvic("<D-->", decrease_font, "Decrease font size")
+    M.mapnvic("<D-0>", reset_font, "Reset font size")
+    M.mapnvic("<C-=>", increase_font, "Increase font size")
+    M.mapnvic("<C-->", decrease_font, "Decrease font size")
+    M.mapnvic("<C-0>", reset_font, "Reset font size")
+  end
+
+  -- NORMAL MODE ONLY MAPPINGS
+  M.map("n", "<A-up>", "[e", "Move line up")
+  M.map("n", "<A-down>", "]e", "Move line down")
+  M.mapn("zi", function() -- override default fold toggle behavior to fix fold columns and scan
+    if vim.wo.foldenable then
+      -- Disable completely
+      vim.wo.foldenable = false
+      vim.wo.foldmethod =
+      "manual" -- seeing weird things where folds are off, but expression being run anyway. this should fix.
+      vim.wo.foldcolumn = "0"
+    else
+      vim.wo.foldenable = true
+      -- TODO: maybe save this value above and set back to last value?
+      vim.wo.foldmethod = "expr"
+      vim.wo.foldcolumn = "auto:4"
+      vim.cmd("normal zx") -- reset folds
+    end
+  end, "Toggle folding"
+  )
+  M.map("n", "<F8>", '"=strftime("%Y-%m-%d")<CR>P', "Insert date")
+  M.mapic("<F8>", '<C-R>=strftime("%Y-%m-%d")<CR>', "Insert date at cursor", { noremap = true, silent = false })
+  M.map("n", "<D-[>", "<<", "Outdent")
+  M.map("n", "<D-]>", ">>", "Indent")
+  M.map("n", "n", "nzzzv", "Center search hits vertically on screen and expand folds if hit is inside")
+  M.map("n", "N", "Nzzzv", "Center search hits vertically on screen and expand folds if hit is inside")
+  M.map("n", "<c-d>", "<c-d>zz", "Half scroll down keep cursor center screen")
+  M.map("n", "<c-u>", "<c-u>zz", "Half scroll up keep cursor center screen")
+  -- gx is a built-in to open URLs under the cursor, but when
+  -- not using netrw, it doesn't work right. Or maybe it's just me
+  -- but anyway this command works great.
+  -- /Users/pwalsh/Documents/md2rtf-style.html
+  -- ../README.md
+  -- ~/Desktop/Screen Shot 2018-04-06 at 5.19.32 PM.png
+  -- [abc](https://github.com/adsr/mle/commit/e4dc4314b02a324701d9ae9873461d34cce041e5.patch)
+  M.mapn("gx", 'silent !open "<c-r><c-f>" || xdg-open "<c-r><c-f>"', "Launch URL or path")
+  M.mapn("*",
+    function()
+      local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "/", "\\/") ..
+          "\\>"
+      -- Can't find a way to have flash jump keep going past what's visible on the screen
+      vim.api.nvim_feedkeys("/\\V" .. text .. enter, 'n', false)
+    end, "Find word under cursor forward"
+  )
+  M.mapn("#",
+    function()
+      local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "?", "\\?") ..
+          "\\>"
+      vim.api.nvim_feedkeys("?\\V" .. text .. enter, 'n', false)
+    end, "Find word under cursor backward"
+  )
+  M.mapn("g*",
+    function()
+      -- Same as above, but don't qualify as full word only
+      local text = string.gsub(vim.fn.expand("<cword>"), "/", "\\/")
+      vim.api.nvim_feedkeys("/\\V" .. text .. enter, 'n', false)
+    end, "Find partial word under cursor forward"
+  )
+  M.mapn("g#",
+    function()
+      -- Same as above, but don't qualify as full word only
+      local text = string.gsub(vim.fn.expand("<cword>"), "?", "\\?")
+      vim.api.nvim_feedkeys("?" .. text .. enter, 'n', false)
+      -- vim.cmd("?\\V" .. text) -- works, but doesn't trigger flash
+    end, "Find partial word under cursor backward"
+  )
+  M.map("n", "<space>", [[@=(foldlevel('.')?'za':"\<Space>")<CR>]], "Toggle folds if enabled")
+
+
+  M.mapn("<leader>p", 'normal "*p', "Paste")
+  M.mapn("[0", "BufferLinePick", "Pick buffer by letter")
+  M.mapn("]0", "BufferLinePick", "Pick buffer by letter")
+
+  M.map("v", "gx", '"0y:silent !open "<c-r>0" || xdg-open "<c-r>0"<cr>gv', "Launch URL or path")
+  -- When pasting over selected text, keep original register value
+  M.map("v", "p", '"_dP', "Paste over selected no store register")
+  -- keep visual block so you can move things repeatedly
+  M.map("v", "<", "<gv", "Outdent and preserve block")
+  M.map("v", ">", ">gv", "Indent and preserve block")
+  M.mapi("<D-[>", "<C-d>", "Outdent")
+  M.mapi("<D-]>", "<C-t>", "Indent")
+  M.map("v", "<D-[>", "<gv", "Outdent and preserve block")
+  M.map("v", "<D-]>", ">gv", "Indent and preserve block")
+  M.map("v", "<A-Up>", "[egv", "Move line up preserve block")
+  M.map("v", "<A-Down>", "]egv", "Move line down preserve block")
+
+  -- emacs bindings to jump around in lines
+  M.mapi("<C-e>", "<C-o>A", "Jump to end of line")
+  M.mapi("<C-a>", "<C-o>I", "Jump to start of line")
+
+  -- Send cursor somewhere on screen and pick a text object from it.
+  -- Uses operator pending mode so you start it with something like `yr` then
+  -- after jump pick the text object like `iw` and you'll copy that other thing
+  -- and be back where you were at the start.
+  M.map("o", "R", require("flash").remote, "Remote operation via Flash")
+  M.map("o", "<c-s>", require("flash").jump, "Flash select")
+  M.map("o", "r", require("flash").treesitter, "Flash select")
+  --
+  -- Move visually selected lines up and down
+  -- vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+  -- vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+
+  M.mapleadernv("e", "Oil", "Find current file in file browser")
+  M.mapleadernv("/", "nohlsearch", "Clear highlight")
+  M.mapleadernv("x", "Bdelete!", "Close buffer")
+  M.mapleadernv("q", "TroubleToggle", "Toggle trouble quicklist")
+  M.mapleadernv("fb",
+    function() require('telescope.builtin').buffers(require('telescope.themes').get_dropdown { previewer = false }) end,
+    "Buffers")
+  M.mapleadernv("fc", function() require('telescope.builtin').live_grep({ search_dirs = { vim.fn.expand('%:p:h') } }) end,
+    "Grep from dir of current file")
+  M.mapleadernv("fd", require('telescope.builtin').lsp_document_symbols, "Document symbols search")
+  M.mapleadernv("ff", require('telescope.builtin').find_files, "Files")
+  M.mapleadernv("fg", require('telescope.builtin').live_grep, "Grep")
+  M.mapleadernv("fh", function()
+    -- if CWD has a .git dir, then specify workspace=CWD
+    if vim.fn.isdirectory('.git') ~= 0 then
+      require("telescope").extensions.frecency.frecency({ workspace = "CWD", theme = "dropdown" })
+    else
+      -- path_display only works when workspace isn't specified :(
+      require("telescope").extensions.frecency.frecency({ theme = "dropdown", path_display = { "truncate" } })
+    end
+  end, "History local")
+  M.mapleadernv("fk", require('telescope.builtin').keymaps, "Keymaps")
+  M.mapleadernv("fl", require('telescope.builtin').loclist, "Loclist")
+  M.mapleadernv("fn", function() require('zk.commands').get("ZkNotes")({ sort = { 'modified' } }) end, "Find notes")
+  M.mapleadernv("fo", require('telescope.builtin').oldfiles, "Old File History Global")
+  M.mapleadernv("fp", require("telescope").extensions.projects.projects, "Projects")
+  M.mapleadernv("fq", require('telescope.builtin').quickfix, "Quickfix")
+  -- ,fs mapping done inside lsp attach functions
+  M.mapleadernv("ft",
+    'lua require(\'telescope.builtin\').grep_string{search = "^\\\\s*[*-] \\\\[ \\\\]", previewer = false, glob_pattern = "*.md", use_regex = true, disable_coordinates=true}',
+    "Todos")
+  M.mapleadernv("fz", function()
+    require("pwnvim.plugins").telescope_get_folder_common_folders({
+      ".config", "src/sideprojects", "src/icl", "src/icl/website.worktree", "src/personal", "src/gh",
+      "Sync/Private", "Sync/Private/Finances", "Sync/IronCore Docs", "Sync/IronCore Docs/Legal",
+      "Sync/IronCore Docs/Finances", "Sync/IronCore Docs/Design",
+      "Notes", "Notes/Notes", "Notes/Notes/meetings"
+    }, 1, function(folder)
+      vim.cmd.lcd(folder)
+      require("oil").open(folder) -- if we bail on picking a file, we have the file browser as fallback
+      require("telescope.builtin").find_files()
+    end)
+  end, "Open folder")
+
+  -- Quickly change indent defaults in a file
+  M.mapleadernv("i1", require('pwnvim.options').tabindent, "Tab")
+  M.mapleadernv("i2", require('pwnvim.options').twospaceindent, "Two Space")
+  M.mapleadernv("i4", require('pwnvim.options').fourspaceindent, "Four Space")
+  M.mapleadernv("ir", "%retab!", "Change existing indent to current with retab")
+
+  -- Git bindings
+  -- Browse git things
+  M.mapleadernv("gs", require('telescope.builtin').git_status, "Status")
+  M.mapleadernv("gb", require('telescope.builtin').git_branches, "Branches")
+  M.mapleadernv("gc", require('telescope.builtin').git_commits, "Commits")
+  -- Worktree stuff
+  M.mapleadernv("gws", require('telescope').extensions.git_worktree.git_worktrees, "Switch worktree")
+  M.mapleadernv("gwn", require('telescope').extensions.git_worktree.create_git_worktree, "New worktree")
+  -- Bunch more will be mapped locally with gitsigns when it loads. See ./gitsigns.lua
+
+
   -- Set cwd to current file's dir
-  ["cd"] = { "<cmd>cd %:h<cr>", "Change dir to path of current file" },
-  ["sd"] = {
-    [[:echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')<CR>]],
-    "Debug syntax files"
-  }
-}
-local leader_visual_mappings = {
-  t = {
-    name = "Tasks",
-    a = {
-      ':grep "^\\s*[*-] \\[ \\] "<cr>:Trouble quickfix<cr>',
-      "All tasks quickfix"
-    },
-    -- d = { function() require("pwnvim.tasks").eachSelectedLine(require("pwnvim.tasks").completeTask) end, "Done" },
-    d = { ":luado return require('pwnvim.tasks').completeTask(line)<cr>", "Done" },
-    s = { require("pwnvim.tasks").scheduleTaskBulk, "Schedule" },
-    -- s needs a way to call the prompt then reuse the value
-    -- t = { function() require("pwnvim.tasks").eachSelectedLine(require("pwnvim.tasks").scheduleTaskToday) end, "Today" },
-    t = {
-      ":luado return require('pwnvim.tasks').scheduleTaskToday(line)<cr>",
-      "Today"
-    }
-  },
-  n = {
-    e = {
-      '"0y:!mv "<c-r>0" "<c-r>=expand(\'%:p:h\')<cr>/"<cr>',
-      "Embed file moving to current file's folder"
-    },
-    f = { ":'<,'>ZkMatch<CR>", "Find Selected" }
-  },
-  i = leader_mappings.i,
-  f = leader_mappings.f,
-  e = leader_mappings.e,
-  q = leader_mappings.q,
-  x = leader_mappings.x
-}
+  M.mapleadernv("lcd", "lcd %:h", "Change local dir to path of current file")
+  M.mapleadernv("cd", "cd %:h", "Change global dir to path of current file")
 
-which_key.register(leader_mappings, {
-  mode = "n",     -- NORMAL mode
-  prefix = "<leader>",
-  buffer = nil,   -- Global mappings. Specify a buffer number for buffer local mappings
-  silent = true,  -- use `silent` when creating keymaps
-  noremap = true, -- use `noremap` when creating keymaps
-  nowait = true   -- use `nowait` when creating keymaps
-})
-which_key.register(leader_visual_mappings, {
-  mode = "v",     -- VISUAL mode
-  prefix = "<leader>",
-  buffer = nil,   -- Global mappings. Specify a buffer number for buffer local mappings
-  silent = true,  -- use `silent` when creating keymaps
-  noremap = true, -- use `noremap` when creating keymaps
-  nowait = true   -- use `nowait` when creating keymaps
-})
+  -- note shortcuts
+  M.mapleadernv("nd", require("pwnvim.markdown").newDailyNote, "New diary")
+  M.mapleadern("ne", '!mv "<cfile>" "<c-r>=expand(\'%:p:h\')<cr>/"', "Embed file moving to current file's folder")
+  M.mapleaderv("ne", 'normal "0y:!mv "<c-r>0" "<c-r>=expand(\'%:p:h\')<cr>/"',
+    "Embed file moving to current file's folder")
+  M.mapleadern("nf", "ZkNotes { sort = { 'modified' }}", "Find")
+  M.map({ "v" }, "<leader>nf", ":'<,'>ZkMatch<CR>", "Find Selected")
 
-which_key.register({
-  ["<D-j>"] = { "gj", "Down screen line" },
-  ["<D-k>"] = { "gk", "Up screen line" },
-  ["<D-4>"] = { "g$", "End of screen line" },
-  ["<D-6>"] = { "g^", "Beginning of screen line" },
+  M.mapleadernv("ng", require('pwnvim.plugins').grammar_check, "Check Grammar")
+  M.mapleadernv("nh", "edit ~/Notes/Notes/HotSheet.md", "Open HotSheet")
+  M.mapleadernv("nm", require("pwnvim.markdown").newMeetingNote, "New meeting")
+  M.mapleadernv("nn", require("pwnvim.markdown").newGeneralNote, "New")
+  M.mapleadernv("nt", "ZkTags", "Open by tag")
+
+  -- note insert shortcuts
+  M.mapleadernv("nic",
+    "r!/opt/homebrew/bin/icalBuddy --bullet '* ' --timeFormat '\\%H:\\%M' --dateFormat '' --noPropNames --noCalendarNames --excludeAllDayEvents --includeCals 'IC - Work' --includeEventProps datetime,title,attendees,location --propertyOrder datetime,title,attendees,location --propertySeparators '| |\\n    * |\\n    * | |' eventsToday",
+    "Insert today's calendar")
+  M.mapleadernv("nio", "r!gtm-okr goals", "Insert OKRs")
+  M.mapleadernv("nij",
+    "r!( (curl -s https://icanhazdadjoke.com/ | grep '\\\"subtitle\\\"') || curl -s https://icanhazdadjoke.com/ ) | sed 's/<[^>]*>//g' | sed -z 's/\\n/ /'",
+    "Insert joke")
+  -- in open note (defined in plugins.lua as local-only shortcuts) via LSPs:
+  -- p: new peer note
+  -- l: show outbound links
+  -- r: show outbound links
+  -- i: info preview
+
+  -- task shortcuts
+  M.mapleaderv("ta", 'grep "^\\s*[*-] \\[ \\] "<cr>:Trouble quickfix', "All tasks quickfix")
+  M.mapleadern("td", require("pwnvim.tasks").completeTaskDirect, "Task done")
+  M.mapleaderv("td", "luado return require('pwnvim.tasks').completeTask(line)", "Done")
+  M.mapleadern("tc", require("pwnvim.tasks").createTaskDirect, "Task create")
+  M.mapleadern("ts", require("pwnvim.tasks").scheduleTaskPrompt, "Task schedule")
+  M.mapleaderv("ts", require("pwnvim.tasks").scheduleTaskBulk, "Schedule")
+  M.mapleadern("tt", require("pwnvim.tasks").scheduleTaskTodayDirect, "Task move today")
+  M.mapleaderv("tt", "luado return require('pwnvim.tasks').scheduleTaskToday(line)<cr>", "Today")
+
+  M.mapleadern("sd", [[echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')]], "Debug syntax files")
+
+  M.mapn("<D-j>", "normal gj", "Down screen line")
+  M.mapn("<D-k>", "normal gk", "Up screen line")
+  M.mapn("<D-4>", "normal g$", "End of screen line")
+  M.mapn("<D-6>", "normal g^", "Beginning of screen line")
   -- Visually select the text that was last edited/pasted
   -- Similar to gv but works after paste
-  ["gV"] = { "`[v`]", "Visually select the text last edited (after paste)" },
-  -- Have ctrl-l continue to do what it did, but also temp clear search match highlighting
-  Y = { "y$", "Yank to end of line" },
-  --["-"] = { "<cmd>NvimTreeFindFile<cr>", "Find current file in file browser" }
-  ["-"] = { "<cmd>Oil<cr>", "Find current file in file browser" },
-  ["_"] = { "<cmd>Oil .<cr>", "File browser from project root" }
-}, { mode = "n", noremap = true, silent = true })
+  M.map({ "n" }, "gV", "`[v`]", "Visually select the text last edited (after paste)")
+  M.map({ "n" }, "Y", "y$", "Yank to end of line")
+  M.mapnv("-", "Oil", "Find current file in file browser")
+  M.mapnv("_", "Oil .", "File browser from project root")
 
--- Make nvim terminal more sane
-which_key.register({
-  ["<esc>"] = { [[<C-\><C-n>]], "Get to normal mode in terminal" },
-  ["<M-[>"] = { "<esc>", "Send escape to terminal" },
-  ["<C-v><Esc>"] = { "<esc>", "Send escape to terminal" },
-  ["<C-h>"] = { [[<Cmd>wincmd h<CR>]], "Move one window left" },
-  ["<C-j>"] = { [[<Cmd>wincmd j<CR>]], "Move one window down" },
-  ["<C-k>"] = { [[<Cmd>wincmd k<CR>]], "Move one window up" },
-  ["<C-l>"] = { [[<Cmd>wincmd l<CR>]], "Move one window right" },
-  ["<C-v><C-h>"] = { [[<C-h>]], "Send c-h to terminal" },
-  ["<C-v><C-j>"] = { [[<C-j>]], "Send c-j to terminal" },
-  ["<C-v><C-k>"] = { [[<C-k>]], "Send c-k to terminal" },
-  ["<C-v><C-l>"] = { [[<C-l>]], "Send c-l to terminal" }
-}, { mode = "t", noremap = true, silent = true })
+  -- TODO Have ctrl-l continue to do what it did, but also temp clear search match highlighting
 
--- Setup tpope unimpaired-like forward/backward shortcuts reminders
-which_key.register({
-  ["[A"] = "First file arg",
-  ["[a"] = "Prev file arg",
-  ["]a"] = "Next file arg",
-  ["]A"] = "Last file arg",
-  ["[B"] = "First buffer",
-  ["]B"] = "Last buffer",
-  ["[b"] = { "<Cmd>BufferLineCyclePrev<CR>", "Prev buffer" },
-  ["]b"] = { "<Cmd>BufferLineCycleNext<CR>", "Next buffer" },
-  ["[c"] = "Prev git hunk",
-  ["]c"] = "Next git hunk",
-  ["[f"] = "Prev file in dir of cur file",
-  ["]f"] = "Next file in dir of cur file",
-  ["[L"] = "First loclist item",
-  ["[l"] = "Prev loclist item",
-  ["]l"] = "Next loclist item",
-  ["]L"] = "Last loclist item",
-  ["[Q"] = "First quicklist item",
-  ["[q"] = "Prev quicklist item",
-  ["]q"] = "Next quicklist item",
-  ["]Q"] = "Last quicklist item",
-  ["]p"] = "Put below",
-  ["]P"] = "Put below",
-  ["[t"] = { "<Cmd>tabprevious<cr>", "Prev tab" },
-  ["[T"] = { "<Cmd>tabprevious<cr>", "First tab" },
-  ["]t"] = { "<Cmd>tabnext<cr>", "Next tab" },
-  ["]T"] = { "<Cmd>tablast<cr>", "Last tab" },
-  ["[n"] = "Prev conflict",
-  ["]n"] = "Next conflict",
-  ["[ "] = "Add blank line before",
-  ["] "] = "Add blank line after",
-  ["[e"] = "Swap line with previous",
-  ["]e"] = "Swap line with next",
-  ["[x"] = "XML encode",
-  ["]x"] = "XML decode",
-  ["[u"] = "URL encode",
-  ["]u"] = "URL decode",
-  ["[y"] = "C escape",
-  ["]y"] = "C unescape",
-  ["[d"] = { "<cmd>lua vim.diagnostic.goto_prev()<CR>", "Prev diagnostic" },
-  ["]d"] = { "<cmd>lua vim.diagnostic.goto_next()<CR>", "Next diagnostic" },
-  ["[1"] = { ":BufferLineGoToBuffer 1<CR>", "Go to buffer 1" },
-  ["]1"] = { ":BufferLineGoToBuffer 1<CR>", "Go to buffer 1" },
-  ["[2"] = { ":BufferLineGoToBuffer 2<CR>", "Go to buffer 2" },
-  ["]2"] = { ":BufferLineGoToBuffer 2<CR>", "Go to buffer 2" },
-  ["[3"] = { ":BufferLineGoToBuffer 3<CR>", "Go to buffer 3" },
-  ["]3"] = { ":BufferLineGoToBuffer 3<CR>", "Go to buffer 3" },
-  ["[4"] = { ":BufferLineGoToBuffer 4<CR>", "Go to buffer 4" },
-  ["]4"] = { ":BufferLineGoToBuffer 4<CR>", "Go to buffer 4" },
-  ["[5"] = { ":BufferLineGoToBuffer 5<CR>", "Go to buffer 5" },
-  ["]5"] = { ":BufferLineGoToBuffer 5<CR>", "Go to buffer 5" },
-  ["[6"] = { ":BufferLineGoToBuffer 6<CR>", "Go to buffer 6" },
-  ["]6"] = { ":BufferLineGoToBuffer 6<CR>", "Go to buffer 6" },
-  ["[7"] = { ":BufferLineGoToBuffer 7<CR>", "Go to buffer 7" },
-  ["]7"] = { ":BufferLineGoToBuffer 7<CR>", "Go to buffer 7" },
-  ["[8"] = { ":BufferLineGoToBuffer 8<CR>", "Go to buffer 8" },
-  ["]8"] = { ":BufferLineGoToBuffer 8<CR>", "Go to buffer 8" },
-  ["[9"] = { ":BufferLineGoToBuffer 9<CR>", "Go to buffer 9" },
-  ["]9"] = { ":BufferLineGoToBuffer 9<CR>", "Go to buffer 9" },
-  ["<S-h>"] = { ":BufferLineCyclePrev<CR>", "Go to next buffer" },
-  ["<S-l>"] = { ":BufferLineCycleNext<CR>", "Go to prev buffer" },
-  f = "Find next char x",
-  F = "Find prev char x",
-  t = "Find before prev char x",
-  T = "Find before prev char x"
-}, { mode = "n", silent = true })
+  -- Make nvim terminal more sane
+  M.map({ "t" }, "<esc>", [[<C-\><C-n>]], "Get to normal mode in terminal")
+  M.map({ "t" }, "<M-[>", "<esc>", "Send escape to terminal")
+  M.map({ "t" }, "<C-v><Esc>", "<esc>", "Send escape to terminal")
+  M.mapt("<c-j>", "wincmd j", "Move one window down")
+  M.mapt("<c-h>", "wincmd h", "Move one window left")
+  M.mapt("<c-k>", "wincmd k", "Move one window up")
+  M.mapt("<c-l>", "wincmd l", "Move one window right")
+  M.map("t", "<c-v><c-j>", "<c-j>", "Send c-j to terminal")
+  M.map("t", "<c-v><c-h>", "<c-h>", "Send c-h to terminal")
+  M.map("t", "<c-v><c-k>", "<c-k>", "Send c-k to terminal")
+  M.map("t", "<c-v><c-l>", "<c-l>", "Send c-l to terminal")
 
-which_key.register({
-  f = "Find next char x",
-  F = "Find prev char x",
-  t = "Find before prev char x",
-  T = "Find before prev char x"
-}, { mode = "o", silent = true })
 
--- Flash mappings
--- Note: the regular mappings mess up surround plugin and various modes
--- Flash automatically enhances search (with / or ?) and char search (f, F, t, T)
+  -- Setup tpope unimpaired-like forward/backward shortcuts reminders
+  which_key.register({
+    ["[A"] = "First file arg",
+    ["[a"] = "Prev file arg",
+    ["]a"] = "Next file arg",
+    ["]A"] = "Last file arg",
+    ["[B"] = "First buffer",
+    ["]B"] = "Last buffer",
+    ["[b"] = { "<Cmd>BufferLineCyclePrev<CR>", "Prev buffer" },
+    ["]b"] = { "<Cmd>BufferLineCycleNext<CR>", "Next buffer" },
+    ["[c"] = "Prev git hunk",
+    ["]c"] = "Next git hunk",
+    ["[f"] = "Prev file in dir of cur file",
+    ["]f"] = "Next file in dir of cur file",
+    ["[L"] = "First loclist item",
+    ["[l"] = "Prev loclist item",
+    ["]l"] = "Next loclist item",
+    ["]L"] = "Last loclist item",
+    ["[Q"] = "First quicklist item",
+    ["[q"] = "Prev quicklist item",
+    ["]q"] = "Next quicklist item",
+    ["]Q"] = "Last quicklist item",
+    ["]p"] = "Put below",
+    ["]P"] = "Put below",
+    ["[t"] = { "<Cmd>tabprevious<cr>", "Prev tab" },
+    ["[T"] = { "<Cmd>tabfirst<cr>", "First tab" },
+    ["]t"] = { "<Cmd>tabnext<cr>", "Next tab" },
+    ["]T"] = { "<Cmd>tablast<cr>", "Last tab" },
+    ["[n"] = "Prev conflict",
+    ["]n"] = "Next conflict",
+    ["[ "] = "Add blank line before",
+    ["] "] = "Add blank line after",
+    ["[e"] = "Swap line with previous",
+    ["]e"] = "Swap line with next",
+    ["[x"] = "XML encode",
+    ["]x"] = "XML decode",
+    ["[u"] = "URL encode",
+    ["]u"] = "URL decode",
+    ["[y"] = "C escape",
+    ["]y"] = "C unescape",
+    ["[d"] = { vim.diagnostic.goto_prev, "Prev diagnostic" },
+    ["]d"] = { vim.diagnostic.goto_next, "Next diagnostic" },
+    ["[1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "Go to buffer 1" },
+    ["]1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "Go to buffer 1" },
+    ["[2"] = { "<cmd>BufferLineGoToBuffer 2<CR>", "Go to buffer 2" },
+    ["]2"] = { "<cmd>BufferLineGoToBuffer 2<CR>", "Go to buffer 2" },
+    ["[3"] = { "<cmd>BufferLineGoToBuffer 3<CR>", "Go to buffer 3" },
+    ["]3"] = { "<cmd>BufferLineGoToBuffer 3<CR>", "Go to buffer 3" },
+    ["[4"] = { "<cmd>BufferLineGoToBuffer 4<CR>", "Go to buffer 4" },
+    ["]4"] = { "<cmd>BufferLineGoToBuffer 4<CR>", "Go to buffer 4" },
+    ["[5"] = { "<cmd>BufferLineGoToBuffer 5<CR>", "Go to buffer 5" },
+    ["]5"] = { "<cmd>BufferLineGoToBuffer 5<CR>", "Go to buffer 5" },
+    ["[6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "Go to buffer 6" },
+    ["]6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "Go to buffer 6" },
+    ["[7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "Go to buffer 7" },
+    ["]7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "Go to buffer 7" },
+    ["[8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "Go to buffer 8" },
+    ["]8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "Go to buffer 8" },
+    ["[9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "Go to buffer 9" },
+    ["]9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "Go to buffer 9" },
+    ["<S-h>"] = { "<cmd>BufferLineCyclePrev<CR>", "Go to next buffer" },
+    ["<S-l>"] = { "<cmd>BufferLineCycleNext<CR>", "Go to prev buffer" },
+  }, { mode = "n", silent = true })
 
--- ctrl-s will toggle that enhancement for search when in the midst of searching
-which_key.register({
-  ["<c-s>"] = { function() require("flash").toggle() end, "Toggle Flash Search" }
-}, { mode = "c" })
 
--- ctrl-s will do general screen jump otherwise
-which_key.register({
-  ["<c-s>"] = {
-    function() require("flash").jump({ jump = { autojump = true } }) end,
-    "Flash Search"
-  },
-  ["<leader>fj"] = {
-    function() require("flash").jump({ jump = { autojump = true } }) end,
-    "Jump on screen"
-  }
-}, { mode = "n" })
+  -- Flash mappings
+  -- Note: the regular mappings mess up surround plugin and various modes
+  -- Flash automatically enhances search (with / or ?) and char search (f, F, t, T)
 
--- Replace vim-visual plugin * and # search of word under cursor
--- The \V tells vim to not treat any special chars as special (except backslash)
--- <cname> won't include a backslash in the word
--- The \< and \> mark word start and end so `*` search for the exact word as a word
--- and `gv` search for the word even if within other words
--- which_key.register({}, { mode = "n" })
+  -- ctrl-s will toggle that enhancement for search when in the midst of searching
+  which_key.register({
+    ["<c-s>"] = { require("flash").toggle, "Toggle Flash Search" }
+  }, { mode = "c" })
 
--- Start visual mode and then adjust selection by treesitter nodes with s
--- so `vs` or `vjjs` or whatever should allow selecting a treesitter node
--- or expanding/contracting it with `;` and `,`
-which_key.register({
-  ["<c-s>"] = { require("flash").jump, "Visual Extend via Flash" },
-  r = { require("flash").treesitter, "Visual Extend to Treesitter block" }
-}, { mode = "x" })
+  -- Start visual mode and then adjust selection by treesitter nodes with s
+  -- so `vs` or `vjjs` or whatever should allow selecting a treesitter node
+  -- or expanding/contracting it with `;` and `,`
+  -- ctrl-s will do general screen jump otherwise
+  M.mapn("<c-s>", function() require("flash").jump({ jump = { autojump = true } }) end, "Flash Search")
+  M.mapleadern("fj", function() require("flash").jump({ jump = { autojump = true } }) end, "Jump on screen")
+  M.mapox("<c-s>", require("flash").jump, "Visual Extend via Flash")
+  M.mapox("r", require("flash").treesitter, "Visual Extend to Treesitter block")
+end
+
+return M

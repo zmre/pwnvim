@@ -212,18 +212,13 @@
                 # Removing 2022-11-30 as it is slow and treesitter generally does the same thing
                 # vim-polyglot # lazy load all the syntax plugins for all the languages
                 rust-tools-nvim # lsp stuff and more for rust
-                crates-nvim # inline intelligence for Cargo.toml
                 nvim-lspconfig # setup LSP for intelligent coding
-                # null-ls-nvim # formatting and linting via lsp system
                 nvim-lint # replace null-ls for linting bits
                 conform-nvim # replace null-ls and lsp-format-nvim for formatting
                 trouble-nvim # navigate all warnings and errors in quickfix-like window
                 #nvim-dap # debugging functionality used by rust-tools-nvim
                 #nvim-dap-ui # ui for debugging
-                #lsp-format-nvim
-                todo-comments-nvim
                 neodev-nvim # help for neovim lua api
-                nvim-nu # support for nushell scripts
                 SchemaStore-nvim # json schemas
                 vim-matchup # replaces built-in matchit and matchparen with better matching and faster
 
@@ -238,14 +233,13 @@
                 dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope
                 nvim-colorizer-lua # color over CSS like #00ff00
                 nvim-web-devicons # makes things pretty; used by many plugins below
-                #nvim-tree-lua # file navigator
-                oil-nvim
+                oil-nvim # file navigator
                 git-worktree-nvim # jump between worktrees
                 gitsigns-nvim # git status in gutter
                 # symbols-outline-nvim # navigate the current file better
                 lualine-nvim # nice status bar at bottom
                 vim-bbye # fix bdelete buffer stuff needed with bufferline
-                bufferline-nvim
+                bufferline-nvim # tabs at top
                 indent-blankline-nvim # visual indent
                 toggleterm-nvim # better terminal management
                 nvim-treesitter.withAllGrammars
@@ -264,7 +258,6 @@
                 nvim-surround # .... updated lua-based alternative to tpope's surround
                 vim-unimpaired # bunch of convenient navigation key mappings
                 vim-repeat # supports all of the above so you can use .
-                comment-nvim # code commenter
                 #nvim-ts-context-commentstring # makes kommentary contextual for embedded languages
                 vim-eunuch # brings cp/mv type commands. :Rename and :Move are particularly handy
                 vim-speeddating # allows ctrl-x and ctrl-a to increment/decrement dates
@@ -316,6 +309,9 @@
               #hologram-nvim # images inline for markdown (only in terminal)
               direnv-vim # auto-execute nix direnv setups -- currently my slowest plugin; enabled by programming filetype
               clipboard-image # only loaded in markdown files
+              comment-nvim # code commenter
+              crates-nvim # inline intelligence for Cargo.toml
+              todo-comments-nvim # highlight comments like NOTE
             ];
           };
         };

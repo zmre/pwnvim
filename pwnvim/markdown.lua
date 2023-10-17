@@ -11,8 +11,9 @@ M.mdFoldLevel = function(lnum)
   end
 end
 
-M.setup = function()
-  local bufnr = vim.api.nvim_get_current_buf()
+M.setup = function(ev)
+  -- local bufnr = vim.api.nvim_get_current_buf()
+  local bufnr = ev.buf
   vim.g.joinspaces = true
   vim.wo.number = false
   vim.wo.relativenumber = false
@@ -38,87 +39,64 @@ M.setup = function()
   -- except temp off until https://github.com/MDeiml/tree-sitter-markdown/issues/114
 
   require('pwnvim.markdown').markdownsyntax()
+  vim.diagnostic.config({ virtual_lines = false }) -- no need to see this in markdown -- wavy underlines good enough
 
   -- normal mode mappings
-  require("which-key").register({
-    m = { ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview" }
-  }, {
-    mode = "n",
-    prefix = "<leader>",
-    buffer = bufnr,
-    silent = true,
-    noremap = true
-  })
-  require("which-key").register({
-    ["gl*"] = {
-      [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],
-      "Add bullets"
-    },
-    ["gl>"] = {
-      [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],
-      "Add quotes"
-    },
-    ["gl["] = {
-      [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>5l]],
-      "Add task"
-    },
-    ["gt"] = {
-      "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>",
-      "Convert URL to link"
-    },
-    ["gp"] = { require('pwnvim.markdown').pasteUrl, "Paste URL as link" },
-    ["<C-M-v>"] = { require('pwnvim.markdown').pasteUrl, "Paste URL as link" },
-    ["<D-b>"] = { 'ysiwe', "Bold" },
-    ["<leader>b"] = { 'ysiwe', "Bold" },
-    ["<D-i>"] = { 'ysiw_', "Italic" },
-    ["<leader>i"] = { 'ysiw_', "Italic" },
-    ["<D-1>"] = { 'ysiw`', "Code block" },
-    ["<leader>`"] = { 'ysiw`', "Code block" },
-    ["<D-l>"] = { 'ysiW]%a(`', "Link" }
-  }, { mode = "n", buffer = bufnr, silent = true, noremap = true })
+  local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
+  local mapilocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapi)
+  local mapvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapv)
+  local mapnviclocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapnvic)
+
+  mapnlocal("<leader>m", ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview")
+  mapnlocal("gl*", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],
+    "Add bullets")
+  mapnlocal("gl>", [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],
+    "Add block quote")
+  mapnlocal("gl[", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>5l]],
+    "Add task")
+  mapnlocal("gt", require('pwnvim.markdown').transformUrlUnderCursorToMdLink, "Convert URL to link")
+  mapnlocal("gp", require('pwnvim.markdown').pasteUrl, "Paste URL as link")
+  mapnlocal("<C-M-v>", require('pwnvim.markdown').pasteUrl, "Paste URL as link")
+  mapnlocal("<D-b>", 'ysiwe', "Bold")
+  mapnlocal("<leader>b", 'ysiwe', "Bold")
+  mapnlocal("<D-i>", 'ysiw_', "Italic")
+  mapnlocal("<leader>i", 'ysiw_', "Italic")
+  mapnlocal("<D-1>", 'ysiw`', "Code block")
+  mapnlocal("<leader>`", 'ysiw`', "Code block")
+  mapnlocal("<D-l>", 'ysiW]%a(`', "Link")
 
   -- insert mode mappings
-  require("which-key").register({
-    ["<C-M-v>"] = { require('pwnvim.markdown').pasteUrl, "Paste URL as link" },
-    ["<D-b>"] = { "****<C-O>h", "Bold" },
-    ["<D-i>"] = { [[__<C-O>h]], "Italic" },
-    ["<D-1>"] = { [[``<C-O>h]], "Code block" },
-    ["<tab>"] = { function() require('pwnvim.markdown').indent() end, "Indent" },
-    ["<s-tab>"] = {
-      function() require('pwnvim.markdown').outdent() end, "Outdent"
-    }
-  }, { mode = "i", buffer = bufnr, silent = true, noremap = true })
+  mapilocal("<C-M-v>", require('pwnvim.markdown').pasteUrl, "Paste URL as link")
+  mapilocal("<D-b>", "****<C-O>h", "Bold")
+  mapilocal("<D-i>", [[__<C-O>h]], "Italic")
+  mapilocal("<D-1>", [[``<C-O>h]], "Code block")
+  mapilocal("<tab>", require('pwnvim.markdown').indent, "Indent")
+  mapilocal("<s-tab>", require('pwnvim.markdown').outdent, "Outdent")
+
+  mapnviclocal("<F7>", function()
+    vim.cmd("lvimgrep /^#/ %")
+    require("trouble").toggle("loclist")
+  end, "Show doc outline")
 
   -- visual mode mappings
-  require("which-key").register({
-    ["gl*"] = {
-      [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
-      "Add bullets"
-    },
-    ["gl>"] = {
-      [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
-      "Add quotes"
-    },
-    ["gl["] = {
-      [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*)/\1* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
-      "Add task"
-    },
-    ["gt"] = {
-      "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>",
-      "Convert URL to link"
-    },
-    ["<D-b>"] = { "Se", "Bold" },
-    ["<leader>b"] = { "Se", "Bold" },
-    ["<D-i>"] = { "S_", "Italic" },
-    ["<leader>i"] = { "S_", "Italic" },
-    ["<D-1>"] = { "S`", "Code ticks" },
-    ["<leader>`"] = { "S_", "Code ticks" },
-    ["<D-l>"] = { "S]%a(", "Code ticks" }
-  }, { mode = "v", buffer = bufnr, silent = true, noremap = true })
+  mapvlocal("gl*", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
+    "Add bullets")
+  mapvlocal("gl>", [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], "Add quotes")
+  mapvlocal("gl[", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*)/\1* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
+    "Add task")
+  mapvlocal("gt", "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>", "Convert URL to link")
+  mapvlocal("<D-b>", "Se", "Bold")
+  mapvlocal("<leader>b", "Se", "Bold")
+  mapvlocal("<D-i>", "S_", "Italic")
+  mapvlocal("<leader>i", "S_", "Italic")
+  mapvlocal("<D-1>", "S`", "Code ticks")
+  mapvlocal("<leader>`", "S_", "Code ticks")
+  mapvlocal("<D-l>", "S]%a(", "Code ticks")
 
   -- no idea why the lua version of adding the command is failing
   -- vim.api.nvim_buf_add_user_command(0, 'PasteUrl', function(opts) require('pwnvim.markdown').pasteUrl() end, {})
   vim.cmd("command! PasteUrl lua require('pwnvim.markdown').pasteUrl()")
+
 
   -- Hologram displays image thumbnails in-terminal while editing markdown in vim
   -- This is wonderful when it's working, but I sometimes get too many open files errors that seem to come from this plugin. Plus

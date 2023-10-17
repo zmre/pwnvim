@@ -71,24 +71,24 @@ M.config = function()
     pattern = {
       "c", "ruby", "php", "php3", "perl", "python", "mason", "vim", "sh", "zsh",
       "scala", "javascript", "javascriptreact", "typescript", "typescriptreact",
-      "html", "svelte", "css", "nix"
+      "html", "svelte", "css", "nix", "toml", "svelte", "toml", "yaml"
     },
-    callback = function() require('pwnvim.options').programming() end,
+    callback = require('pwnvim.options').programming,
     group = filetypes
   })
   autocmd("FileType", {
     pattern = { "lua", "xml" },
-    callback = function() require('pwnvim.filetypes').lua() end,
+    callback = require('pwnvim.filetypes').lua,
     group = filetypes
   })
   autocmd("FileType", {
     pattern = { "md", "markdown", "vimwiki" },
-    callback = function() require('pwnvim.markdown').setup() end,
+    callback = require('pwnvim.markdown').setup,
     group = filetypes
   })
   autocmd("FileType", {
     pattern = { "rust" },
-    callback = function() require('pwnvim.filetypes').rust() end,
+    callback = require('pwnvim.filetypes').rust,
     group = filetypes
   })
   autocmd("FileType", {
@@ -107,8 +107,8 @@ M.config = function()
   })
 end
 
-M.rust = function()
-  require('pwnvim.options').programming()
+M.rust = function(ev)
+  require('pwnvim.options').programming(ev)
   require('pwnvim.options').fourspaceindent()
   vim.bo.makeprg = "cargo"
   vim.cmd("compiler cargo")
@@ -125,14 +125,14 @@ M.rust = function()
   ]], false)
 end
 
-M.c = function()
-  require('pwnvim.options').programming()
+M.c = function(ev)
+  require('pwnvim.options').programming(ev)
   require('pwnvim.options').fourspaceindent()
   vim.bo.makeprg = "make"
 end
 
-M.lua = function()
-  require('pwnvim.options').programming()
+M.lua = function(ev)
+  require('pwnvim.options').programming(ev)
   require('pwnvim.options').twospaceindent()
 end
 

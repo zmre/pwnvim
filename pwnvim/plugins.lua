@@ -38,7 +38,6 @@ M.ui = function()
     indent_lines = surround_defaults.indent_lines
   })
 
-  require("pwnvim.plugins.todo-comments")
   require("pwnvim.plugins.gitsigns")
   require("diffview").setup({})
   require("git-worktree").setup({
@@ -193,7 +192,6 @@ M.diagnostics = function()
     })
   end
 
-  require("nu").setup({}) -- support nushell scripts
   vim.diagnostic.config({
     virtual_text = false,
     signs = { active = { signs.signs } },
@@ -221,120 +219,63 @@ M.diagnostics = function()
     group = true, -- group results by file
     icons = true,
     auto_preview = true,
+    auto_close = true,
     signs = {
       error = signs.error,
       warning = signs.warn,
       hint = signs.hint,
       information = signs.info,
       other = "﫠"
+    },
+    action_keys = {
+      close = { "q", "<F7>" }
     }
   })
 
   local function attached(client, bufnr)
-    local function buf_set_keymap(...)
-      vim.api.nvim_buf_set_keymap(bufnr, ...)
-    end
-
-    local opts = { noremap = true, silent = false }
-    --[[ if client.name == "tsserver" or client.name == "jsonls" or client.name ==
-        "nil" or client.name == "eslint" or client.name == "html" or
-        client.name == "cssls" or client.name == "tailwindcss" then
-      -- Most of these are being turned off because prettier handles the use case better
-      client.server_capabilities.documentFormattingProvider = false
-      client.server_capabilities.documentRangeFormattingProvider = false
-      -- else
-      --   client.server_capabilities.documentFormattingProvider = true
-      --   client.server_capabilities.documentRangeFormattingProvider = true
-      --   require("lsp-format").on_attach(client, bufnr)
-    end ]]
-
-    -- print("LSP attached " .. client.name)
+    local mapleadernvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadernv)
+    local mapleadernlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadern)
+    local mapleadervlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleaderv)
+    local mapnviclocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapnvic)
+    local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
 
     vim.api.nvim_buf_set_option(bufnr, "formatexpr",
       "v:lua.vim.lsp.formatexpr()")
     vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
     vim.api.nvim_buf_set_option(bufnr, "tagfunc", "v:lua.vim.lsp.tagfunc")
 
-    local which_key = require("which-key")
-    local local_leader_opts = {
-      mode = "n",     -- NORMAL mode
-      prefix = "<leader>",
-      buffer = bufnr, -- Local mappings.
-      silent = true,  -- use `silent` when creating keymaps
-      noremap = true, -- use `noremap` when creating keymaps
-      nowait = true   -- use `nowait` when creating keymaps
-    }
-    local local_leader_opts_visual = {
-      mode = "v",     -- VISUAL mode
-      prefix = "<leader>",
-      buffer = bufnr, -- Local mappings.
-      silent = true,  -- use `silent` when creating keymaps
-      noremap = true, -- use `noremap` when creating keymaps
-      nowait = true   -- use `nowait` when creating keymaps
-    }
+    mapleadernvlocal("ls", require("telescope.builtin").lsp_document_symbols, "Show Symbols")
+    mapleadernlocal("ld", vim.lsp.buf.definition, "Go to definition")
+    -- override standard tag jump c-] for go to definition
+    mapnlocal("<c-]>", vim.lsp.buf.definition, "Go to definition")
+    mapleadernlocal("lD", vim.lsp.buf.implementation, "Implementation")
+    mapleadernlocal("le", vim.diagnostic.open_float, "Show Line Diags")
+    mapleadernlocal("li", vim.lsp.buf.hover, "Info hover")
+    mapleadernlocal("lr", require("telescope.builtin").lsp_references, "References")
+    mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix Code Actions")
+    mapleadernlocal("lt", vim.lsp.buf.signature_help, "Signature")
+    mapleadernlocal("lsd", require("telescope.builtin").lsp_document_symbols, "Find symbol in document")
+    mapleadernlocal("lsw", require("telescope.builtin").lsp_workspace_symbols, "Find symbol in workspace")
 
-    local leader_mappings = {
-      ["q"] = { "<cmd>TroubleToggle<CR>", "Show Trouble list" },
-      l = {
-        name = "Local LSP",
-        s = { require("telescope.builtin").lsp_document_symbols, "Show Symbols" },
-        d = { vim.lsp.buf.definition, "Go to definition" },
-        D = { vim.lsp.buf.implementation, "Implementation" },
-        e = { vim.diagnostic.open_float, "Show Line Diags"
-        },
-        i = { vim.lsp.buf.hover, "Info hover" },
-        I = { require("telescope.builtin").lsp_implementations, "Implementations" },
-        l = { require("lsp_lines").toggle, "Toggle virtual text lines" },
-        r = { require("telescope.builtin").lsp_references, "References" },
-        f = { vim.lsp.buf.code_action, "Fix Code Actions" },
-        t = { vim.lsp.buf.signature_help, "Signature" },
-      },
-      f = {
-        ["sd"] = { require("telescope.builtin").lsp_document_symbols, "Find symbol in document" },
-        ["sw"] = { require("telescope.builtin").lsp_workspace_symbols, "Find symbol in workspace" }
-      }
-    }
-    which_key.register(leader_mappings, local_leader_opts)
-    -- Create a new note after asking for its title.
-    buf_set_keymap("", "<F7>", require("telescope.builtin").lsp_document_symbols, opts)
-    buf_set_keymap("i", "<F7>", require("telescope.builtin").lsp_document_symbols, opts)
-    buf_set_keymap("n", "K", vim.lsp.buf.hover, opts)
-    -- override standard tag jump
-    buf_set_keymap("", "C-]", vim.lsp.buf.definition, opts)
-    -- buf_set_keymap("i", "C-]", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+    mapleadernvlocal("ll", require("lsp_lines").toggle, "Toggle virtual text lines")
+
+    if vim.bo.filetype ~= "markdown" then
+      -- Sometimes other LSPs attach to markdown (like tailwindcss) and so we have a race to see which F7 will win...
+      mapnviclocal("<F7>", require("telescope.builtin").lsp_document_symbols, "Browse document symbols")
+    end
 
     -- Set some keybinds conditional on server capabilities
     if client.server_capabilities.document_formatting then
-      which_key.register({
-        l = {
-          ["="] = { vim.lsp.buf.formatting_sync, "Format" }
-        }
-      }, local_leader_opts)
-      -- vim.cmd([[
-      --       augroup LspFormatting
-      --           autocmd! * <buffer>
-      --           autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()
-      --       augroup END
-      --       ]])
-    end
-    if client.server_capabilities.implementation then
-      which_key.register({
-        l = {
-          ["I"] = { require("telescope.builtin").lsp_implementations, "Implementations" }
-        }
-      }, local_leader_opts)
+      mapleadernlocal("l=", vim.lsp.buf.formatting_sync, "Format")
     end
     if client.server_capabilities.document_range_formatting then
-      which_key.register({
-        l = {
-          ["="] = { vim.lsp.buf.range_formatting, "Format Range" }
-        }
-      }, local_leader_opts_visual)
+      mapleadervlocal("l=", vim.lsp.buf.range_formatting, "Format range")
+    end
+    if client.server_capabilities.implementation then
+      mapleadernlocal("lI", require("telescope.builtin").lsp_implementations, "Implementations")
     end
     if client.server_capabilities.rename then
-      which_key.register({
-        l = { ["R"] = { vim.lsp.buf.rename, "Rename" } }
-      }, local_leader_opts)
+      mapleadernlocal("lR", vim.lsp.buf.rename, "Rename")
     end
   end
 
@@ -410,7 +351,6 @@ M.diagnostics = function()
       runnables = { use_telescope = true }
     }
   })
-  require("crates").setup({})
   require("cmp-npm").setup({})
   lspconfig.yamlls.setup {
     settings = {
@@ -528,6 +468,7 @@ M.telescope = function()
     os.execute("open '" .. entry.value .. "'")
   end
 
+  local trouble = require("trouble.providers.telescope")
   require("telescope").setup({
     file_ignore_patterns = {
       "*.bak", ".git/", "node_modules", ".zk/", "Caches/", "Backups/"
@@ -548,12 +489,14 @@ M.telescope = function()
       -- path_display = { "truncate" },
       mappings = {
         n = {
+          ["<c-t>"] = trouble.open_with_trouble,
           ["<C-y>"] = yank_selected_entry,
           ["<C-o>"] = system_open_selected_entry,
           ["<F10>"] = quicklook_selected_entry,
           ["q"] = require("telescope.actions").close
         },
         i = {
+          ["<c-t>"] = trouble.open_with_trouble,
           ["<c-h>"] = "which_key",
           ["<C-y>"] = yank_selected_entry,
           ["<F10>"] = quicklook_selected_entry,
@@ -725,85 +668,35 @@ M.notes = function()
       config = {
         on_attach = function(_, bufnr)
           -- print("ZK attached")
+          local mapleadernvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadernv)
+          local mapleadernlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadern)
+          local mapleadervlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleaderv)
+          local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
 
-          local which_key = require("which-key")
-          local local_leader_opts = {
-            mode = "n",     -- NORMAL mode
-            prefix = "<leader>",
-            buffer = bufnr, -- Local mappings.
-            silent = true,  -- use `silent` when creating keymaps
-            noremap = true, -- use `noremap` when creating keymaps
-            nowait = true   -- use `nowait` when creating keymaps
-          }
-          local local_leader_opts_visual = {
-            mode = "v",     -- VISUAL mode
-            prefix = "<leader>",
-            buffer = bufnr, -- Local mappings.
-            silent = true,  -- use `silent` when creating keymaps
-            noremap = true, -- use `noremap` when creating keymaps
-            nowait = true   -- use `nowait` when creating keymaps
-          }
 
-          local leader_mappings = {
-            K = { "<Cmd>lua vim.lsp.buf.hover()<CR>", "Info preview" },
-            n = {
-              -- Create the note in the same directory as the current buffer after asking for title
-              p = {
-                "<Cmd>ZkNew { dir = vim.fn.expand('%:p:h'), title = vim.fn.input('Title: ') }<CR>",
-                "New peer note (same dir)"
-              },
-              l = { "<Cmd>ZkLinks<CR>", "Show note links" },
-              -- the following duplicate with the ,l_ namespace on purpose because of programming muscle memory
-              r = {
-                "<cmd>Telescope lsp_references<CR>",
-                "References to this note"
-              }
-            },
-            l = {
-              name = "Local LSP",
-              -- Open notes linking to the current buffer.
-              l = {
-                "<cmd>lua require('lsp_lines').toggle",
-                "Toggle LSP lines"
-              },
-              r = {
-                "<cmd>Telescope lsp_references<CR>",
-                "References to this note"
-              },
-              i = {
-                "<Cmd>lua vim.lsp.buf.hover()<CR>",
-                "Info preview"
-              },
-              f = {
-                "<cmd>lua vim.lsp.buf.code_action()<CR>",
-                "Fix Code Actions"
-              },
-              e = {
-                "<cmd>lua vim.diagnostic.open_float()<CR>",
-                "Show Line Diags"
-              }
-            }
-          }
-          which_key.register(leader_mappings, local_leader_opts)
-          local leader_mappings_visual = {
-            l = {
-              l = {
-                "<cmd>lua require('lsp_lines').toggle",
-                "Toggle LSP lines"
-              }
-            },
-            n = {
-              p = {
-                ":'<,'>ZkNewFromTitleSelection { dir = vim.fn.expand('%:p:h') }<CR>",
-                "New peer note (same dir) selection for title"
-              }
-              -- Create a new note in the same directory as the current buffer, using the current selection for title.
-            }
-          }
-          which_key.register(leader_mappings_visual,
-            local_leader_opts_visual)
+          mapnlocal("K", vim.lsp.buf.hover, "Info hover")
+          -- Create the note in the same directory as the current buffer after asking for title
+          mapleadernlocal("np", "ZkNew { dir = vim.fn.expand('%:p:h'), title = vim.fn.input('Title: ') }",
+            "New peer note (same dir)")
+          mapleadernlocal("nl", "ZkLinks", "Show note links")
+          mapleadernlocal("nr", require("telescope.builtin").lsp_references, "References to this note")
+          mapleadernlocal("lr", require("telescope.builtin").lsp_references, "References to this note") -- for muscle memory
+          mapleadernlocal("li", vim.lsp.buf.hover, "Info hover")
+          mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix code actions")
+          mapleadernlocal("le", vim.diagnostic.open_float, "Show line diags")
+          mapleadernvlocal("ll", require("lsp_lines").toggle, "Toggle virtual text lines")
+          mapleadervlocal("np",
+            function() require('zk.commands').get("ZkNewFromTitleSelection")({ dir = vim.fn.expand('%:p:h') }) end,
+            "New peer note (same dir) selection for title")
+          mapleadernlocal("nu", function()
+            vim.cmd("normal yiW")
+            require("pwnvim.markdown").pasteUrl()
+          end, "Turn bare URL into link")
+          mapleadervlocal("nu", function()
+            vim.cmd("normal y")
+            require("pwnvim.markdown").pasteUrl()
+          end, "Turn bare URL into link")
 
-          local opts = { noremap = true, silent = true }
 
           -- TODO: Make <CR> magic...
           --   in normal mode, if on a link, it should open the link (note or url)
@@ -813,9 +706,6 @@ M.notes = function()
           --   "<Cmd>lua vim.lsp.buf.definition()<CR>",
           --   opts)
           -- Preview a linked note.
-          vim.api.nvim_buf_set_keymap(bufnr, "n", "K",
-            "<Cmd>lua vim.lsp.buf.hover()<CR>",
-            opts)
 
           require("pwnvim.options").tabindent()
         end
@@ -998,20 +888,6 @@ M.misc = function()
     ignore_lsp = {}
   })
   require("telescope").load_extension("projects")
-
-  require("Comment").setup()
-  require("which-key").register({
-    ["<leader>c<space>"] = {
-      "<Plug>(comment_toggle_linewise_current)", "Toggle comments"
-    },
-    ["g/"] = { "<Plug>(comment_toggle_linewise_current)", "Toggle comments" }
-  }, { mode = "n", silent = true, norewrap = true })
-  require("which-key").register({
-    ["<leader>c<space>"] = {
-      "<Plug>(comment_toggle_linewise_visual)", "Toggle comments"
-    },
-    ["g/"] = { "<Plug>(comment_toggle_linewise_visual)", "Toggle comments" }
-  }, { mode = "v", silent = true, norewrap = true })
 
   require("nvim-autopairs").setup({})
 

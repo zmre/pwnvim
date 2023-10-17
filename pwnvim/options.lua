@@ -397,7 +397,13 @@ end
 
 M.retab = function() vim.cmd('%retab!') end
 
-M.programming = function()
+M.programming = function(ev)
+  local bufnr = ev.buf
+  local mapleadernlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadern)
+  local mapleadervlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleaderv)
+  local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
+  local mapvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapv)
+
   vim.opt.number = true
   vim.wo.number = true
   vim.wo.spell = false
@@ -426,6 +432,20 @@ M.programming = function()
   vim.g.direnv_auto = 0
   vim.cmd('packadd direnv.vim')
   vim.cmd('DirenvExport')
+
+  -- commenting
+  vim.cmd('packadd comment.nvim')
+  require("Comment").setup()
+  mapnlocal("g/", "<Plug>(comment_toggle_linewise_current)", "Toggle comments")
+  mapvlocal("g/", "<Plug>(comment_toggle_linewise_visual)", "Toggle comments")
+  mapleadernlocal("c<space>", "<Plug>(comment_toggle_linewise_current)", "Toggle comments")
+  mapleadervlocal("c<space>", "<Plug>(comment_toggle_linewise_visual)", "Toggle comments")
+
+  vim.cmd('packadd crates.nvim')
+  require("crates").setup({})
+
+  vim.cmd('packadd todo-comments.nvim')
+  require("pwnvim.plugins.todo-comments")
 end
 
 return M
