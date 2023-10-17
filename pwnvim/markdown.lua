@@ -39,8 +39,63 @@ M.setup = function(ev)
   -- except temp off until https://github.com/MDeiml/tree-sitter-markdown/issues/114
 
   require('pwnvim.markdown').markdownsyntax()
+  require('pwnvim.markdown').setupmappings(bufnr)
+
   vim.diagnostic.config({ virtual_lines = false }) -- no need to see this in markdown -- wavy underlines good enough
 
+  -- no idea why the lua version of adding the command is failing
+  -- vim.api.nvim_buf_add_user_command(0, 'PasteUrl', function(opts) require('pwnvim.markdown').pasteUrl() end, {})
+  vim.cmd("command! PasteUrl lua require('pwnvim.markdown').pasteUrl()")
+
+
+  -- Hologram displays image thumbnails in-terminal while editing markdown in vim
+  -- This is wonderful when it's working, but I sometimes get too many open files errors that seem to come from this plugin. Plus
+  -- some weirdness where my entire terminal (kitty) completely hangs for a time. Especially when typing in an alt description.
+  -- So, sadly, commenting out for now. 2023-01-19
+  -- if vim.env.KITTY_INSTALLATION_DIR and not vim.g.neovide then
+  --   vim.cmd('packadd hologram.nvim')
+  --   require('hologram').setup {
+  --     auto_display = true -- WIP automatic markdown image display, may be prone to breaking
+  --   }
+  -- end
+  vim.cmd('packadd clipboard-image.nvim')
+  require 'clipboard-image'.setup {
+    default = {
+      img_name = function()
+        vim.fn.inputsave()
+        local name = vim.fn.input({ prompt = "Name: " })
+        -- TODO: swap spaces out for dashes
+        vim.fn.inputrestore()
+        return os.date('%Y-%m-%d') .. "-" .. name
+      end,
+      img_dir = { "%:p:h", "%:t:r:s?$?_attachments?" },
+      img_dir_txt = "%:t:r:s?$?_attachments?",
+      -- TODO: can I put the name as the title somehow?
+      affix = "![image](%s)"
+    }
+  }
+
+  -- I have historically always used spaces for indents wherever possible including markdown
+  -- Changing now to use tabs because NotePlan 3 can't figure out nested lists that are space
+  -- indented and I go back and forth between that and nvim (mainly for iOS access to notes).
+  -- So, for now, this is the compatibility compromise. 2022-09-27
+  -- UPDATE 2023-08-18: going to do ugly stateful things and check the CWD and only
+  --         use tabs when in a Notes directory so I stop screwing up READMEs.
+  if (string.find(vim.fn.getcwd(), "Notes") or
+        string.find(vim.fn.getcwd(), "noteplan")) then
+    require('pwnvim.options').tabindent()
+    require('pwnvim.options').retab() -- turn spaces to tabs when markdown file is opened
+  else
+    require('pwnvim.options').twospaceindent()
+    -- require('pwnvim.options').retab() -- turn tabs to spaces when markdown file is opened
+  end
+  -- Temporary workaround for https://github.com/nvim-telescope/telescope.nvim/issues/559
+  -- which prevents folds from being calculated initially when launching from telescope
+  -- Has the lousy side-effect of calculating them twice if not launched from telescope
+  vim.cmd("normal zx")
+end
+
+M.setupmappings = function(bufnr)
   -- normal mode mappings
   local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
   local mapilocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapi)
@@ -93,56 +148,15 @@ M.setup = function(ev)
   mapvlocal("<leader>`", "S_", "Code ticks")
   mapvlocal("<D-l>", "S]%a(", "Code ticks")
 
-  -- no idea why the lua version of adding the command is failing
-  -- vim.api.nvim_buf_add_user_command(0, 'PasteUrl', function(opts) require('pwnvim.markdown').pasteUrl() end, {})
-  vim.cmd("command! PasteUrl lua require('pwnvim.markdown').pasteUrl()")
-
-
-  -- Hologram displays image thumbnails in-terminal while editing markdown in vim
-  -- This is wonderful when it's working, but I sometimes get too many open files errors that seem to come from this plugin. Plus
-  -- some weirdness where my entire terminal (kitty) completely hangs for a time. Especially when typing in an alt description.
-  -- So, sadly, commenting out for now. 2023-01-19
-  -- if vim.env.KITTY_INSTALLATION_DIR and not vim.g.neovide then
-  --   vim.cmd('packadd hologram.nvim')
-  --   require('hologram').setup {
-  --     auto_display = true -- WIP automatic markdown image display, may be prone to breaking
-  --   }
-  -- end
-  vim.cmd('packadd clipboard-image.nvim')
-  require 'clipboard-image'.setup {
-    default = {
-      img_name = function()
-        vim.fn.inputsave()
-        local name = vim.fn.input({ prompt = "Name: " })
-        -- TODO: swap spaces out for dashes
-        vim.fn.inputrestore()
-        return os.date('%Y-%m-%d') .. "-" .. name
-      end,
-      img_dir = { "%:p:h", "%:t:r:s?$?_attachments?" },
-      img_dir_txt = "%:t:r:s?$?_attachments?",
-      -- TODO: can I put the name as the title somehow?
-      affix = "![image](%s)"
-    }
-  }
-
-  -- I have historically always used spaces for indents wherever possible including markdown
-  -- Changing now to use tabs because NotePlan 3 can't figure out nested lists that are space
-  -- indented and I go back and forth between that and nvim (mainly for iOS access to notes).
-  -- So, for now, this is the compatibility compromise. 2022-09-27
-  -- UPDATE 2023-08-18: going to do ugly stateful things and check the CWD and only
-  --         use tabs when in a Notes directory so I stop screwing up READMEs.
-  if (string.find(vim.fn.getcwd(), "Notes") or
-        string.find(vim.fn.getcwd(), "noteplan")) then
-    require('pwnvim.options').tabindent()
-    require('pwnvim.options').retab() -- turn spaces to tabs when markdown file is opened
-  else
-    require('pwnvim.options').twospaceindent()
-    -- require('pwnvim.options').retab() -- turn tabs to spaces when markdown file is opened
-  end
-  -- Temporary workaround for https://github.com/nvim-telescope/telescope.nvim/issues/559
-  -- which prevents folds from being calculated initially when launching from telescope
-  -- Has the lousy side-effect of calculating them twice if not launched from telescope
-  vim.cmd("normal zx")
+  -- task shortcuts
+  M.mapvlocal("<leader>ta", 'grep "^\\s*[*-] \\[ \\] "<cr>:Trouble quickfix', "All tasks quickfix")
+  M.mapnlocal("<leader>td", require("pwnvim.tasks").completeTaskDirect, "Task done")
+  M.mapvlocal("<leader>td", "luado return require('pwnvim.tasks').completeTask(line)", "Done")
+  M.mapnlocal("<leader>tc", require("pwnvim.tasks").createTaskDirect, "Task create")
+  M.mapnlocal("<leader>ts", require("pwnvim.tasks").scheduleTaskPrompt, "Task schedule")
+  M.mapvlocal("<leader>ts", require("pwnvim.tasks").scheduleTaskBulk, "Schedule")
+  M.mapnlocal("<leader>tt", require("pwnvim.tasks").scheduleTaskTodayDirect, "Task move today")
+  M.mapvlocal("<leader>tt", "luado return require('pwnvim.tasks').scheduleTaskToday(line)<cr>", "Today")
 end
 
 M.markdownsyntax = function()

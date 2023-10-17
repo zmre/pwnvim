@@ -390,20 +390,10 @@ M.config = function()
     "r!( (curl -s https://icanhazdadjoke.com/ | grep '\\\"subtitle\\\"') || curl -s https://icanhazdadjoke.com/ ) | sed 's/<[^>]*>//g' | sed -z 's/\\n/ /'",
     "Insert joke")
   -- in open note (defined in plugins.lua as local-only shortcuts) via LSPs:
-  -- p: new peer note
-  -- l: show outbound links
-  -- r: show outbound links
-  -- i: info preview
-
-  -- task shortcuts
-  M.mapleaderv("ta", 'grep "^\\s*[*-] \\[ \\] "<cr>:Trouble quickfix', "All tasks quickfix")
-  M.mapleadern("td", require("pwnvim.tasks").completeTaskDirect, "Task done")
-  M.mapleaderv("td", "luado return require('pwnvim.tasks').completeTask(line)", "Done")
-  M.mapleadern("tc", require("pwnvim.tasks").createTaskDirect, "Task create")
-  M.mapleadern("ts", require("pwnvim.tasks").scheduleTaskPrompt, "Task schedule")
-  M.mapleaderv("ts", require("pwnvim.tasks").scheduleTaskBulk, "Schedule")
-  M.mapleadern("tt", require("pwnvim.tasks").scheduleTaskTodayDirect, "Task move today")
-  M.mapleaderv("tt", "luado return require('pwnvim.tasks').scheduleTaskToday(line)<cr>", "Today")
+  -- ,np: new peer note
+  -- ,nl: show outbound links
+  -- ,nr: show outbound links
+  -- ,ni: info preview
 
   M.mapleadern("sd", [[echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')]], "Debug syntax files")
 
