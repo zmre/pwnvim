@@ -110,7 +110,7 @@ M.setupmappings = function(bufnr)
   mapnlocal("gl[", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>5l]],
     "Add task")
   mapnlocal("gt", require('pwnvim.markdown').transformUrlUnderCursorToMdLink, "Convert URL to link")
-  mapnlocal("gp", require('pwnvim.markdown').pasteUrl, "Paste URL as link")
+  mapnlocal("<leader>P", require('pwnvim.markdown').pasteUrl, "Paste URL as link")
   mapnlocal("<C-M-v>", require('pwnvim.markdown').pasteUrl, "Paste URL as link")
   mapnlocal("<D-b>", 'ysiwe', "Bold")
   mapnlocal("<leader>b", 'ysiwe', "Bold")
