@@ -235,7 +235,7 @@ M.config = function()
   -- ../README.md
   -- ~/Desktop/Screen Shot 2018-04-06 at 5.19.32 PM.png
   -- [abc](https://github.com/adsr/mle/commit/e4dc4314b02a324701d9ae9873461d34cce041e5.patch)
-  M.mapn("gx", 'silent !open "<c-r><c-f>" || xdg-open "<c-r><c-f>"', "Launch URL or path")
+  M.mapn("gx", ':silent !open "<c-r><c-f>" || xdg-open "<c-r><c-f>"<CR>', "Launch URL or path")
   M.mapn("*",
     function()
       local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "/", "\\/") ..
