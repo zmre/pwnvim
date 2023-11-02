@@ -110,9 +110,11 @@ M.config = function()
     ["<leader>f"] = { name = "+find" },
     ["<leader>g"] = { name = "+git" },
     ["<leader>gt"] = { name = "+git toggle" },
+    ["<leader>gw"] = { name = "+git workspace" },
     ["<leader>h"] = { name = "+hunk" },
     ["<leader>i"] = { name = "+indent" },
     ["<leader>l"] = { name = "+lsp" },
+    ["<leader>ls"] = { name = "+symbols" },
     ["<leader>n"] = { name = "+notes" },
     ["<leader>t"] = { name = "+tasks" },
   })
@@ -326,7 +328,7 @@ M.config = function()
   M.mapleadernv("fk", require('telescope.builtin').keymaps, "Keymaps")
   M.mapleadernv("fl", require('telescope.builtin').loclist, "Loclist")
   M.mapleadernv("fn", function() require('zk.commands').get("ZkNotes")({ sort = { 'modified' } }) end, "Find notes")
-  M.mapleadernv("fo", require('telescope.builtin').oldfiles, "Old File History Global")
+  M.mapleadernv("fo", require('telescope.builtin').oldfiles, "Old file history global")
   M.mapleadernv("fp", require("telescope").extensions.projects.projects, "Projects")
   M.mapleadernv("fq", require('telescope.builtin').quickfix, "Quickfix")
   -- ,fs mapping done inside lsp attach functions

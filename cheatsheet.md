@@ -3,29 +3,27 @@
 _This is a combination of built-in universal keys and things that are specific to my config._
 
 ## Misc
-* `gx` or enter to open a URL (but need gx if the URL is in a task)
-* `gf` to open the file path under the cursor
+* `gx` to open a URL
+* `gf` to open the file path under the cursor (in vim)
 * `gv` to **reselect** last selection
 * `gi` to go back to last insertion point and insert
-* `gp` paste markdown url (auto lookup the title)
+* `,P` paste markdown url (auto lookup the title of the page)
 * `:PasteImg` will save image to subdir if it is on clipboard
 	* On mac, use `ctrl` modifier on screenshot like `cmd-ctrl-shift-4` to put screenshot on clipboard
 * `g ctrl-g` show cursor col, line, word, byte offsets
 * `g~`_m_ switch case of _movement_
 * `'"` go to position before last edit
 * `';` go to last edited line
-* ` g;`, ` g,` go forward/backward in change list
-* ` di(`, ` di"` delete within parents/quotes. Do ` a` instead of ` i` for taking out the delimiters
+* `g;`, `g,` go forward/backward in change list
+* `di(`, `di"` delete within parents/quotes. Do `a` instead of `i` for taking out the delimiters
 * `"_c`_m_ change _movement_ but blackhole the deletion so you can use the `"` register or paste
 	* Alt: use `v`_m_`p` to select that which you want to change and paste over it (or use `cmd-v` instead of `p`)
-* `,b` reduce multiple blank lines to one (or add bold in markdown files)
 * `,cd` change dir to current file's path
 * `,lcd` change dir for cur buffer only to current file's path
 * `,q` open quicklist with any errors
 * `q:` opens command mode but in editor
 	* `<C-f>` is equivalent but launches from command mode
 * `F2`, `,e` Show/hide file explorer
-* `F3` Fast grep
 * `F4` Toggle showing invisible characters
 * `F7` Show tags or file outline drawer
 * `F8` Insert current date
@@ -88,82 +86,103 @@ _This is a combination of built-in universal keys and things that are specific t
 
 ## Programming (many require lsp server)
 * `,c ` (c space) comment, uncomment current line or selection
-* `,ls` show symbols outline
-* `,ld` goto definition
+  * `gc`_m_ comment for motion or `gcc` for current line
+  * `gb`_m_ comment blockwise for motion (or visual selection)
 * `,lD` goto implementation
-* `,li` info hover
-* `,lI` implementations popup menu
-* `,lr` show references
-* `,lf` fixit code actions menu
-* `,lt` signature
+* `,ld` goto definition
 * `,le` show line errors
-* `,lR` rename symbol
-* `,l=` format current line or selection
-* `,fsd` find symbols in document
-* `,fsw` find symbols in workspace
-* `,rt` run test under cursor
-* `,rT` run all tests
-* `,i1` use tab for indent
-* `,i2` use two spaces for indent
-* `,i4` use four spaces for indent
-* `,ir` retab to current setting
+* `,lf` fixit code actions menu
+* `,li` info hover
+* `,ll` toggle virtual text lines
+* `,lr` show references
+* `,lsd` find symbols in document
+* `,lsw` find symbols in workspace
+* `,lt` show signature
+
+* When available
+  * `,lR` rename symbol
+  * `,l=` format current line or selection
+  * `,lI` telescope implementations
+
+* For rust
+  * `,rr` run menu of options (tests, etc)
+  * `,re` expand macro
+  * `,rh` hover actions
+  * `,ra` rust code actions
+
+* Indentation
+  * `,i1` use tab for indent
+  * `,i2` use two spaces for indent
+  * `,i4` use four spaces for indent
+  * `,ir` retab to current setting
 
 ## Git
 * `,gs` browse git status and jump to selected file
 * `,gb` browse git branches and switch to selected
 * `,gc` browse git commits
-* `,gh` show current line blame
-* `,tb` show current line blame
 * `,g-` reset (unstage) current hunk
 * `,g+` stage current hunk
-* `,hs` stage hunk
-* `,hr` reset hunk
-* `,hS` stage buffer
-* `,hR` reset buffer
-* `,hp` preview hunk
-* `,hb` hunk blame
-* `,hd` diff this file
-* `,hD` diff this to index
+* `,gu` undo stage hunk
+* `,gS` stage buffer
+* `,gR` reset buffer
+* `,gp` preview hunk
+* `,gB` blame hunk popup
+* `,gd` diff this to index
+* `,gD` diff this to previous
+
+* Worktrees
+  * `,gws` switch worktree
+  * `,gwn` new worktree
+
+* Toggles
+  * `,gtb` toggle current line blame
+  * `,gtd` toggle show deleted
+
+  Motion
+  * _action_`ih` select the current git hunk
+
 * `]c`, `[c` next/prev change
 * `]n`, `[n` next/prev conflict
-* `:G`, `:GStatus`
-	* Use `ctrl + n` / `ctrl + p` to jump between files
-	* Press `-` on a file to toggle whether it is added (`git add` or `git reset` depending)
-	* Press `p` on a file to walk through hunks of changes and selectively add parts of a file
-	* Press `<enter>` to view it and then `:Gdiff` to see changes
-	* Press `cc` to commit
-	* Press `ca` to amend last commit
-	* `gq` to close status buffer
-	* `=` toggle inline diff of file under cursor (preferred)
-		* Or `dp` to invoke git diff on the file under the cursor
-* `:Gdiff`
-	* index on left (git added or last committed), working copy on right
-	* `:diffget` will pull changes from opposite window in allowing to undo changes
-	* Press `s` to stage a hunk
-	* Press `u` to unstage a hunk
-	* Press `-` to toggle staging of hunk
-	* Use `]c` and `[c` to jump between hunks
-* `:Gcommit`
-* `:GBrowse` to launch current file in github in browser
-	* "In commit messages, GitHub issues, issue URLs, and collaborators can be omni-completed (`<C-X><C-O>`, see :help compl-omni). This makes inserting those `Closes #123` remarks slightly easier than copying and pasting from the browser.
-* `:Gedit :0`
-	* Open index version of current file in a tmp buffer. index file is the git added version.
-* `:Gedit`
-	* Explore git objects to navigate commits and old versions of the tree without changing anything
-	* Can hit enter on parent (prev commit) or tree (state of all files at this point) and then select other files
-	* Get into this better with `:Gclog`
-	* When looking at a commit, hit enter on a diff line to see how things changed
-	* Capital `C` will jump you from a tmp file or whatever up to related commit
-* `:Git mergetool` load current conflicts into quickfix list (TODO: try `ri` on the git status screen to initiate rebase)
-	* Navigate through the conflicted files (use the unimpaired `[q` and `]q`)
-	* Launch the 3-way merge tool with `:Gvdiffsplit!` (the `!` is for 3-way and `v` for vertical split)
-		* Now put cursor in the middle window. 
-		* Left pane, "2", is local, right pane is remote, "3". For rebase though, left seems to be master and right the local branch.
-		* Use `d2o` or `d3o` to pull changes from left or right for current chunk.
-		* Navigate between chunks with `]c` and `[c`
-		* When a file is good, use `:Gw` and move on
-		* When finished you get to the end of the quickfix list, use `:G` to check status then `cc` to commit.
-		* After commit, use `rr` in the status screen or `:G rebase --contine` and hope you don't get a fresh set of conflicts, but if you do, repeat from the top.
+
+* Fugitive
+  * `:G`, `:GStatus`
+    * Use `ctrl + n` / `ctrl + p` to jump between files
+    * Press `-` on a file to toggle whether it is added (`git add` or `git reset` depending)
+    * Press `p` on a file to walk through hunks of changes and selectively add parts of a file
+    * Press `<enter>` to view it and then `:Gdiff` to see changes
+    * Press `cc` to commit
+    * Press `ca` to amend last commit
+    * `gq` to close status buffer
+    * `=` toggle inline diff of file under cursor (preferred)
+      * Or `dp` to invoke git diff on the file under the cursor
+  * `:Gdiff`
+    * index on left (git added or last committed), working copy on right
+    * `:diffget` will pull changes from opposite window in allowing to undo changes
+    * Press `s` to stage a hunk
+    * Press `u` to unstage a hunk
+    * Press `-` to toggle staging of hunk
+    * Use `]c` and `[c` to jump between hunks
+  * `:Gcommit`
+  * `:GBrowse` to launch current file in github in browser
+    * "In commit messages, GitHub issues, issue URLs, and collaborators can be omni-completed (`<C-X><C-O>`, see :help compl-omni). This makes inserting those `Closes #123` remarks slightly easier than copying and pasting from the browser.
+  * `:Gedit :0`
+    * Open index version of current file in a tmp buffer. index file is the git added version.
+  * `:Gedit`
+    * Explore git objects to navigate commits and old versions of the tree without changing anything
+    * Can hit enter on parent (prev commit) or tree (state of all files at this point) and then select other files
+    * Get into this better with `:Gclog`
+    * When looking at a commit, hit enter on a diff line to see how things changed
+    * Capital `C` will jump you from a tmp file or whatever up to related commit
+  * `:Git mergetool` load current conflicts into quickfix list (TODO: try `ri` on the git status screen to initiate rebase)
+    * Navigate through the conflicted files (use the unimpaired `[q` and `]q`)
+    * Launch the 3-way merge tool with `:Gvdiffsplit!` (the `!` is for 3-way and `v` for vertical split)
+      * Now put cursor in the middle window. 
+      * Left pane, "2", is local, right pane is remote, "3". For rebase though, left seems to be master and right the local branch.
+      * Use `d2o` or `d3o` to pull changes from left or right for current chunk.
+      * Navigate between chunks with `]c` and `[c`
+      * When a file is good, use `:Gw` and move on
+      * When finished you get to the end of the quickfix list, use `:G` to check status then `cc` to commit.
+      * After commit, use `rr` in the status screen or `:G rebase --contine` and hope you don't get a fresh set of conflicts, but if you do, repeat from the top.
 
 ## Notes
 * `,ng` spawn grammar checker
@@ -201,39 +220,6 @@ Fuzzy finder via Telescope
 	* `ctrl + o` on selection call `open` on it
 	* ctrl + q to put results in quick fix list
 	* `ctrl + e` create new file in current dir or creates dir if name contains trailing slash or subdirs like `dir/subdir/file`
-
-## Plugin: NvimTree file explorer
-* `<CR>`, `o` open a file or folder
-* `<C-e>` edit the file in place, effectively replacing the tree explorer
-* `<F10>` quicklook file under cursor
-* `y` copy just filename to clipboard
-* `Y` copy the relative path (to cwd) to clipboard
-* `O` same as (edit) with no window picker
-* `<C-]>` cd in the directory under the cursor
-* `<C-v>` open the file in a vertical split
-* `<C-x>` open the file in a horizontal split
-* `<C-t>` open the file in a new tab
-* `<`, `>` navigate to the prev/next sibling of current file/directory
-* `P` move cursor to the parent directory
-* `<BS>` close current opened directory or parent
-* `<Tab>` open the file as a preview (keeps the cursor in the tree)
-* `I` toggle visibility of files/folders hidden via git ignore
-* `H` toggle visibility of dotfiles
-* `a` add a file; leaving a trailing `/` will add a directory
-* `d` delete a file (will prompt for confirmation)
-* `r` rename a file
-* `x` add/remove file/directory to cut clipboard
-* `c` add/remove file/directory to copy clipboard
-* `p` paste from clipboard; cut clipboard has precedence over copy; will prompt for confirmation
-* `]e`, `[e` go to next/prev diagnostic item
-* `]c`, `[c` go to next/prev git item
-* `s` open a file with default system application or a folder with default file manager, using |system_open| option
-* `f` live filter nodes dynamically based on regex matching.
-* `F` clear live filter
-* `q` close tree window
-* `W` collapse the whole tree
-* `E` expand the whole tree, stopping after expanding |actions.expand_all.max_folder_discovery| folders; this might hang neovim for a while if running on a big folder
-* `S` prompt the user to enter a path and then expands the tree to match the path
 
 ### Plugin: Unimpaired
 * `[a`, `]a` prev/next file if multiple specified on cli
