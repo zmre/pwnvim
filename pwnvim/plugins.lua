@@ -239,29 +239,37 @@ M.diagnostics = function()
     local mapnviclocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapnvic)
     local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
 
+    local builtin = require("telescope.builtin")
+
     vim.api.nvim_buf_set_option(bufnr, "formatexpr",
       "v:lua.vim.lsp.formatexpr()")
     vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
     vim.api.nvim_buf_set_option(bufnr, "tagfunc", "v:lua.vim.lsp.tagfunc")
 
-    mapleadernvlocal("ls", require("telescope.builtin").lsp_document_symbols, "Show Symbols")
     mapleadernlocal("ld", vim.lsp.buf.definition, "Go to definition")
     -- override standard tag jump c-] for go to definition
     mapnlocal("<c-]>", vim.lsp.buf.definition, "Go to definition")
     mapleadernlocal("lD", vim.lsp.buf.implementation, "Implementation")
     mapleadernlocal("le", vim.diagnostic.open_float, "Show Line Diags")
     mapleadernlocal("li", vim.lsp.buf.hover, "Info hover")
-    mapleadernlocal("lr", require("telescope.builtin").lsp_references, "References")
+    mapleadernlocal("lr", builtin.lsp_references, "References")
     mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix Code Actions")
-    mapleadernlocal("lt", vim.lsp.buf.signature_help, "Signature")
-    mapleadernlocal("lsd", require("telescope.builtin").lsp_document_symbols, "Find symbol in document")
-    mapleadernlocal("lsw", require("telescope.builtin").lsp_workspace_symbols, "Find symbol in workspace")
-
     mapleadernvlocal("ll", require("lsp_lines").toggle, "Toggle virtual text lines")
+    mapleadernlocal("lt", vim.lsp.buf.signature_help, "Signature")
+    mapleadernlocal("lsd", builtin.lsp_document_symbols, "Find symbol in document")
+    mapleadernlocal("lsw", builtin.lsp_workspace_symbols, "Find symbol in workspace")
 
-    if vim.bo.filetype ~= "markdown" then
+    if vim.bo[bufnr].filetype ~= "markdown" then
       -- Sometimes other LSPs attach to markdown (like tailwindcss) and so we have a race to see which F7 will win...
-      mapnviclocal("<F7>", require("telescope.builtin").lsp_document_symbols, "Browse document symbols")
+      mapnviclocal("<F7>", builtin.lsp_document_symbols, "Browse document symbols")
+    end
+
+    if vim.bo[bufnr].filetype == "rust" then
+      local rt = require("rust-tools")
+      mapleadernlocal("rr", require('rust-tools').runnables.runnables, "Runnables")
+      mapleadernlocal("re", require('rust-tools').expand_macro.expand_macro, "Expand macro")
+      mapleadernlocal("rh", require('rust-tools').hover_actions.hover_actions, "Rust hover actions")
+      mapleadernlocal("ra", require('rust-tools').code_action_group.code_action_group, "Rust code actions")
     end
 
     -- Set some keybinds conditional on server capabilities
@@ -296,7 +304,7 @@ M.diagnostics = function()
     stdin = true
   }
   require("conform.formatters.prettier").args = {
-    "--stdin-filepath", "$FILENAME", "--indent", "2"
+    "--stdin-filepath", "$FILENAME", "--tab-width", "2"
   }
 
   require("conform").setup({
