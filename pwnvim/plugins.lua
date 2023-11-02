@@ -154,6 +154,10 @@ M.diagnostics = function()
   require("lsp_lines").setup()
 
   if not SimpleUI then
+    require("notify").setup({
+      stages = "static",
+      timeout = 5000,
+    })
     require("noice").setup({
       lsp = {
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
@@ -595,7 +599,9 @@ M.telescope = function()
   })
   require("telescope").load_extension("fzy_native")
   require("telescope").load_extension("zk")
-  require("telescope").load_extension("noice")
+  if not SimpleUI then
+    require("telescope").load_extension("noice")
+  end
   require("telescope").load_extension("frecency")
   require("telescope").load_extension("git_worktree")
   if vim.fn.has("mac") ~= 1 then
