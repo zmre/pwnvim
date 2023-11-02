@@ -252,6 +252,7 @@
                 nvim-notify # needed by noice
                 noice-nvim # show progress and add other UI improvements
                 lsp_lines-nvim # use virtual text to inline errors and warnings
+                marks-nvim # show marks in the gutter
 
                 # Editor Features ####################################
                 vim-abolish # better abbreviations / spelling fixer
