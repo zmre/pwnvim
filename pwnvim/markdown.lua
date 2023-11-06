@@ -47,7 +47,6 @@ M.setup = function(ev)
   -- vim.api.nvim_buf_add_user_command(0, 'PasteUrl', function(opts) require('pwnvim.markdown').pasteUrl() end, {})
   vim.cmd("command! PasteUrl lua require('pwnvim.markdown').pasteUrl()")
 
-
   -- Hologram displays image thumbnails in-terminal while editing markdown in vim
   -- This is wonderful when it's working, but I sometimes get too many open files errors that seem to come from this plugin. Plus
   -- some weirdness where my entire terminal (kitty) completely hangs for a time. Especially when typing in an alt description.
@@ -59,6 +58,7 @@ M.setup = function(ev)
   --   }
   -- end
   vim.cmd('packadd clipboard-image.nvim')
+  -- note: PasteImg is just require'clipboard-image.paste'.paste_img()
   require 'clipboard-image'.setup {
     default = {
       img_name = function()

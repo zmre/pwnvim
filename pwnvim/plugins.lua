@@ -67,11 +67,11 @@ M.ui = function()
       }
 
     })
-    require 'marks'.setup {
+    require('marks').setup {
       -- whether to map keybinds or not. default true
       default_mappings = false,
       -- which builtin marks to show. default {}
-      builtin_marks = { ".", "<", ">", "^" },
+      builtin_marks = { "<", ">", "^", ";", '"' },
       -- whether movements cycle back to the beginning/end of buffer. default true
       cyclic = true,
       -- whether the shada file is updated after modifying uppercase marks. default false
@@ -310,10 +310,10 @@ M.diagnostics = function()
 
     if vim.bo[bufnr].filetype == "rust" then
       local rt = require("rust-tools")
-      mapleadernlocal("rr", require('rust-tools').runnables.runnables, "Runnables")
-      mapleadernlocal("re", require('rust-tools').expand_macro.expand_macro, "Expand macro")
-      mapleadernlocal("rh", require('rust-tools').hover_actions.hover_actions, "Rust hover actions")
-      mapleadernlocal("ra", require('rust-tools').code_action_group.code_action_group, "Rust code actions")
+      mapleadernlocal("rr", rt.runnables.runnables, "Runnables")
+      mapleadernlocal("re", rt.expand_macro.expand_macro, "Expand macro")
+      mapleadernlocal("rh", rt.hover_actions.hover_actions, "Rust hover actions")
+      mapleadernlocal("ra", rt.code_action_group.code_action_group, "Rust code actions")
     end
 
     -- Set some keybinds conditional on server capabilities
