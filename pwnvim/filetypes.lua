@@ -99,7 +99,7 @@ M.config = function()
   autocmd('User', {
     pattern = { 'PageOpen', 'PageOpenFile' },
     group = filetypes,
-    callback = function() require('pwnvim.filetypes').page() end
+    callback = require('pwnvim.filetypes').page
   })
 end
 
