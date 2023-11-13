@@ -7,19 +7,19 @@ require('lualine').setup {
     section_separators = { left = SimpleUI and '>' or '', right = SimpleUI and '<' or '' },
     globalstatus = true
   },
-  extensions = { 'quickfix', 'nvim-tree', 'fugitive' },
+  extensions = { 'quickfix', 'fugitive' },
   sections = {
     lualine_a = { 'mode' },
     lualine_b = { 'branch' },
-    lualine_c = { 'nvim-tree', 'filename' },
+    lualine_c = { 'filename' },
     lualine_x = { 'encoding', 'fileformat', 'filetype' },
     lualine_y = { 'progress', 'location' },
     lualine_z = {
-      {
-        require("noice").api.statusline.mode.get,
-        cond = require("noice").api.statusline.mode.has,
-        color = { fg = "#ff9e64" },
-      },
+      --{
+      -- require("noice").api.statusline.mode.get,
+      -- cond = require("noice").api.statusline.mode.has,
+      --color = { fg = "#ff9e64" },
+      --},
       {
         'diagnostics',
         sources = { 'nvim_diagnostic' },

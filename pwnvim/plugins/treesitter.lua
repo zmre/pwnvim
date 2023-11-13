@@ -1,21 +1,21 @@
 require("nvim-treesitter.configs").setup({
   sync_install = false,
   modules = {},
-  -- disable = { "markdown" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
+  disable = {},
   ensure_installed = {},
   ignore_install = { "all" },
   auto_install = false,
   autotag = { enable = true },
   highlight = {
     enable = true,
-    -- disable = { "markdown" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
+    disable = {},
 
     additional_vim_regex_highlighting = false
   },
   indent = { enable = true, disable = { "yaml", "markdown", "dbout" } },
   incremental_selection = {
     enable = true,
-    -- disable = { "markdown" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
+    disable = {},
     is_supported = function()
       -- disable in command window
       local mode = vim.api.nvim_get_mode().mode
@@ -24,7 +24,7 @@ require("nvim-treesitter.configs").setup({
   },
   context_commentstring = {
     enable = true,
-    -- disable = { "markdown", "dbout" }, -- until https://github.com/MDeiml/tree-sitter-markdown/issues/114
+    disable = { "dbout" },
   },
   matchup = {
     enable = true,

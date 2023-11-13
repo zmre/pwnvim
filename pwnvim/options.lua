@@ -217,6 +217,7 @@ M.defaults = function()
         SpellCap = { style = "undercurl", sp = "${cyan}" },
         SpellRare = { style = "undercurl", sp = "Magenta" },
         SpellLocal = { style = "undercurl", sp = "${cyan}" },
+        MatchParen = { bg = "#555555", style = "italic" },
         IndentBlanklineChar = { fg = "#444444" },
         -- Todo                                       = { fg = "#282c34", bg = "${highlight}", style = "bold" },
         VertSplit = { fg = "#202020", bg = "#606060" },
@@ -304,7 +305,7 @@ M.defaults = function()
   vim.cmd("colorscheme " .. cscheme)
   vim.api.nvim_exec([[
     filetype plugin indent on
-    syntax on
+    syntax off
     syntax sync minlines=2000
   ]], false)
 

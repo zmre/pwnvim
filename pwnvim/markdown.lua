@@ -84,7 +84,7 @@ M.setup = function(ev)
   if (string.find(vim.fn.getcwd(), "Notes") or
         string.find(vim.fn.getcwd(), "noteplan")) then
     require('pwnvim.options').tabindent()
-    require('pwnvim.options').retab() -- turn spaces to tabs when markdown file is opened
+    --require('pwnvim.options').retab() -- turn spaces to tabs when markdown file is opened
   else
     require('pwnvim.options').twospaceindent()
     -- require('pwnvim.options').retab() -- turn tabs to spaces when markdown file is opened

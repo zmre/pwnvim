@@ -241,7 +241,7 @@
                 #zephyr-nvim # alternate colorscheme
                 telescope-nvim # da best popup fuzzy finder
                 telescope-fzy-native-nvim # with fzy gives better results
-                telescope-frecency-nvim # and frecency comes in handy too
+                # telescope-frecency-nvim # and frecency comes in handy too
                 #sqlite-lua # needed by frecency plugin -- beta support to remove dep
                 dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope
                 nvim-colorizer-lua # color over CSS like #00ff00
@@ -295,9 +295,9 @@
                 nvim-autopairs # balances parens as you type
                 nvim-ts-autotag # balance or rename html
                 vim-emoji # TODO: redundant now?
-                luasnip # snippets driver
-                cmp_luasnip # snippets completion
-                friendly-snippets # actual library of snippets used by luasnip
+                #luasnip # snippets driver
+                #cmp_luasnip # snippets completion
+                #friendly-snippets # actual library of snippets used by luasnip
 
                 # writing
                 zk-nvim # lsp for a folder of notes for searching/linking/etc.

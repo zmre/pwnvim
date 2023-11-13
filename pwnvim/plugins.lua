@@ -10,10 +10,6 @@ local signs = require("pwnvim.signs")
 ----------------------- UI --------------------------------
 -- Tree, GitSigns, Indent markers, Colorizer, bufferline, lualine, treesitter
 M.ui = function()
-  -- following options are the default
-  -- each of these are documented in `:help nvim-tree.OPTION_NAME`
-  -- local nvim_tree_config = require("nvim-tree.config")
-  -- local tree_cb = nvim_tree_config.nvim_tree_callback
   require("pwnvim.plugins.nvim-tree")
 
   -- dadbod-ui
@@ -191,13 +187,13 @@ M.diagnostics = function()
           enabled = true,
           auto_open = {
             enabled = true,
-            trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
-            luasnip = true, -- Will open signature help when jumping to Luasnip insert nodes
-            throttle = 50   -- Debounce lsp signature help request by 50ms
+            trigger = true,  -- Automatically show signature help when typing a trigger character from the LSP
+            luasnip = false, -- Will open signature help when jumping to Luasnip insert nodes
+            throttle = 50    -- Debounce lsp signature help request by 50ms
           },
-          view = nil,       -- when nil, use defaults from documentation
+          view = nil,        -- when nil, use defaults from documentation
           ---@type NoiceViewOptions
-          opts = {}         -- merged with defaults from documentation
+          opts = {}          -- merged with defaults from documentation
         },
         message = {
           -- Messages shown by lsp servers
@@ -602,7 +598,7 @@ M.telescope = function()
   if not SimpleUI then
     require("telescope").load_extension("noice")
   end
-  require("telescope").load_extension("frecency")
+  -- require("telescope").load_extension("frecency")
   require("telescope").load_extension("git_worktree")
   if vim.fn.has("mac") ~= 1 then
     -- doesn't currently work on mac
@@ -613,8 +609,8 @@ end -- telescope
 ----------------------- COMPLETIONS --------------------------------
 -- cmp, luasnip
 M.completions = function()
-  require("luasnip/loaders/from_vscode").lazy_load()
-  local luasnip = require("luasnip")
+  -- require("luasnip/loaders/from_vscode").lazy_load()
+  -- local luasnip = require("luasnip")
   local check_backspace = function()
     local col = vim.fn.col(".") - 1
     return col == 0 or
@@ -647,10 +643,10 @@ M.completions = function()
       ["<Tab>"] = cmp.mapping(function(fallback)
         if cmp.visible() then
           cmp.select_next_item()
-        elseif luasnip.expandable() then
-          luasnip.expand({})
-        elseif luasnip.expand_or_jumpable() then
-          luasnip.expand_or_jump()
+          -- elseif luasnip.expandable() then
+          --   luasnip.expand({})
+          -- elseif luasnip.expand_or_jumpable() then
+          --   luasnip.expand_or_jump()
         elseif check_backspace() then
           fallback()
         else
@@ -661,8 +657,8 @@ M.completions = function()
       ["<S-Tab>"] = cmp.mapping(function(fallback)
         if cmp.visible() then
           cmp.select_prev_item()
-        elseif luasnip.jumpable(-1) then
-          luasnip.jump(-1)
+          -- elseif luasnip.jumpable(-1) then
+          --   luasnip.jump(-1)
         else
           fallback()
         end
@@ -672,7 +668,8 @@ M.completions = function()
     sources = {
       { name = "nvim_lsp" },
       -- { name = "nvim_lsp_signature_help" },
-      { name = "nvim_lua" }, { name = "emoji" }, { name = "luasnip" },
+      { name = "nvim_lua" }, { name = "emoji" },
+      -- { name = "luasnip" },
       { name = "path" }, { name = "crates" },
       { name = "npm",    keyword_length = 3 },
       { name = "buffer", keyword_length = 3 }
@@ -686,14 +683,14 @@ M.completions = function()
         vim_item.menu = ({
           nvim_lsp = "[LSP]",
           nvim_lsp_signature_help = "[LSPS]",
-          luasnip = "[Snippet]",
+          -- luasnip = "[Snippet]",
           buffer = "[Buffer]",
           path = "[Path]"
         })[entry.source.name]
         return vim_item
       end
     },
-    snippet = { expand = function(args) luasnip.lsp_expand(args.body) end }
+    -- snippet = { expand = function(args) luasnip.lsp_expand(args.body) end }
   })
   --[[ cmp.setup.cmdline("/", {
     mapping = cmp.mapping.preset.cmdline(),
@@ -927,21 +924,7 @@ M.misc = function()
   --     '.git', '_darcs', '.hg', '.bzr', '.svn', 'Makefile', 'package.json',
   --     '.zk', 'Cargo.toml', 'build.sbt', 'Package.swift', 'Makefile.in'
   -- }
-  require("project_nvim").setup({
-    active = true,
-    on_config_done = nil,
-    manual_mode = false,
-    detection_methods = { "pattern", "lsp" },
-    patterns = {
-      ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json",
-      ".zk", "build.sbt", "Package.swift", "Makefile.in", "README.md",
-      "flake.nix"
-    },
-    show_hidden = false,
-    silent_chdir = true,
-    ignore_lsp = {}
-  })
-  require("telescope").load_extension("projects")
+
 
   require("nvim-autopairs").setup({})
 
@@ -962,6 +945,24 @@ M.misc = function()
   vim.api.nvim_set_keymap("t", [[<C-\>]],
     "<Cmd>exe v:count1 . 'ToggleTerm'<cr>",
     { noremap = true })
+
+  require("project_nvim").setup({
+    active = true,
+    on_config_done = nil,
+    manual_mode = false,
+    detection_methods = { "lsp", "pattern" },
+    exclude_dirs = { "/nix/store/*" },
+    scope_chdir = "tab",
+    patterns = {
+      ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json",
+      ".zk", "build.sbt", "Package.swift", "Makefile.in", "README.md",
+      "flake.nix"
+    },
+    show_hidden = false,
+    silent_chdir = true,
+    ignore_lsp = {}
+  })
+  require("telescope").load_extension("projects")
 end -- misc
 
 M.telescope_get_folder_common_folders = function(search_folders, depth, callback)
