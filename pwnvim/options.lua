@@ -34,7 +34,8 @@ M.defaults = function()
 
   -- my shada is so large it takes up half of startup time to process; constraining what it keeps here
   -- previous value: !,'100,<50,s10,h'
-  vim.opt.shada = { "'35", "<0", ":5", "/0", '"0', "@5", "f10", "h", "s10" }
+  vim.opt.shada = { "'50", "<0", ":5", "/0", '"0', "@5", "f10", "h", "s10" }
+  -- The "'#" option remembers some number of marks, but actually controls how many files in the oldfiles list
   -- this would allow spaces in filenames for commands like `gf` but results are really mixed.
   -- commenting for now 2022-12-22
   -- vim.opt.isfname:append { "32" }

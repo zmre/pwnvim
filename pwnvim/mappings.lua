@@ -317,13 +317,7 @@ M.config = function()
   M.mapleadernv("ff", require('telescope.builtin').find_files, "Files")
   M.mapleadernv("fg", require('telescope.builtin').live_grep, "Grep")
   M.mapleadernv("fh", function()
-    -- if CWD has a .git dir, then specify workspace=CWD
-    if vim.fn.isdirectory('.git') ~= 0 then
-      require("telescope").extensions.frecency.frecency({ workspace = "CWD", theme = "dropdown" })
-    else
-      -- path_display only works when workspace isn't specified :(
-      require("telescope").extensions.frecency.frecency({ theme = "dropdown", path_display = { "truncate" } })
-    end
+    require('telescope.builtin').oldfiles { only_cwd = true }
   end, "History local")
   M.mapleadernv("fk", require('telescope.builtin').keymaps, "Keymaps")
   M.mapleadernv("fl", require('telescope.builtin').loclist, "Loclist")
