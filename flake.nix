@@ -21,10 +21,12 @@
     # clipboard-image.url = "github:ekickx/clipboard-image.nvim";
     clipboard-image.url = "github:postfen/clipboard-image.nvim";
     clipboard-image.flake = false;
-    vscode-langservers-custom.url = "github:hrsh7th/vscode-langservers-extracted/v4.7.0";
+    vscode-langservers-custom.url = "github:hrsh7th/vscode-langservers-extracted/v4.8.0";
     vscode-langservers-custom.flake = false;
     conform-nvim.url = "github:stevearc/conform.nvim";
     conform-nvim.flake = false;
+    tree-sitter-markdown.url = "github:MDeiml/tree-sitter-markdown/v0.1.7";
+    tree-sitter-markdown.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -37,6 +39,17 @@
         inherit system;
         config = {allowUnfree = true;};
         overlays = [
+          (self: super: {
+            nvim-treesitter.allGrammars = super.nvim-treesitter.allGrammars.overrideAttrs (oldAttrs: {
+              tree-sitter-markdown = inputs.tree-sitter-markdown // {location = "tree-sitter-markdown";};
+              tree-sitter-markdown-inline =
+                inputs.tree-sitter-markdown
+                // {
+                  language = "markdown_inline";
+                  location = "tree-sitter-markdown-inline";
+                };
+            });
+          })
           (self: super: {
             vimPlugins =
               super.vimPlugins
@@ -63,9 +76,9 @@
                   # we have this custom because they don't have the eslint server and they hard code
                   # some vscodium paths that we don't care about
                   pname = "vscode-langservers-custom";
-                  version = "4.7.0";
+                  version = "4.8.0";
                   src = inputs.vscode-langservers-custom;
-                  npmDepsHash = "sha256-DhajWr+O0zgJALr7I/Nc5GmkOsa9QXfAQpZCaULV47M=";
+                  npmDepsHash = "sha256-LFWC87Ahvjf2moijayFze1Jk0TmTc7rOUd/s489PHro=";
 
                   buildPhase = let
                     extensions =
