@@ -126,6 +126,13 @@ M.config = function()
   M.map({ "n", "v", "i", "c" }, "<F1>", "<Esc>", "Escape")
   -- Make F2 bring up a file browser
   M.mapnvic("<F2>", "Oil .", "Toggle file browser")
+  -- Use F3 for a quick grep with Trouble to show results
+  M.mapnvic("<F3>", function()
+    vim.ui.input({ prompt = "Regex: " }, function(needle)
+      vim.cmd("lgrep -i " .. needle)
+      require("trouble").toggle({ mode = "loclist", position = "bottom" })
+    end)
+  end)
   -- Make F4 toggle invisible characters (locally)
   M.mapnvic("<F4>", function()
     if vim.opt_local.list:get() then

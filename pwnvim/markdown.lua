@@ -130,7 +130,7 @@ M.setupmappings = function(bufnr)
 
   mapnviclocal("<F7>", function()
     vim.cmd("lvimgrep /^#/ %")
-    require("trouble").toggle("loclist")
+    require("trouble").toggle({ mode = "loclist", position = "right" })
   end, "Show doc outline")
 
   -- visual mode mappings

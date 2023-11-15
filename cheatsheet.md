@@ -24,6 +24,7 @@ _This is a combination of built-in universal keys and things that are specific t
 * `q:` opens command mode but in editor
 	* `<C-f>` is equivalent but launches from command mode
 * `F2`, `,e` Show/hide file explorer
+* `F3` Quick grep with results to loclist (not live)
 * `F4` Toggle showing invisible characters
 * `F7` Show tags or file outline drawer
 * `F8` Insert current date
@@ -205,7 +206,7 @@ _This is a combination of built-in universal keys and things that are specific t
 Fuzzy finder via Telescope
 
 * `,ff` fuzzy search files
-* `,fg` fuzzy grep files
+* `,fg` fuzzy grep files (live)
 * `,fb` fuzzy find buffer
 * `,fh` fuzzy search history of open files
 * `,fq` fuzzy browse quickfix
