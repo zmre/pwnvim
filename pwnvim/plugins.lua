@@ -107,7 +107,8 @@ M.ui = function()
 
   require("pwnvim.plugins.lualine")
   require("pwnvim.plugins.treesitter")
-  require("pwnvim.plugins.bufferline")
+  -- require("pwnvim.plugins.bufferline")
+  require("barbecue").setup({ attach_navic = false, show_modified = true, })
   require("pwnvim.plugins.indent-blankline")
   require("flash").setup({
     modes = {
@@ -324,6 +325,9 @@ M.diagnostics = function()
     end
     if client.server_capabilities.rename then
       mapleadernlocal("lR", vim.lsp.buf.rename, "Rename")
+    end
+    if client.server_capabilities.documentSymbolProvider then
+      require("nvim-navic").attach(client, bufnr)
     end
   end
 

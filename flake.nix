@@ -252,14 +252,16 @@
                 # symbols-outline-nvim # navigate the current file better
                 lualine-nvim # nice status bar at bottom
                 vim-bbye # fix bdelete buffer stuff needed with bufferline
-                bufferline-nvim # tabs at top
+                # bufferline-nvim # tabs at top
+                barbecue-nvim
+                nvim-navic # required by barbecue
                 indent-blankline-nvim # visual indent
                 toggleterm-nvim # better terminal management
                 nvim-treesitter.withAllGrammars
                 #(nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
                 playground # treesitter playground
                 nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
-                nvim-treesitter-context # keep current block header (func defn or whatever) on first line
+                # nvim-treesitter-context # keep current block header (func defn or whatever) on first line
                 lf-vim
                 nui-nvim # needed by noice
                 nvim-notify # needed by noice

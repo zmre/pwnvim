@@ -129,8 +129,10 @@ M.config = function()
   -- Use F3 for a quick grep with Trouble to show results
   M.mapnvic("<F3>", function()
     vim.ui.input({ prompt = "Regex: " }, function(needle)
-      vim.cmd("lgrep -i " .. needle)
-      require("trouble").toggle({ mode = "loclist", position = "bottom" })
+      if needle then
+        vim.cmd("lgrep -i " .. needle)
+        require("trouble").toggle({ mode = "loclist", position = "bottom" })
+      end
     end)
   end)
   -- Make F4 toggle invisible characters (locally)
@@ -166,7 +168,7 @@ M.config = function()
   M.mapnvic("<D-s>", "write", "Save buffer")
   M.mapnvic("<D-q>", "quit", "Quit")
   -- Magic buffer-picking mode
-  M.mapnvic("<M-b>", "BufferLinePick", "Pick buffer by letter")
+  -- M.mapnvic("<M-b>", "BufferLinePick", "Pick buffer by letter")
 
   -- Copy and paste ops mainly for neovide / gui apps
   if require("pwnvim.options").isGuiRunning() then
@@ -279,8 +281,8 @@ M.config = function()
 
 
   M.mapn("<leader>p", 'normal "*p', "Paste")
-  M.mapn("[0", "BufferLinePick", "Pick buffer by letter")
-  M.mapn("]0", "BufferLinePick", "Pick buffer by letter")
+  -- M.mapn("[0", "BufferLinePick", "Pick buffer by letter")
+  -- M.mapn("]0", "BufferLinePick", "Pick buffer by letter")
 
   M.map("v", "gx", '"0y:silent !open "<c-r>0" || xdg-open "<c-r>0"<cr>gv', "Launch URL or path")
   -- When pasting over selected text, keep original register value
@@ -435,8 +437,10 @@ M.config = function()
     ["]A"] = "Last file arg",
     ["[B"] = "First buffer",
     ["]B"] = "Last buffer",
-    ["[b"] = { "<Cmd>BufferLineCyclePrev<CR>", "Prev buffer" },
-    ["]b"] = { "<Cmd>BufferLineCycleNext<CR>", "Next buffer" },
+    ["[b"] = { "<Cmd>bprev<CR>", "Prev buffer" },
+    ["]b"] = { "<Cmd>bnext<CR>", "Next buffer" },
+    -- ["[b"] = { "<Cmd>BufferLineCyclePrev<CR>", "Prev buffer" },
+    -- ["]b"] = { "<Cmd>BufferLineCycleNext<CR>", "Next buffer" },
     ["[c"] = "Prev git hunk",
     ["]c"] = "Next git hunk",
     ["[f"] = "Prev file in dir of cur file",
@@ -469,26 +473,28 @@ M.config = function()
     ["]y"] = "C unescape",
     ["[d"] = { vim.diagnostic.goto_prev, "Prev diagnostic" },
     ["]d"] = { vim.diagnostic.goto_next, "Next diagnostic" },
-    ["[1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "Go to buffer 1" },
-    ["]1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "Go to buffer 1" },
-    ["[2"] = { "<cmd>BufferLineGoToBuffer 2<CR>", "Go to buffer 2" },
-    ["]2"] = { "<cmd>BufferLineGoToBuffer 2<CR>", "Go to buffer 2" },
-    ["[3"] = { "<cmd>BufferLineGoToBuffer 3<CR>", "Go to buffer 3" },
-    ["]3"] = { "<cmd>BufferLineGoToBuffer 3<CR>", "Go to buffer 3" },
-    ["[4"] = { "<cmd>BufferLineGoToBuffer 4<CR>", "Go to buffer 4" },
-    ["]4"] = { "<cmd>BufferLineGoToBuffer 4<CR>", "Go to buffer 4" },
-    ["[5"] = { "<cmd>BufferLineGoToBuffer 5<CR>", "Go to buffer 5" },
-    ["]5"] = { "<cmd>BufferLineGoToBuffer 5<CR>", "Go to buffer 5" },
-    ["[6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "Go to buffer 6" },
-    ["]6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "Go to buffer 6" },
-    ["[7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "Go to buffer 7" },
-    ["]7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "Go to buffer 7" },
-    ["[8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "Go to buffer 8" },
-    ["]8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "Go to buffer 8" },
-    ["[9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "Go to buffer 9" },
-    ["]9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "Go to buffer 9" },
-    ["<S-h>"] = { "<cmd>BufferLineCyclePrev<CR>", "Go to next buffer" },
-    ["<S-l>"] = { "<cmd>BufferLineCycleNext<CR>", "Go to prev buffer" },
+    -- ["[1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "Go to buffer 1" },
+    -- ["]1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "Go to buffer 1" },
+    -- ["[2"] = { "<cmd>BufferLineGoToBuffer 2<CR>", "Go to buffer 2" },
+    -- ["]2"] = { "<cmd>BufferLineGoToBuffer 2<CR>", "Go to buffer 2" },
+    -- ["[3"] = { "<cmd>BufferLineGoToBuffer 3<CR>", "Go to buffer 3" },
+    -- ["]3"] = { "<cmd>BufferLineGoToBuffer 3<CR>", "Go to buffer 3" },
+    -- ["[4"] = { "<cmd>BufferLineGoToBuffer 4<CR>", "Go to buffer 4" },
+    -- ["]4"] = { "<cmd>BufferLineGoToBuffer 4<CR>", "Go to buffer 4" },
+    -- ["[5"] = { "<cmd>BufferLineGoToBuffer 5<CR>", "Go to buffer 5" },
+    -- ["]5"] = { "<cmd>BufferLineGoToBuffer 5<CR>", "Go to buffer 5" },
+    -- ["[6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "Go to buffer 6" },
+    -- ["]6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "Go to buffer 6" },
+    -- ["[7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "Go to buffer 7" },
+    -- ["]7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "Go to buffer 7" },
+    -- ["[8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "Go to buffer 8" },
+    -- ["]8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "Go to buffer 8" },
+    -- ["[9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "Go to buffer 9" },
+    -- ["]9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "Go to buffer 9" },
+    ["<S-h>"] = { "<cmd>bn<CR>", "Go to next buffer" },
+    ["<S-l>"] = { "<cmd>bp<CR>", "Go to prev buffer" },
+    -- ["<S-h>"] = { "<cmd>BufferLineCyclePrev<CR>", "Go to next buffer" },
+    -- ["<S-l>"] = { "<cmd>BufferLineCycleNext<CR>", "Go to prev buffer" },
   }, { mode = "n", silent = true })
 
 

@@ -138,7 +138,9 @@ M.defaults = function()
   -- noinsert: don't insert until selection made, noselect: don't select automatically
   vim.opt.completeopt = "menu,menuone,noinsert,noselect" -- needed for autocompletion stuff
   vim.opt.conceallevel = 2
-  vim.opt.fileencoding = "utf-8"
+  if vim.api.nvim_buf_get_option(0, 'modifiable') then
+    vim.opt.fileencoding = "utf-8"
+  end
 
   -- Globals
   vim.g.vimsyn_embed = 'l' -- Highlight Lua code inside .vim files

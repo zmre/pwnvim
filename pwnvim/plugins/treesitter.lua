@@ -75,14 +75,14 @@ require("nvim-treesitter.configs").setup({
     }
   }
 })
-require("treesitter-context").setup({
-  enable = true,
-  trim_scope = "outer",
-  zindex = 20,
-  mode = "cursor",
-  multiline_threshold = 2,
-  min_window_height = 0,
-  line_numbers = true,
-  max_lines = 4, -- no max window height
-  patterns = { markdown = { "atx_heading" } }
-})
+-- require("treesitter-context").setup({
+--   enable = true,
+--   trim_scope = "outer",
+--   zindex = 20,
+--   mode = "cursor",
+--   multiline_threshold = 2,
+--   min_window_height = 0,
+--   line_numbers = true,
+--   max_lines = 4, -- no max window height
+--   patterns = { markdown = { "atx_heading" } }
+-- })
