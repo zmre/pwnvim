@@ -75,7 +75,7 @@ M.defaults = function()
   vim.opt.hidden = true
   vim.opt.cf = true -- jump to errors based on error files
   vim.o.listchars =
-  "tab:⇥ ,trail:␣,multispace:␣,extends:⇉,precedes:⇇,nbsp:·,eol:↴" -- ,space:⋅"
+  "tab:⇥ ,trail:␣,multispace:␣,extends:⇉,precedes:⇇,nbsp:·" --,eol:↴" -- ,space:⋅"
   vim.opt.list = false -- render special chars (tabs, trails, ...)
   vim.opt.ttyfast = true
   vim.opt.expandtab = true
@@ -151,6 +151,153 @@ M.defaults = function()
   vim.api.nvim_set_keymap('n', ',', '', {}) -- first unset it though
   vim.g.mapleader = ','                     -- Namespace for custom shortcuts
 
+  vim.api.nvim_exec([[
+    filetype plugin indent on
+    syntax off
+    syntax sync minlines=2000
+  ]], false)
+
+  -- Brief highlight on yank
+  vim.api.nvim_exec([[
+    augroup YankHighlight
+        autocmd!
+        autocmd TextYankPost * silent! lua vim.highlight.on_yank()
+    augroup end
+    ]], false)
+end
+
+M.colors_cat = function()
+  vim.g.termguicolors = not SimpleUI
+  vim.o.termguicolors = not SimpleUI
+  vim.o.background = "dark"
+
+  require("catppuccin").setup({
+    flavour = "macchiato", -- latte, frappe, macchiato, mocha
+    background = {         -- :h background
+      light = "latte",
+      dark = "macchiato",
+    },
+    transparent_background = true, -- disables setting the background color.
+    dim_inactive = {
+      enabled = true,              -- dims the background color of inactive window
+      shade = "dark",
+      percentage = 0.15,           -- percentage of the shade to apply to the inactive window
+    },
+    integrations = {
+      alpha = false,
+      cmp = true,
+      dashboard = false,
+      flash = true,
+      gitsigns = true,
+      illuminate = false,
+      mini = { enabled = false },
+      neogit = false,
+      nvimtree = false,
+      treesitter = true,
+      notify = true,
+      markdown = true,
+      noice = true,
+      ufo = false,
+      semantic_tokens = true,
+      treesitter_context = true,
+      lsp_trouble = true,
+      telescope = { enabled = true },
+      which_key = true,
+      -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
+    },
+    custom_highlights = function(colors)
+      return {
+        mkdLink = { fg = colors.blue, style = { "underline" } },
+        bareLink = { fg = colors.blue, style = { "underline" } },
+        mkdURL = { fg = colors.green, style = { "underline" } },
+        mkdInlineURL = { fg = colors.blue, style = { "underline" } },
+        mkdListItem = { fg = colors.teal },
+        markdownListMarker = { fg = colors.teal },
+        mkdListItemCheckbox = { fg = colors.green },
+        markdownCheckboxCanceled = { fg = colors.surface2, style = { "strikethrough" } },
+        markdownCheckboxPostponed = { fg = colors.surface2 },
+        markdownStrikethrough = { fg = colors.surface2, style = { "strikethrough" } },
+        markdownTag = { fg = colors.surface2 },
+        doneTag = { fg = colors.surface2, style = { "italic" } },
+        highPrioTask = { fg = colors.red, style = { "bold" } },
+        TSURI = { fg = colors.blue, style = { "underline" } },
+        TSPunctSpecial = { fg = colors.red },
+        markdownTSTitle = { fg = colors.teal, style = { "bold" } },
+        markdownAutomaticLink = { fg = colors.blue, style = { "underline" } },
+        markdownLink = { fg = colors.green, style = { "underline" } },
+        markdownLinkText = { fg = colors.blue, style = { "underline" } },
+        ["@link_text"] = { fg = colors.blue, style = { "underline", "bold" } },
+        markdownUrl = { fg = colors.green, style = { "underline" } },
+        markdownWikiLink = { fg = colors.blue, style = { "underline" } },
+        ["@text.title.1"] = { fg = colors.yellow, style = { "bold" } },
+        markdownH1 = { fg = colors.yellow, style = { "bold" } },
+        ["@text.title.2"] = { fg = colors.yellow, style = { "bold" } },
+        markdownH2 = { fg = colors.yellow, style = { "bold" } },
+        ["@text.title.3"] = { fg = colors.yellow },
+        markdownH3 = { fg = colors.yellow },
+        ["@text.title.4"] = { fg = colors.green, style = { "italic" } },
+        markdownH4 = { fg = colors.green, style = { "italic" } },
+        ["@text.title.5"] = { fg = colors.green, style = { "italic" } },
+        markdownH5 = { fg = colors.green, style = { "italic" } },
+        ["@text.title.6"] = { fg = colors.green, style = { "italic" } },
+        markdownH6 = { fg = colors.green, style = { "italic" } },
+        htmlH1 = { fg = colors.yellow, style = { "bold" } },
+        htmlH2 = { fg = colors.yellow, style = { "bold" } },
+        htmlH3 = { fg = colors.yellow },
+        htmlH4 = { fg = colors.green, style = { "italic" } },
+        htmlH5 = { fg = colors.green, style = { "italic" } },
+        htmlH6 = { fg = colors.green, style = { "italic" } },
+        markdownBold = { fg = "#ffffff", style = { "bold" } },
+        htmlBold = { fg = "#ffffff", style = { "bold" } },
+        markdownItalic = { fg = "#eeeeee", style = { "italic" } },
+        htmlItalic = { fg = "#eeeeee", style = { "italic" } },
+        markdownBoldItalic = { fg = "#ffffff", style = { "bold", "italic" } },
+        htmlBoldItalic = { fg = "#ffffff", style = { "bold", "italic" } },
+        SpellBad = { style = { "undercurl" }, sp = colors.red },
+        SpellCap = { style = { "undercurl" }, sp = colors.teal },
+        SpellRare = { style = { "undercurl" }, sp = colors.lavender },
+        SpellLocal = { style = { "undercurl" }, sp = colors.teal },
+        MatchParen = { bg = "#555555", style = { "italic" } },
+        IndentBlanklineChar = { fg = "#444444" },
+        -- Todo                                       = { fg = "#282c34", bg = "${highlight}", style = "bold" },
+        VertSplit = { fg = "#202020", bg = "#606060" },
+        Folded = { fg = "#c0c8d0", bg = "#384058" },
+        ["@comment.markdown"] = { fg = colors.surface2 },
+        ["@field.markdown_inline"] = { fg = colors.lavender },
+        ["@text.literal.markdown_inline"] = { fg = colors.green },
+        ["@text.reference.markdown_inline"] = {
+          fg = colors.blue,
+          style = { "underline" }
+        },
+        ["@text.underline"] = { style = { "underline" } },
+        ["@text.strong.markdown_inline"] = { fg = "#ffffff", style = { "bold" } },
+        ["@text.emphasis.markdown_inline"] = { fg = "#eeeeee", style = { "italic" } },
+        ["@strikethrough.markdown_inline"] = {
+          fg = colors.surface2,
+          style = { "strikethrough" }
+        },
+        ["@tag"] = { fg = colors.surface2 },
+        ["@block_quote.markdown"] = { fg = colors.lavender, style = { "italic" } },
+        ["@text.title.markdown"] = { fg = colors.yellow, style = { "bold" } },
+        ["@punctuation.special.markdown"] = { fg = colors.teal },
+        ["@punctuation.delimiter.markdown_inline"] = { fg = colors.peach },
+        ["@text.uri.markdown_inline"] = { fg = colors.blue },
+        ["@text.todo.unchecked"] = { fg = "#ffffff", bg = "", style = { "bold" } },
+        ["@text.todo.checked"] = { fg = colors.green, style = { "bold" } },
+      }
+    end
+
+  })
+  local cscheme
+  if SimpleUI then
+    cscheme = "ir_black"
+  else
+    cscheme = "catppuccin"
+  end
+  vim.cmd.colorscheme(cscheme)
+end
+
+M.colors_onedark = function()
   vim.g.termguicolors = not SimpleUI
   vim.o.termguicolors = not SimpleUI
   vim.o.background = "dark"
@@ -305,20 +452,7 @@ M.defaults = function()
   else
     cscheme = "onedark"
   end
-  vim.cmd("colorscheme " .. cscheme)
-  vim.api.nvim_exec([[
-    filetype plugin indent on
-    syntax off
-    syntax sync minlines=2000
-  ]], false)
-
-  -- Brief highlight on yank
-  vim.api.nvim_exec([[
-    augroup YankHighlight
-        autocmd!
-        autocmd TextYankPost * silent! lua vim.highlight.on_yank()
-    augroup end
-    ]], false)
+  vim.cmd.colorscheme(cscheme)
 end
 
 M.defaultFontSize = function()

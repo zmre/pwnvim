@@ -448,6 +448,12 @@ M.diagnostics = function()
   lspconfig.tailwindcss.setup({
     on_attach = attached,
     capabilities = capabilities,
+    root_dir = require("lspconfig/util").root_pattern(
+      "tailwind.config.js",
+      "tailwind.config.ts",
+      "tailwind.config.cjs"
+    ),
+    filetypes = { "css", "html", "svelte" },
     settings = {
       files = { exclude = { "**/.git/**", "**/node_modules/**", "**/*.md" } }
     }
@@ -545,6 +551,7 @@ M.telescope = function()
           ["<C-y>"] = yank_selected_entry,
           ["<C-o>"] = system_open_selected_entry,
           ["<F10>"] = quicklook_selected_entry,
+          ["dd"] = require("telescope.actions").delete_buffer,
           ["q"] = require("telescope.actions").close
         },
         i = {

@@ -237,6 +237,7 @@
 
                 # UI #################################################
                 onedarkpro-nvim # colorscheme
+                catppuccin-nvim # colorscheme
                 ir_black # colorscheme for basic terminals
                 #zephyr-nvim # alternate colorscheme
                 telescope-nvim # da best popup fuzzy finder
