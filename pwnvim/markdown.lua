@@ -151,12 +151,12 @@ M.setupmappings = function(bufnr)
   -- task shortcuts
   mapvlocal("<leader>ta", [[<cmd>grep "^\s*[*-] \[ \] "<cr>:Trouble quickfix<cr>]], "All tasks quickfix")
   mapnlocal("<leader>td", require("pwnvim.tasks").completeTaskDirect, "Task done")
-  mapvlocal("<leader>td", "luado return require('pwnvim.tasks').completeTask(line)", "Done")
+  mapvlocal("<leader>td", ":luado return require('pwnvim.tasks').completeTask(line)", "Done")
   mapnlocal("<leader>tc", require("pwnvim.tasks").createTaskDirect, "Task create")
   mapnlocal("<leader>ts", require("pwnvim.tasks").scheduleTaskPrompt, "Task schedule")
   mapvlocal("<leader>ts", require("pwnvim.tasks").scheduleTaskBulk, "Schedule")
   mapnlocal("<leader>tt", require("pwnvim.tasks").scheduleTaskTodayDirect, "Task move today")
-  mapvlocal("<leader>tt", "luado return require('pwnvim.tasks').scheduleTaskToday(line)<cr>", "Today")
+  mapvlocal("<leader>tt", ":luado return require('pwnvim.tasks').scheduleTaskToday(line)<cr>", "Today")
 end
 
 M.markdownsyntax = function()
