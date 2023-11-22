@@ -130,7 +130,7 @@ M.config = function()
   M.mapnvic("<F3>", function()
     vim.ui.input({ prompt = "Regex: " }, function(needle)
       if needle then
-        vim.cmd("lgrep -i " .. needle)
+        vim.cmd(table.concat({ "lgrep -i ", '"', needle, '"' }))
         require("trouble").toggle({ mode = "loclist", position = "bottom" })
       end
     end)
