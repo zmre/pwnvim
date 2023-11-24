@@ -15,6 +15,12 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    flake-compat = {
+      # Needed along with default.nix in root to allow nixd lsp to do completions
+      # See: https://github.com/nix-community/nixd/tree/main/docs/examples/flake
+      url = "github:inclyc/flake-compat";
+      flake = false;
+    };
     fenix.url = "github:nix-community/fenix";
     fenix.inputs.nixpkgs.follows = "nixpkgs";
     # ekickx doesn't seem to be maintaing. postfen's fork worth using for now. TODO: revisit
@@ -133,10 +139,15 @@
           proselint # ditto
           luaformatter # ditto for lua
           prisma-engines # ditto for schema.prisma files
-          #rnix-lsp # nix lsp -- appears to be abandoned?
-          nil # nix lsp -- better than rnix?
-          #nixfmt # nix formatter used with null-ls
-          alejandra # nix formatter alternative
+          # Nix language servers summary 2023-11-23
+          # rnix-lsp -- seems abandoned
+          # nil -- way better than rnix and generally great, but
+          nixd # -- damn good at completions referencing back to nixpkgs, for example
+          #         at least provided you do some weird gymnastics in flakes:
+          #         https://github.com/nix-community/nixd/blob/main/docs/user-guide.md#faq
+          #         using this one for now
+          #nixfmt # nix formatter
+          alejandra # better nix formatter alternative
           statix # linter for nix
           shellcheck
           # luajitPackages.lua-lsp
@@ -197,7 +208,6 @@
         withNodeJs = false;
         withPython3 = false;
         withRuby = false;
-        extraPython3Packages = false;
         extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
         # make sure impatient is loaded before everything else to speed things up
         configure = {
@@ -234,6 +244,8 @@
                 neodev-nvim # help for neovim lua api
                 SchemaStore-nvim # json schemas
                 vim-matchup # replaces built-in matchit and matchparen with better matching and faster
+                nvim-lightbulb # show code actions
+                nvim-code-action-menu # add extra details to code actions incl. diffs
 
                 # UI #################################################
                 onedarkpro-nvim # colorscheme

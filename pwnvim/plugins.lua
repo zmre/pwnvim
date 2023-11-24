@@ -459,10 +459,14 @@ M.diagnostics = function()
     }
   })
   -- nil_ls is a nix lsp
-  lspconfig.nil_ls.setup({
+  --[[ lspconfig.nil_ls.setup({
     on_attach = attached,
     capabilities = capabilities,
     settings = { ["nil"] = { nix = { flake = { autoArchive = false } } } }
+  }) ]]
+  lspconfig.nixd.setup({
+    on_attach = attached,
+    capabilities = capabilities
   })
   lspconfig.cssls.setup({
     on_attach = attached,
@@ -498,6 +502,12 @@ M.diagnostics = function()
       }
     },
     capabilities = capabilities
+  })
+  require("nvim-lightbulb").setup({
+    autocmd = { enabled = true },
+    sign = { enabled = false },
+    virtual_text = { enabled = true, },
+    float = { enabled = false }
   })
 end -- Diagnostics setup
 
@@ -744,7 +754,8 @@ M.notes = function()
           mapleadernlocal("nr", require("telescope.builtin").lsp_references, "References to this note")
           mapleadernlocal("lr", require("telescope.builtin").lsp_references, "References to this note") -- for muscle memory
           mapleadernlocal("li", vim.lsp.buf.hover, "Info hover")
-          mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix code actions")
+          -- mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix code actions")
+          mapleadernlocal("lf", "CodeActionMenu", "Fix code actions")
           mapleadernlocal("le", vim.diagnostic.open_float, "Show line diags")
           mapleadernvlocal("ll", require("lsp_lines").toggle, "Toggle virtual text lines")
           mapleadervlocal("np",
