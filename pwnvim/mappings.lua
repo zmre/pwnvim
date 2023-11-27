@@ -115,6 +115,7 @@ M.config = function()
     ["<leader>i"] = { name = "+indent" },
     ["<leader>l"] = { name = "+lsp" },
     ["<leader>ls"] = { name = "+symbols" },
+    ["<leader>lc"] = { name = "+change" },
     ["<leader>n"] = { name = "+notes" },
     ["<leader>t"] = { name = "+tasks" },
   })

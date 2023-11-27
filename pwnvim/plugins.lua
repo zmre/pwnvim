@@ -290,6 +290,7 @@ M.diagnostics = function()
     mapleadernlocal("ld", vim.lsp.buf.definition, "Go to definition")
     -- override standard tag jump c-] for go to definition
     mapnlocal("<c-]>", vim.lsp.buf.definition, "Go to definition")
+    mapnlocal("K", vim.lsp.buf.hover, "Info hover")
     mapleadernlocal("lD", vim.lsp.buf.implementation, "Implementation")
     mapleadernlocal("le", vim.diagnostic.open_float, "Show Line Diags")
     mapleadernlocal("li", vim.lsp.buf.hover, "Info hover")
@@ -330,6 +331,11 @@ M.diagnostics = function()
     if client.server_capabilities.documentSymbolProvider then
       require("nvim-navic").attach(client, bufnr)
     end
+    require("which-key").register({
+      mode = { "n", "v" },
+      ["<leader>ls"] = { name = "+symbols" },
+      ["<leader>lc"] = { name = "+change" },
+    })
   end
 
   require('lint').linters_by_ft = {
@@ -510,6 +516,17 @@ M.diagnostics = function()
     virtual_text = { enabled = true, },
     float = { enabled = false }
   })
+  vim.lsp.util.stylize_markdown = function(bufnr, contents, opts)
+    contents = vim.lsp.util._normalize_markdown(contents, {
+      width = vim.lsp.util._make_floating_popup_size(contents, opts),
+    })
+
+    vim.bo[bufnr].filetype = "markdown"
+    vim.treesitter.start(bufnr)
+    vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, contents)
+
+    return contents
+  end
 end -- Diagnostics setup
 
 ----------------------- TELESCOPE --------------------------------
@@ -745,7 +762,6 @@ M.notes = function()
           local mapleadernlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadern)
           local mapleadervlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleaderv)
           local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
-
 
           mapnlocal("K", vim.lsp.buf.hover, "Info hover")
           -- Create the note in the same directory as the current buffer after asking for title
