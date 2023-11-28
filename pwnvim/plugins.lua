@@ -516,27 +516,6 @@ M.diagnostics = function()
     virtual_text = { enabled = true, },
     float = { enabled = false }
   })
-  vim.lsp.util.stylize_markdown = function(bufnr, contents, opts)
-    local status, returnedval = pcall(function()
-      contents = vim.lsp.util._normalize_markdown(contents, {
-        width = vim.lsp.util._make_floating_popup_size(contents, opts),
-      })
-
-      vim.bo[bufnr].filetype = "markdown"
-      vim.treesitter.start(bufnr)
-      vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, contents)
-
-      return contents
-    end)
-    if status then
-      -- success... return the new contents
-      return returnedval
-    else
-      -- failure... should we log it somehow?  not sure, but we can print it for now
-      print("ERROR: " .. returnedval)
-    end
-    return contents
-  end
 end -- Diagnostics setup
 
 ----------------------- TELESCOPE --------------------------------
