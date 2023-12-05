@@ -16,7 +16,7 @@ M.defaults = function()
   -- we just use lua plugins here so disable others
   vim.g.loaded_perl_provider = 0
   vim.g.loaded_node_provider = 0
-  vim.g.loaded_python3_provider = 0
+  -- vim.g.loaded_python3_provider = 0 -- moved to flake for different modes
   vim.g.loaded_ruby_provider = 0
   -- vim.g.loaded_matchit = 0
   -- vim.g.loaded_matchparen = 1 -- to disable built in paren matching

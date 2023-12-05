@@ -110,19 +110,6 @@
         ];
       };
 
-      recursiveMerge = attrList: let
-        f = attrPath:
-          builtins.zipAttrsWith (n: values:
-            if pkgs.lib.tail values == []
-            then pkgs.lib.head values
-            else if pkgs.lib.all pkgs.lib.isList values
-            then pkgs.lib.unique (pkgs.lib.concatLists values)
-            else if pkgs.lib.all pkgs.lib.isAttrs values
-            then f (attrPath ++ [n]) values
-            else pkgs.lib.last values);
-      in
-        f [] attrList;
-    in rec {
       dependencies = with pkgs;
         [
           fd
@@ -189,7 +176,179 @@
         ]
         ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
         [pngpaste]; # needed by vim clipboard-image plugin
-      neovim-augmented = recursiveMerge [
+
+      customRC =
+        ''
+          lua << EOF
+            package.path = "${self}/?.lua;" .. package.path
+            rustsrc_path = "${pkgs.rustPlatform.rustLibSrc}/core/Cargo.toml"
+            vim.env.RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}"
+            vim.env.RA_LOG = "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug"
+            rustanalyzer_path = "${pkgs.rust-analyzer}/bin/rust-analyzer"
+            vim.g.loaded_python3_provider = 0
+            vim.g.python3_host_prog = "${pythonEnv}/bin/python"
+        ''
+        + pkgs.lib.readFile ./init.lua
+        + ''
+          EOF
+        '';
+
+      requiredPlugins = with pkgs.vimPlugins;
+        [
+          # Common dependencies of other plugins
+          popup-nvim # dependency of some other plugins
+          plenary-nvim # Library for lua plugins; used by many plugins here
+
+          # Syntax / Language Support ##########################
+          # Removing 2022-11-30 as it is slow and treesitter generally does the same thing
+          # vim-polyglot # lazy load all the syntax plugins for all the languages
+          rust-tools-nvim # lsp stuff and more for rust
+          nvim-lspconfig # setup LSP for intelligent coding
+          nvim-lint # replace null-ls for linting bits
+          conform-nvim # replace null-ls and lsp-format-nvim for formatting
+          trouble-nvim # navigate all warnings and errors in quickfix-like window
+          #nvim-dap # debugging functionality used by rust-tools-nvim
+          #nvim-dap-ui # ui for debugging
+          neodev-nvim # help for neovim lua api
+          SchemaStore-nvim # json schemas
+          vim-matchup # replaces built-in matchit and matchparen with better matching and faster
+          nvim-lightbulb # show code actions
+          nvim-code-action-menu # add extra details to code actions incl. diffs
+
+          # UI #################################################
+          onedarkpro-nvim # colorscheme
+          catppuccin-nvim # colorscheme
+          ir_black # colorscheme for basic terminals
+          #zephyr-nvim # alternate colorscheme
+          telescope-nvim # da best popup fuzzy finder
+          telescope-fzy-native-nvim # with fzy gives better results
+          # telescope-frecency-nvim # and frecency comes in handy too
+          #sqlite-lua # needed by frecency plugin -- beta support to remove dep
+          dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope
+          nvim-colorizer-lua # color over CSS like #00ff00
+          nvim-web-devicons # makes things pretty; used by many plugins below
+          oil-nvim # file navigator
+          git-worktree-nvim # jump between worktrees
+          gitsigns-nvim # git status in gutter
+          # symbols-outline-nvim # navigate the current file better
+          lualine-nvim # nice status bar at bottom
+          vim-bbye # fix bdelete buffer stuff needed with bufferline
+          # bufferline-nvim # tabs at top
+          barbecue-nvim
+          nvim-navic # required by barbecue
+          indent-blankline-nvim # visual indent
+          toggleterm-nvim # better terminal management
+          nvim-treesitter.withAllGrammars
+          #(nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
+          playground # treesitter playground
+          nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
+          # nvim-treesitter-context # keep current block header (func defn or whatever) on first line
+          lf-vim
+          nui-nvim # needed by noice
+          nvim-notify # needed by noice
+          noice-nvim # show progress and add other UI improvements
+          lsp_lines-nvim # use virtual text to inline errors and warnings
+          marks-nvim # show marks in the gutter
+
+          # Editor Features ####################################
+          vim-abolish # better abbreviations / spelling fixer
+          nvim-surround # .... updated lua-based alternative to tpope's surround
+          vim-unimpaired # bunch of convenient navigation key mappings
+          vim-repeat # supports all of the above so you can use .
+          #nvim-ts-context-commentstring # makes kommentary contextual for embedded languages
+          vim-eunuch # brings cp/mv type commands. :Rename and :Move are particularly handy
+          vim-speeddating # allows ctrl-x and ctrl-a to increment/decrement dates
+          flash-nvim
+
+          # Database interactions
+          # vim-dadbod
+          # vim-dadbod-ui
+          # vim-dadbod-completion
+
+          # Autocompletion
+          nvim-cmp # generic autocompleter
+          cmp-nvim-lsp # use lsp as source for completions
+          cmp-nvim-lua # makes vim config editing better with completions
+          cmp-buffer # any text in open buffers
+          cmp-path # complete paths
+          cmp-cmdline # completing in :commands
+          cmp-emoji # complete :emojis:
+          cmp-nvim-lsp-signature-help # help complete function call by showing args
+          cmp-npm # complete node packages in package.json
+          nvim-autopairs # balances parens as you type
+          nvim-ts-autotag # balance or rename html
+          vim-emoji # TODO: redundant now?
+          #luasnip # snippets driver
+          #cmp_luasnip # snippets completion
+          #friendly-snippets # actual library of snippets used by luasnip
+
+          # writing
+          zk-nvim # lsp for a folder of notes for searching/linking/etc.
+          true-zen-nvim # distraction free, width constrained writing mode
+          # twilight-nvim # dim text outside of current scope
+
+          # Misc
+          vim-fugitive # git management
+          diffview-nvim
+          project-nvim
+          vim-tmux-navigator # navigate vim and tmux panes together
+          impatient-nvim # speeds startup times by caching lua bytecode
+          which-key-nvim
+          vim-startuptime
+        ]
+        ++ pkgs.lib.optionals (!pkgs.stdenv.isDarwin) [
+          telescope-media-files-nvim # only works on linux, requires ueberzug, but gives image preview
+        ];
+      optionalPlugins = with pkgs.vimPlugins; [
+        # grammar check
+        vim-grammarous
+        # see note about hologram in markdown.lua file. commented out 2023-01-19
+        #hologram-nvim # images inline for markdown (only in terminal)
+        direnv-vim # auto-execute nix direnv setups -- currently my slowest plugin; enabled by programming filetype
+        clipboard-image # only loaded in markdown files
+        comment-nvim # code commenter
+        crates-nvim # inline intelligence for Cargo.toml
+        todo-comments-nvim # highlight comments like NOTE
+      ];
+
+      recursiveMerge = attrList: let
+        f = attrPath:
+          builtins.zipAttrsWith (n: values:
+            if pkgs.lib.tail values == []
+            then pkgs.lib.head values
+            else if pkgs.lib.all pkgs.lib.isList values
+            then pkgs.lib.unique (pkgs.lib.concatLists values)
+            else if pkgs.lib.all pkgs.lib.isAttrs values
+            then f (attrPath ++ [n]) values
+            else pkgs.lib.last values);
+      in
+        f [] attrList;
+
+      extraPythonPkgs = ps:
+        with ps; [
+          jupyter
+          ipython
+          ipykernel
+          sentence-transformers
+          numpy
+          pip
+          pandas
+          scipy
+          tokenizers
+          sympy
+          pinecone-client
+          pyarrow
+          python-dotenv
+          pynvim
+          jupyter-client
+          cairosvg
+          pnglatex
+          plotly
+          pyperclip
+        ];
+      pythonEnv = pkgs.python310.withPackages extraPythonPkgs;
+
+      augmentedNeovim = recursiveMerge [
         (pkgs.neovim-unwrapped.overrideAttrs (oldAddrs: {
           # This should help compile dependencies with debug symbols
           preConfigure =
@@ -202,7 +361,29 @@
         }))
         {buildInputs = dependencies;}
       ];
-      packages.pwnvim = pkgs.wrapNeovim neovim-augmented {
+      augmentedNeovimPython = recursiveMerge [
+        (pkgs.neovim-unwrapped.overrideAttrs (oldAddrs: {
+          # This should help compile dependencies with debug symbols
+          preConfigure =
+            ''
+              export DEBUG=1
+            ''
+            + oldAddrs.preConfigure;
+          # Options for built type are: RelWithDebInfo, Release, and Debug
+          cmakeFlags = oldAddrs.cmakeFlags ++ ["-DCMAKE_BUILD_TYPE=RelWithDebInfo"];
+        }))
+        {
+          buildInputs =
+            dependencies
+            ++ [
+              pythonEnv
+              pkgs.libffi
+              pkgs.imagemagick
+            ];
+        }
+      ];
+    in rec {
+      packages.pwnvim = pkgs.wrapNeovim augmentedNeovim {
         viAlias = true;
         vimAlias = true;
         withNodeJs = false;
@@ -211,137 +392,52 @@
         extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
         # make sure impatient is loaded before everything else to speed things up
         configure = {
+          inherit customRC;
+          packages.myPlugins = with pkgs.vimPlugins; {
+            start = requiredPlugins;
+            opt = optionalPlugins;
+          };
+        };
+      };
+      packages.pwnvim-python = pkgs.wrapNeovim augmentedNeovimPython {
+        viAlias = false;
+        vimAlias = false;
+        withNodeJs = false;
+        withPython3 = true;
+        extraLuaPackages = ps: [ps.magick];
+        extraPython3Packages = extraPythonPkgs;
+        # python3Env = pythonEnv;
+        withRuby = false;
+        extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
+        # make sure impatient is loaded before everything else to speed things up
+        configure = {
           customRC =
-            ''
-              lua << EOF
-                package.path = "${self}/?.lua;" .. package.path
-                rustsrc_path = "${pkgs.rustPlatform.rustLibSrc}/core/Cargo.toml"
-                vim.env.RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}"
-                vim.env.RA_LOG = "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug"
-                rustanalyzer_path = "${pkgs.rust-analyzer}/bin/rust-analyzer"
-            ''
-            + pkgs.lib.readFile ./init.lua
+            customRC
             + ''
+              lua << EOF
+              vim.g.molten_image_provider = "image.nvim"
+              vim.g.molten_output_win_max_height = 20
+              vim.g.molten_auto_open_output = false
+              vim.g.loaded_python3_provider = nil
+              require("image").setup({
+                backend = "kitty",
+                max_width = 100,
+                max_height = 12,
+                max_height_window_percentage = math.huge,
+                max_width_window_percentage = math.huge,
+                window_overlap_clear_enabled = true,
+                window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" }
+              })
               EOF
             '';
           packages.myPlugins = with pkgs.vimPlugins; {
-            start = with pkgs.vimPlugins;
-              [
-                # Common dependencies of other plugins
-                popup-nvim # dependency of some other plugins
-                plenary-nvim # Library for lua plugins; used by many plugins here
-
-                # Syntax / Language Support ##########################
-                # Removing 2022-11-30 as it is slow and treesitter generally does the same thing
-                # vim-polyglot # lazy load all the syntax plugins for all the languages
-                rust-tools-nvim # lsp stuff and more for rust
-                nvim-lspconfig # setup LSP for intelligent coding
-                nvim-lint # replace null-ls for linting bits
-                conform-nvim # replace null-ls and lsp-format-nvim for formatting
-                trouble-nvim # navigate all warnings and errors in quickfix-like window
-                #nvim-dap # debugging functionality used by rust-tools-nvim
-                #nvim-dap-ui # ui for debugging
-                neodev-nvim # help for neovim lua api
-                SchemaStore-nvim # json schemas
-                vim-matchup # replaces built-in matchit and matchparen with better matching and faster
-                nvim-lightbulb # show code actions
-                nvim-code-action-menu # add extra details to code actions incl. diffs
-
-                # UI #################################################
-                onedarkpro-nvim # colorscheme
-                catppuccin-nvim # colorscheme
-                ir_black # colorscheme for basic terminals
-                #zephyr-nvim # alternate colorscheme
-                telescope-nvim # da best popup fuzzy finder
-                telescope-fzy-native-nvim # with fzy gives better results
-                # telescope-frecency-nvim # and frecency comes in handy too
-                #sqlite-lua # needed by frecency plugin -- beta support to remove dep
-                dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope
-                nvim-colorizer-lua # color over CSS like #00ff00
-                nvim-web-devicons # makes things pretty; used by many plugins below
-                oil-nvim # file navigator
-                git-worktree-nvim # jump between worktrees
-                gitsigns-nvim # git status in gutter
-                # symbols-outline-nvim # navigate the current file better
-                lualine-nvim # nice status bar at bottom
-                vim-bbye # fix bdelete buffer stuff needed with bufferline
-                # bufferline-nvim # tabs at top
-                barbecue-nvim
-                nvim-navic # required by barbecue
-                indent-blankline-nvim # visual indent
-                toggleterm-nvim # better terminal management
-                nvim-treesitter.withAllGrammars
-                #(nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
-                playground # treesitter playground
-                nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
-                # nvim-treesitter-context # keep current block header (func defn or whatever) on first line
-                lf-vim
-                nui-nvim # needed by noice
-                nvim-notify # needed by noice
-                noice-nvim # show progress and add other UI improvements
-                lsp_lines-nvim # use virtual text to inline errors and warnings
-                marks-nvim # show marks in the gutter
-
-                # Editor Features ####################################
-                vim-abolish # better abbreviations / spelling fixer
-                nvim-surround # .... updated lua-based alternative to tpope's surround
-                vim-unimpaired # bunch of convenient navigation key mappings
-                vim-repeat # supports all of the above so you can use .
-                #nvim-ts-context-commentstring # makes kommentary contextual for embedded languages
-                vim-eunuch # brings cp/mv type commands. :Rename and :Move are particularly handy
-                vim-speeddating # allows ctrl-x and ctrl-a to increment/decrement dates
-                flash-nvim
-
-                # Database interactions
-                # vim-dadbod
-                # vim-dadbod-ui
-                # vim-dadbod-completion
-
-                # Autocompletion
-                nvim-cmp # generic autocompleter
-                cmp-nvim-lsp # use lsp as source for completions
-                cmp-nvim-lua # makes vim config editing better with completions
-                cmp-buffer # any text in open buffers
-                cmp-path # complete paths
-                cmp-cmdline # completing in :commands
-                cmp-emoji # complete :emojis:
-                cmp-nvim-lsp-signature-help # help complete function call by showing args
-                cmp-npm # complete node packages in package.json
-                nvim-autopairs # balances parens as you type
-                nvim-ts-autotag # balance or rename html
-                vim-emoji # TODO: redundant now?
-                #luasnip # snippets driver
-                #cmp_luasnip # snippets completion
-                #friendly-snippets # actual library of snippets used by luasnip
-
-                # writing
-                zk-nvim # lsp for a folder of notes for searching/linking/etc.
-                true-zen-nvim # distraction free, width constrained writing mode
-                # twilight-nvim # dim text outside of current scope
-
-                # Misc
-                vim-fugitive # git management
-                diffview-nvim
-                project-nvim
-                vim-tmux-navigator # navigate vim and tmux panes together
-                impatient-nvim # speeds startup times by caching lua bytecode
-                which-key-nvim
-                vim-startuptime
-              ]
-              ++ pkgs.lib.optionals (!pkgs.stdenv.isDarwin) [
-                telescope-media-files-nvim # only works on linux, requires ueberzug, but gives image preview
-              ];
-            opt = with pkgs.vimPlugins; [
-              # grammar check
-              vim-grammarous
-              # see note about hologram in markdown.lua file. commented out 2023-01-19
-              #hologram-nvim # images inline for markdown (only in terminal)
-              direnv-vim # auto-execute nix direnv setups -- currently my slowest plugin; enabled by programming filetype
-              clipboard-image # only loaded in markdown files
-              comment-nvim # code commenter
-              crates-nvim # inline intelligence for Cargo.toml
-              todo-comments-nvim # highlight comments like NOTE
-            ];
+            start =
+              requiredPlugins
+              ++ (with pkgs.vimPlugins; [
+                molten-nvim # jupyter notebook runner inside vim
+                image-nvim # display images in kitty inside nvim for markdown and jupyter notebooks -- to experiment with
+              ]);
+            opt = optionalPlugins;
           };
         };
       };
@@ -355,5 +451,9 @@
       devShell = pkgs.mkShell {
         buildInputs = [packages.pwnvim] ++ dependencies;
       };
+      # apps.pwnvim-python = flake-utils.lib.mkApp {
+      #   drv =
+      #
+      # };
     });
 }
