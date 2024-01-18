@@ -186,7 +186,6 @@
             vim.env.RA_LOG = "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug"
             rustanalyzer_path = "${pkgs.rust-analyzer}/bin/rust-analyzer"
             vim.g.loaded_python3_provider = 0
-            vim.g.python3_host_prog = "${pythonEnv}/bin/python"
         ''
         + pkgs.lib.readFile ./init.lua
         + ''
@@ -324,30 +323,6 @@
       in
         f [] attrList;
 
-      extraPythonPkgs = ps:
-        with ps; [
-          jupyter
-          ipython
-          ipykernel
-          sentence-transformers
-          numpy
-          pip
-          pandas
-          scipy
-          tokenizers
-          sympy
-          pinecone-client
-          pyarrow
-          python-dotenv
-          pynvim
-          jupyter-client
-          cairosvg
-          pnglatex
-          plotly
-          pyperclip
-        ];
-      pythonEnv = pkgs.python310.withPackages extraPythonPkgs;
-
       augmentedNeovim = recursiveMerge [
         (pkgs.neovim-unwrapped.overrideAttrs (oldAddrs: {
           # This should help compile dependencies with debug symbols
@@ -361,6 +336,29 @@
         }))
         {buildInputs = dependencies;}
       ];
+      extraPythonPkgs = ps:
+        with ps; [
+          jupyter
+          ipython
+          ipykernel
+          sentence-transformers
+          numpy
+          pip
+          pandas
+          scipy
+          tokenizers
+          sympy
+          pyarrow
+          python-dotenv
+          pynvim
+          jupyter-client
+          cairosvg
+          pnglatex
+          plotly
+          pyperclip
+        ];
+      pythonEnv = pkgs.python310.withPackages extraPythonPkgs;
+
       augmentedNeovimPython = recursiveMerge [
         (pkgs.neovim-unwrapped.overrideAttrs (oldAddrs: {
           # This should help compile dependencies with debug symbols
@@ -419,6 +417,7 @@
               vim.g.molten_output_win_max_height = 20
               vim.g.molten_auto_open_output = false
               vim.g.loaded_python3_provider = nil
+              vim.g.python3_host_prog = "${pythonEnv}/bin/python"
               require("image").setup({
                 backend = "kitty",
                 max_width = 100,

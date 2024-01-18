@@ -486,10 +486,10 @@ M.gui = function()
   vim.g.neovide_remember_window_size = true
   vim.g.neovide_input_macos_alt_is_meta = false
   vim.g.neovide_hide_mouse_when_typing = false
-  vim.g.neovide_background_color = "#131F34EA"
-  vim.g.neovide_input_use_logo = true -- enable cmd key on mac; is this needed now?
+  vim.g.neovide_background_color = "#131F34EA" -- note: for green screen purposes, try "#2a2a2aea"
+  vim.g.neovide_input_use_logo = true          -- enable cmd key on mac; is this needed now?
 
-  vim.opt.mouse = "nv"                -- only use mouse in normal and visual modes (notably not insert and command)
+  vim.opt.mouse = "nv"                         -- only use mouse in normal and visual modes (notably not insert and command)
   vim.opt.mousemodel = "popup_setpos"
   -- use the system clipboard for all unnamed yank operations
   vim.opt.clipboard = "unnamedplus"
