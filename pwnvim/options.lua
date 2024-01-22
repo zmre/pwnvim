@@ -31,6 +31,8 @@ M.defaults = function()
   vim.g.vim_markdown_conceal_code_blocks = 0
   vim.g.vim_markdown_frontmatter = 1
 
+  vim.opt.winblend = 0 -- no floating transparency (I find it unreadable); telescope has its own setting for this
+  vim.opt.pumblend = 0 -- no popup transparency for same reason
 
   -- my shada is so large it takes up half of startup time to process; constraining what it keeps here
   -- previous value: !,'100,<50,s10,h'
@@ -396,28 +398,29 @@ M.colors_onedark = function()
         ["@text.todo.unchecked"] = { fg = "#ffffff", bg = "", style = "bold" },
         ["@text.todo.checked"] = { fg = "${green}", style = "bold" },
 
-        TelescopeBorder = {
-          fg = "${telescope_results}",
-          bg = "${telescope_results}"
-        },
-        TelescopePromptBorder = {
-          fg = "${telescope_prompt}",
-          bg = "${telescope_prompt}"
-        },
-        TelescopePromptCounter = { fg = "${fg}" },
-        TelescopePromptNormal = { fg = "${fg}", bg = "${telescope_prompt}" },
-        TelescopePromptPrefix = { fg = "${purple}", bg = "${telescope_prompt}" },
-        TelescopePromptTitle = { fg = "${telescope_prompt}", bg = "${purple}" },
+        -- TelescopeBorder = {
+        --   fg = "${telescope_results}",
+        --   bg = "${telescope_results}"
+        -- },
+        -- TelescopePromptBorder = {
+        --   fg = "${telescope_prompt}",
+        --   bg = "${telescope_prompt}"
+        -- },
+        -- TelescopePromptCounter = { fg = "${fg}" },
+        -- TelescopePromptNormal = { fg = "${fg}", bg = "${telescope_prompt}" },
+        -- TelescopePromptPrefix = { fg = "${purple}", bg = "${telescope_prompt}" },
+        -- TelescopePromptTitle = { fg = "${telescope_prompt}", bg = "${purple}" },
+        --
+        -- TelescopePreviewTitle = { fg = "${telescope_results}", bg = "${green}" },
+        -- TelescopeResultsTitle = {
+        --   fg = "${telescope_results}",
+        --   bg = "${telescope_results}"
+        -- },
 
-        TelescopePreviewTitle = { fg = "${telescope_results}", bg = "${green}" },
-        TelescopeResultsTitle = {
-          fg = "${telescope_results}",
-          bg = "${telescope_results}"
-        },
-
-        TelescopeMatching = { fg = "${blue}" },
-        TelescopeNormal = { bg = "${telescope_results}" },
-        TelescopeSelection = { bg = "${telescope_prompt}" },
+        -- TelescopeMatching = { fg = "${blue}" },
+        -- TelescopeNormal = { bg = "#000000" },
+        -- TelescopeSelection = { bg = "${telescope_prompt}" },
+        PmenuSel = { blend = 0 },
       },
       styles = {                -- Choose from "bold,italic,underline"
         virtual_text = "italic" -- Style that is applied to virtual text
@@ -438,10 +441,10 @@ M.colors_onedark = function()
           -- Make neovide have a more distinctive blue bg color
           bg = (vim.g.neovide and "#16233B" or "#282c34"),
           cursorline = (vim.g.neovide and "#131F34" or "#2d313b"),
-          telescope_prompt = "#2e323a",
-          telescope_results = "#21252d"
+          -- telescope_prompt = "#2e323a",
+          -- telescope_results = "#21252d"
         },
-        onelight = { telescope_prompt = "#f5f5f5", telescope_results = "#eeeeee" }
+        -- onelight = { telescope_prompt = "#f5f5f5", telescope_results = "#eeeeee" }
       }
     })
   end
@@ -475,21 +478,27 @@ M.gui = function()
   -- if vim.loop.os_uname().sysname == "Darwin" then
   vim.opt.guifont = "Hasklug Nerd Font:h" .. M.defaultFontSize()
 
-  -- g:neovide_transparency should be 0 to unify transparency of content and title bar
-  vim.g.neovide_transparency = 0.0
-  -- vim.g.neovide_transparency = 0.92
-  vim.g.transparency = 0.92
-  vim.g.neovide_cursor_animation_length = 0.01
-  vim.g.neovide_cursor_trail_length = 0.1
-  vim.g.neovide_cursor_antialiasing = true
-  vim.g.neovide_refresh_rate = 60
-  vim.g.neovide_remember_window_size = true
-  vim.g.neovide_input_macos_alt_is_meta = false
-  vim.g.neovide_hide_mouse_when_typing = false
-  vim.g.neovide_background_color = "#131F34EA" -- note: for green screen purposes, try "#2a2a2aea"
-  vim.g.neovide_input_use_logo = true          -- enable cmd key on mac; is this needed now?
+  if vim.g.neovide then
+    vim.opt.linespace = 2
+    -- g:neovide_transparency should be 0 to unify transparency of content and title bar
+    vim.g.neovide_transparency = 0.0
+    -- vim.g.neovide_transparency = 0.92
+    vim.g.transparency = 0.92
+    vim.g.neovide_cursor_animation_length = 0.01
+    vim.g.neovide_cursor_trail_length = 0.1
+    vim.g.neovide_cursor_antialiasing = true
+    vim.g.neovide_refresh_rate = 60
+    vim.g.neovide_remember_window_size = true
+    vim.g.neovide_input_macos_alt_is_meta = false
+    vim.g.neovide_hide_mouse_when_typing = false
+    vim.g.neovide_background_color = "#131F34EA" -- note: for green screen purposes, try "#2a2a2aea"
+    vim.g.neovide_input_use_logo = true          -- enable cmd key on mac; is this needed now?
+    vim.g.neovide_floating_blur_amount_x = 10.0
+    vim.g.neovide_floating_blur_amount_y = 10.0
+  end
 
-  vim.opt.mouse = "nv"                         -- only use mouse in normal and visual modes (notably not insert and command)
+  vim.opt.mouse =
+  "nv" -- only use mouse in normal and visual modes (notably not insert and command)
   vim.opt.mousemodel = "popup_setpos"
   -- use the system clipboard for all unnamed yank operations
   vim.opt.clipboard = "unnamedplus"

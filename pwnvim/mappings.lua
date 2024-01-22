@@ -205,12 +205,30 @@ M.config = function()
       local new_size = require("pwnvim.options").defaultFontSize()
       change_font(curr_font.name, new_size)
     end
-    M.mapnvic("<D-=>", increase_font, "Increase font size")
-    M.mapnvic("<D-->", decrease_font, "Decrease font size")
-    M.mapnvic("<D-0>", reset_font, "Reset font size")
-    M.mapnvic("<C-=>", increase_font, "Increase font size")
-    M.mapnvic("<C-->", decrease_font, "Decrease font size")
-    M.mapnvic("<C-0>", reset_font, "Reset font size")
+    local function increase_nvscale()
+      vim.g.neovide_scale_factor = vim.g.neovide_scale_factor * 1.1
+    end
+    local function decrease_nvscale()
+      vim.g.neovide_scale_factor = vim.g.neovide_scale_factor * 0.9
+    end
+    local function reset_nvscale()
+      vim.g.neovide_scale_factor = 1.0
+    end
+    if vim.g.neovide then
+      M.mapnvic("<D-=>", increase_nvscale, "Increase font size")
+      M.mapnvic("<D-->", decrease_nvscale, "Decrease font size")
+      M.mapnvic("<D-0>", reset_nvscale, "Reset font size")
+      M.mapnvic("<C-=>", increase_nvscale, "Increase font size")
+      M.mapnvic("<C-->", decrease_nvscale, "Decrease font size")
+      M.mapnvic("<C-0>", reset_nvscale, "Reset font size")
+    else
+      M.mapnvic("<D-=>", increase_font, "Increase font size")
+      M.mapnvic("<D-->", decrease_font, "Decrease font size")
+      M.mapnvic("<D-0>", reset_font, "Reset font size")
+      M.mapnvic("<C-=>", increase_font, "Increase font size")
+      M.mapnvic("<C-->", decrease_font, "Decrease font size")
+      M.mapnvic("<C-0>", reset_font, "Reset font size")
+    end
   end
 
   -- NORMAL MODE ONLY MAPPINGS
