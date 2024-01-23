@@ -111,7 +111,6 @@
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
-        "tree-sitter-markdown": "tree-sitter-markdown",
         "vscode-langservers-custom": "vscode-langservers-custom"
       }
     },
@@ -144,23 +143,6 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
-        "type": "github"
-      }
-    },
-    "tree-sitter-markdown": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1699605445,
-        "narHash": "sha256-UxpTkiRChAwNJBVS9y/lydI8R035EuRy3t39Y1mscq0=",
-        "owner": "MDeiml",
-        "repo": "tree-sitter-markdown",
-        "rev": "7ce4c69fe92d1c10225e3d1b3676c87dd9427b45",
-        "type": "github"
-      },
-      "original": {
-        "owner": "MDeiml",
-        "ref": "v0.1.7",
-        "repo": "tree-sitter-markdown",
         "type": "github"
       }
     },

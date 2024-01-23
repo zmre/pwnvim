@@ -31,8 +31,8 @@
     vscode-langservers-custom.flake = false;
     conform-nvim.url = "github:stevearc/conform.nvim";
     conform-nvim.flake = false;
-    tree-sitter-markdown.url = "github:MDeiml/tree-sitter-markdown/v0.1.7";
-    tree-sitter-markdown.flake = false;
+    # tree-sitter-markdown.url = "github:MDeiml/tree-sitter-markdown/v0.1.7";
+    # tree-sitter-markdown.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -45,17 +45,17 @@
         inherit system;
         config = {allowUnfree = true;};
         overlays = [
-          (self: super: {
-            nvim-treesitter.allGrammars = super.nvim-treesitter.allGrammars.overrideAttrs (oldAttrs: {
-              tree-sitter-markdown = inputs.tree-sitter-markdown // {location = "tree-sitter-markdown";};
-              tree-sitter-markdown-inline =
-                inputs.tree-sitter-markdown
-                // {
-                  language = "markdown_inline";
-                  location = "tree-sitter-markdown-inline";
-                };
-            });
-          })
+          # (self: super: {
+          #   nvim-treesitter.allGrammars = super.nvim-treesitter.allGrammars.overrideAttrs (oldAttrs: {
+          #     tree-sitter-markdown = inputs.tree-sitter-markdown // {location = "tree-sitter-markdown";};
+          #     tree-sitter-markdown-inline =
+          #       inputs.tree-sitter-markdown
+          #       // {
+          #         language = "markdown_inline";
+          #         location = "tree-sitter-markdown-inline";
+          #       };
+          #   });
+          # })
           (self: super: {
             vimPlugins =
               super.vimPlugins

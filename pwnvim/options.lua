@@ -212,6 +212,8 @@ M.colors_cat = function()
         mkdLink = { fg = colors.blue, style = { "underline" } },
         bareLink = { fg = colors.blue, style = { "underline" } },
         mkdURL = { fg = colors.green, style = { "underline" } },
+        ["@markup.link.label"] = { link = "mkdLink" },
+        ["@markup.link.url"] = { link = "mkdURL" },
         mkdInlineURL = { fg = colors.blue, style = { "underline" } },
         mkdListItem = { fg = colors.teal },
         markdownListMarker = { fg = colors.teal },
@@ -231,17 +233,17 @@ M.colors_cat = function()
         ["@link_text"] = { fg = colors.blue, style = { "underline", "bold" } },
         markdownUrl = { fg = colors.green, style = { "underline" } },
         markdownWikiLink = { fg = colors.blue, style = { "underline" } },
-        ["@text.title.1"] = { fg = colors.yellow, style = { "bold" } },
+        ["@markup.heading.1"] = { fg = colors.yellow, style = { "bold" } },
         markdownH1 = { fg = colors.yellow, style = { "bold" } },
-        ["@text.title.2"] = { fg = colors.yellow, style = { "bold" } },
+        ["@markup.heading.2"] = { fg = colors.yellow, style = { "bold" } },
         markdownH2 = { fg = colors.yellow, style = { "bold" } },
-        ["@text.title.3"] = { fg = colors.yellow },
+        ["@markup.heading.3"] = { fg = colors.yellow },
         markdownH3 = { fg = colors.yellow },
-        ["@text.title.4"] = { fg = colors.green, style = { "italic" } },
+        ["@markup.heading.4"] = { fg = colors.green, style = { "italic" } },
         markdownH4 = { fg = colors.green, style = { "italic" } },
-        ["@text.title.5"] = { fg = colors.green, style = { "italic" } },
+        ["@markup.heading.5"] = { fg = colors.green, style = { "italic" } },
         markdownH5 = { fg = colors.green, style = { "italic" } },
-        ["@text.title.6"] = { fg = colors.green, style = { "italic" } },
+        ["@markup.heading.6"] = { fg = colors.green, style = { "italic" } },
         markdownH6 = { fg = colors.green, style = { "italic" } },
         htmlH1 = { fg = colors.yellow, style = { "bold" } },
         htmlH2 = { fg = colors.yellow, style = { "bold" } },
@@ -261,31 +263,26 @@ M.colors_cat = function()
         SpellLocal = { style = { "undercurl" }, sp = colors.teal },
         MatchParen = { bg = "#555555", style = { "italic" } },
         IndentBlanklineChar = { fg = "#444444" },
-        -- Todo                                       = { fg = "#282c34", bg = "${highlight}", style = "bold" },
+        -- Todo                                       = { fg = "#282c34", bg = "${highlight}", bold = true },
         VertSplit = { fg = "#202020", bg = "#606060" },
         Folded = { fg = "#c0c8d0", bg = "#384058" },
         ["@comment.markdown"] = { fg = colors.surface2 },
         ["@field.markdown_inline"] = { fg = colors.lavender },
-        ["@text.literal.markdown_inline"] = { fg = colors.green },
-        ["@text.reference.markdown_inline"] = {
-          fg = colors.blue,
-          style = { "underline" }
-        },
-        ["@text.underline"] = { style = { "underline" } },
-        ["@text.strong.markdown_inline"] = { fg = "#ffffff", style = { "bold" } },
-        ["@text.emphasis.markdown_inline"] = { fg = "#eeeeee", style = { "italic" } },
-        ["@strikethrough.markdown_inline"] = {
+        ["@markup.raw"] = { fg = colors.green },
+        ["@markup.underline"] = { style = { "underline" } },
+        ["@markup.strong.markdown_inline"] = { fg = "#ffffff", style = { "bold" } },
+        ["@markup.emphasis.markdown_inline"] = { fg = "#eeeeee", style = { "italic" } },
+        ["@markup.strikethrough.markdown_inline"] = {
           fg = colors.surface2,
           style = { "strikethrough" }
         },
         ["@tag"] = { fg = colors.surface2 },
         ["@block_quote.markdown"] = { fg = colors.lavender, style = { "italic" } },
-        ["@text.title.markdown"] = { fg = colors.yellow, style = { "bold" } },
         ["@punctuation.special.markdown"] = { fg = colors.teal },
         ["@punctuation.delimiter.markdown_inline"] = { fg = colors.peach },
-        ["@text.uri.markdown_inline"] = { fg = colors.blue },
-        ["@text.todo.unchecked"] = { fg = "#ffffff", bg = "", style = { "bold" } },
-        ["@text.todo.checked"] = { fg = colors.green, style = { "bold" } },
+        ["@markup.link.url.markdown_inline"] = { fg = colors.blue },
+        ["@markup.list.unchecked"] = { fg = "#ffffff", bg = "", style = { "bold" } },
+        ["@markup.list.checked"] = { fg = colors.green, style = { "bold" } },
       }
     end
 
@@ -309,94 +306,95 @@ M.colors_onedark = function()
       -- Call :OnedarkproCache if you make changes below and to speed startups
       caching = true,
       highlights = {
-        mkdLink = { fg = "${blue}", style = "underline" },
-        bareLink = { fg = "${blue}", style = "underline" },
-        mkdURL = { fg = "${green}", style = "underline" },
-        mkdInlineURL = { fg = "${blue}", style = "underline" },
+        mkdLink = { fg = "${blue}", underline = true },
+        bareLink = { link = "mkdLink" },
+        mkdInlineURL = { link = "mkdLink" },
+        TSURI = { link = "mkdLink" },
+        mkdURL = { fg = "${green}", underline = true },
+        markdownAutomaticLink = { link = "mkdLink" },
+        markdownLink = { link = "mkdURL" },
+        markdownLinkText = { link = "mkdLink" },
+        markdownUrl = { link = "mkdURL" },
+        markdownWikiLink = { link = "mkdLink" },
+        ["@link_text.markdown_inline"] = { link = "mkdLink" },
+        ["@markup.link.label"] = { link = "mkdLink" },
+        ["@markup.link.url"] = { link = "mkdURL" },
+
+
         mkdListItem = { fg = "${cyan}" },
         markdownListMarker = { fg = "${cyan}" },
+        ["@markup.list"] = { link = "markdownListMarker" },
         mkdListItemCheckbox = { fg = "${green}" },
-        -- markdownCheckbox                           = { fg = "${purple}" },
-        -- markdownCheckboxUnchecked                  = { fg = "${purple}" },
-        -- markdownCheckboxChecked                    = { fg = "${green}" },
         markdownCheckboxCanceled = { fg = "${comment}", style = "strikethrough" },
         markdownCheckboxPostponed = { fg = "${comment}" },
-        markdownStrikethrough = { fg = "${comment}", style = "strikethrough" },
+
         markdownTag = { fg = "${comment}" },
-        doneTag = { fg = "${comment}", style = "italic" },
-        highPrioTask = { fg = "${red}", style = "bold" },
-        -- mkdLinkTitle
-        -- mkdID
-        -- mkdDelimiter
-        -- mkdInlineURL
-        -- mkdCode
-        -- mkdFootnote
-        -- mkdMath
-        -- htmlLink
-        TSURI = { fg = "${blue}", style = "underline" },
+        doneTag = { fg = "${comment}", italic = true },
+        highPrioTask = { fg = "${red}", bold = true },
         TSPunctSpecial = { fg = "${red}" },
-        markdownTSTitle = { fg = "${cyan}", style = "bold" },
-        markdownAutomaticLink = { fg = "${blue}", style = "underline" },
-        markdownLink = { fg = "${green}", style = "underline" },
-        markdownLinkText = { fg = "${blue}", style = "underline" },
-        markdownUrl = { fg = "${green}", style = "underline" },
-        markdownWikiLink = { fg = "${blue}", style = "underline" },
-        ["@text.title.1"] = { fg = "${yellow}", style = "bold" },
-        markdownH1 = { fg = "${yellow}", style = "bold" },
-        ["@text.title.2"] = { fg = "${yellow}", style = "bold" },
-        markdownH2 = { fg = "${yellow}", style = "bold" },
-        ["@text.title.3"] = { fg = "${yellow}" },
-        markdownH3 = { fg = "${yellow}" },
-        ["@text.title.4"] = { fg = "${green}", style = "italic" },
-        markdownH4 = { fg = "${green}", style = "italic" },
-        ["@text.title.5"] = { fg = "${green}", style = "italic" },
-        markdownH5 = { fg = "${green}", style = "italic" },
-        ["@text.title.6"] = { fg = "${green}", style = "italic" },
-        markdownH6 = { fg = "${green}", style = "italic" },
-        htmlH1 = { fg = "${yellow}", style = "bold" },
-        htmlH2 = { fg = "${yellow}", style = "bold" },
+        markdownTSTitle = { fg = "${cyan}", bold = true },
+
+        htmlH1 = { fg = "${yellow}", bold = true },
+        htmlH2 = { fg = "${yellow}", bold = true },
         htmlH3 = { fg = "${yellow}" },
-        htmlH4 = { fg = "${green}", style = "italic" },
-        htmlH5 = { fg = "${green}", style = "italic" },
-        htmlH6 = { fg = "${green}", style = "italic" },
-        markdownBold = { fg = "#ffffff", style = "bold" },
-        htmlBold = { fg = "#ffffff", style = "bold" },
-        markdownItalic = { fg = "#eeeeee", style = "italic" },
-        htmlItalic = { fg = "#eeeeee", style = "italic" },
-        markdownBoldItalic = { fg = "#ffffff", style = "bold,italic" },
-        htmlBoldItalic = { fg = "#ffffff", style = "bold,italic" },
+        htmlH4 = { fg = "${green}", italic = true },
+        htmlH5 = { fg = "${green}", italic = true },
+        htmlH6 = { fg = "${green}", italic = true },
+        ["@markup.heading.1"] = { link = "htmlH1" },
+        markdownH1 = { link = "htmlH1" },
+        ["@markup.heading.2"] = { link = "htmlH2" },
+        markdownH2 = { link = "htmlH2" },
+        ["@markup.heading.3"] = { link = "htmlH3" },
+        markdownH3 = { link = "htmlH3" },
+        ["@markup.heading.4"] = { link = "htmlH4" },
+        markdownH4 = { link = "htmlH4" },
+        ["@markup.heading.5"] = { link = "htmlH5" },
+        markdownH5 = { link = "htmlH5" },
+        ["@markup.heading.6"] = { link = "htmlH6" },
+        markdownH6 = { link = "htmlH6" },
+
+        htmlBold = { fg = "#ffffff", bold = true },
+        markdownBold = { link = "htmlBold" },
+        ["@markup.strong"] = { link = "htmlBold" },
+
+
+        htmlItalic = { fg = "#eeeeee", italic = true },
+        markdownItalic = { link = "htmlItalic" },
+        ["@markup.italic"] = { link = "htmlItalic" },
+
+        htmlBoldItalic = { fg = "#ffffff", bold = true, italic = true },
+        markdownBoldItalic = { link = "htmlBoldItalic" },
+
+        ["@markup.underline"] = { underline = true },
+
+        markdownStrikethrough = { fg = "${comment}", style = "strikethrough" },
+        ["@strikethrough.markdown_inline"] = { link = "markdownStrikethrough" },
+        ["@markup.strikethrough"] = { link = "markdownStrikethrough" },
+
         SpellBad = { style = "undercurl", sp = "${red}" },
         SpellCap = { style = "undercurl", sp = "${cyan}" },
         SpellRare = { style = "undercurl", sp = "Magenta" },
         SpellLocal = { style = "undercurl", sp = "${cyan}" },
-        MatchParen = { bg = "#555555", style = "italic" },
+        MatchParen = { bg = "#555555", italic = true },
         IndentBlanklineChar = { fg = "#444444" },
-        -- Todo                                       = { fg = "#282c34", bg = "${highlight}", style = "bold" },
+        -- Todo                                       = { fg = "#282c34", bg = "${highlight}", bold = true },
         VertSplit = { fg = "#202020", bg = "#606060" },
         Folded = { fg = "#c0c8d0", bg = "#384058" },
         ["@comment.markdown"] = { fg = "${comment}" },
         ["@field.markdown_inline"] = { fg = "${purple}" },
-        ["@text.literal.markdown_inline"] = { fg = "${green}" },
-        ["@text.reference.markdown_inline"] = {
-          fg = "${blue}",
-          style = "underline"
-        },
-        ["@text.underline"] = { style = "underline" },
-        ["@text.strong.markdown_inline"] = { fg = "#ffffff", style = "bold" },
-        ["@text.emphasis.markdown_inline"] = { fg = "#eeeeee", style = "italic" },
-        ["@strikethrough.markdown_inline"] = {
-          fg = "${comment}",
-          style = "strikethrough"
-        },
+        ["@markup.raw"] = { fg = "${green}" },
+        ["@markup.raw.block"] = { fg = "${green}" },
+
+
         ["@tag"] = { fg = "${comment}" },
-        ["@block_quote.markdown"] = { fg = "${purple}", style = "italic" },
-        ["@text.title.markdown"] = { fg = "${yellow}", style = "bold" },
+        ["@block_quote.markdown"] = { fg = "${purple}", italic = true },
         -- ["@parameter.markdown_inline"] = { fg = theme.palette.fg },
         ["@punctuation.special.markdown"] = { fg = "${cyan}" },
         ["@punctuation.delimiter.markdown_inline"] = { fg = "${orange}" },
-        ["@text.uri.markdown_inline"] = { fg = "${blue}" },
-        ["@text.todo.unchecked"] = { fg = "#ffffff", bg = "", style = "bold" },
-        ["@text.todo.checked"] = { fg = "${green}", style = "bold" },
+
+        ["@markup.list.unchecked"] = { fg = "#ffffff", bg = "", bold = true },
+
+        ["@markup.list.checked"] = { fg = "${green}", bold = true },
 
         -- TelescopeBorder = {
         --   fg = "${telescope_results}",
@@ -420,7 +418,7 @@ M.colors_onedark = function()
         -- TelescopeMatching = { fg = "${blue}" },
         -- TelescopeNormal = { bg = "#000000" },
         -- TelescopeSelection = { bg = "${telescope_prompt}" },
-        PmenuSel = { blend = 0 },
+        -- PmenuSel = { blend = 0 },
       },
       styles = {                -- Choose from "bold,italic,underline"
         virtual_text = "italic" -- Style that is applied to virtual text
@@ -432,8 +430,8 @@ M.colors_onedark = function()
         underline = not SimpleUI,
         undercurl = not SimpleUI,
         cursorline = true,
-        transparency = false, -- only in neovide
-        terminal_colors = false,
+        transparency = false,    -- only in neovide
+        terminal_colors = false, -- leave terminal windows alone
         highlight_inactive_windows = true
       },
       colors = {
