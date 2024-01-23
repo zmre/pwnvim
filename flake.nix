@@ -381,22 +381,24 @@
         }
       ];
     in rec {
-      packages.pwnvim = pkgs.wrapNeovim augmentedNeovim {
-        viAlias = true;
-        vimAlias = true;
-        withNodeJs = false;
-        withPython3 = false;
-        withRuby = false;
-        extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
-        # make sure impatient is loaded before everything else to speed things up
-        configure = {
-          inherit customRC;
-          packages.myPlugins = with pkgs.vimPlugins; {
-            start = requiredPlugins;
-            opt = optionalPlugins;
+      packages.pwnvim =
+        pkgs.wrapNeovim augmentedNeovim {
+          viAlias = true;
+          vimAlias = true;
+          withNodeJs = false;
+          withPython3 = false;
+          withRuby = false;
+          extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
+          # make sure impatient is loaded before everything else to speed things up
+          configure = {
+            inherit customRC;
+            packages.myPlugins = with pkgs.vimPlugins; {
+              start = requiredPlugins;
+              opt = optionalPlugins;
+            };
           };
-        };
-      };
+        }
+        // {buildInputs = dependencies;};
       packages.pwnvim-python = pkgs.wrapNeovim augmentedNeovimPython {
         viAlias = false;
         vimAlias = false;
