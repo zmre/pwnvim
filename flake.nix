@@ -33,6 +33,10 @@
     conform-nvim.flake = false;
     # tree-sitter-markdown.url = "github:MDeiml/tree-sitter-markdown/v0.1.7";
     # tree-sitter-markdown.flake = false;
+    onedarkpro.url = "github:olimorris/onedarkpro.nvim";
+    onedarkpro.flake = false;
+    catppuccin.url = "github:catppuccin/nvim";
+    catppuccin.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -60,6 +64,17 @@
             vimPlugins =
               super.vimPlugins
               // {
+                # Adding overlay to get latest onedarkpro (not in nixpkgs yet) following issues with ts name changes
+                onedarkpro-nvim = super.vimUtils.buildVimPlugin {
+                  name = "onedarkpro-nvim";
+                  pname = "onedarkpro-nvim";
+                  src = inputs.onedarkpro;
+                };
+                catppuccin-nvim = super.vimUtils.buildVimPlugin {
+                  name = "catppuccin-nvim";
+                  pname = "catppuccin-nvim";
+                  src = inputs.catppuccin;
+                };
                 clipboard-image = super.vimUtils.buildVimPlugin {
                   name = "clipboard-image.nvim";
                   pname = "clipboard-image.nvim";

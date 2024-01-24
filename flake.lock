@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "catppuccin": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1705993697,
+        "narHash": "sha256-vYTux8m9qHIUEUhTEQ9BpjtObHh0mR6Nqar2wbDQSWM=",
+        "owner": "catppuccin",
+        "repo": "nvim",
+        "rev": "bc1f2151f23227ba02ac203c2c59ad693352a741",
+        "type": "github"
+      },
+      "original": {
+        "owner": "catppuccin",
+        "repo": "nvim",
+        "type": "github"
+      }
+    },
     "clipboard-image": {
       "flake": false,
       "locked": {
@@ -103,14 +119,32 @@
         "type": "github"
       }
     },
+    "onedarkpro": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1706134802,
+        "narHash": "sha256-pk8fOwSwMeBM637SU5hTmggv3Vdch0WpeOGx7zZ0Su0=",
+        "owner": "olimorris",
+        "repo": "onedarkpro.nvim",
+        "rev": "e39ebd1d8062acd11b2bc0cfef8ce6d88d26c4f9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "olimorris",
+        "repo": "onedarkpro.nvim",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
+        "catppuccin": "catppuccin",
         "clipboard-image": "clipboard-image",
         "conform-nvim": "conform-nvim",
         "fenix": "fenix",
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
+        "onedarkpro": "onedarkpro",
         "vscode-langservers-custom": "vscode-langservers-custom"
       }
     },
