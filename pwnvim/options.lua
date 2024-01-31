@@ -31,8 +31,6 @@ M.defaults = function()
   vim.g.vim_markdown_conceal_code_blocks = 0
   vim.g.vim_markdown_frontmatter = 1
 
-  vim.opt.winblend = 0 -- no floating transparency (I find it unreadable); telescope has its own setting for this
-  vim.opt.pumblend = 0 -- no popup transparency for same reason
 
   -- my shada is so large it takes up half of startup time to process; constraining what it keeps here
   -- previous value: !,'100,<50,s10,h'
@@ -430,7 +428,7 @@ M.colors_onedark = function()
         underline = not SimpleUI,
         undercurl = not SimpleUI,
         cursorline = true,
-        transparency = false,    -- only in neovide
+        transparency = false,    -- better to let neovide define
         terminal_colors = false, -- leave terminal windows alone
         highlight_inactive_windows = true
       },
@@ -477,11 +475,12 @@ M.gui = function()
   vim.opt.guifont = "Hasklug Nerd Font:h" .. M.defaultFontSize()
 
   if vim.g.neovide then
+    vim.opt.winblend = 30 -- floating transparency amount
+    vim.opt.pumblend = 30 -- popup menu transparency amount
     vim.opt.linespace = 2
-    -- g:neovide_transparency should be 0 to unify transparency of content and title bar
-    vim.g.neovide_transparency = 0.0
-    -- vim.g.neovide_transparency = 0.92
-    vim.g.transparency = 0.92
+    -- vim.g.neovide_transparency = 0.0
+    vim.g.neovide_transparency = 0.92
+    -- vim.g.transparency = 0.92
     vim.g.neovide_cursor_animation_length = 0.01
     vim.g.neovide_cursor_trail_length = 0.1
     vim.g.neovide_cursor_antialiasing = true
@@ -489,10 +488,10 @@ M.gui = function()
     vim.g.neovide_remember_window_size = true
     vim.g.neovide_input_macos_alt_is_meta = false
     vim.g.neovide_hide_mouse_when_typing = false
-    vim.g.neovide_background_color = "#131F34EA" -- note: for green screen purposes, try "#2a2a2aea"
-    vim.g.neovide_input_use_logo = true          -- enable cmd key on mac; is this needed now?
-    vim.g.neovide_floating_blur_amount_x = 10.0
-    vim.g.neovide_floating_blur_amount_y = 10.0
+    --vim.g.neovide_background_color = "#131F34EA" --EA -- note: for green screen purposes, try "#2a2a2aea"
+    vim.g.neovide_input_use_logo = true -- enable cmd key on mac; is this needed now?
+    vim.g.neovide_floating_blur_amount_x = 5.0
+    vim.g.neovide_floating_blur_amount_y = 5.0
   end
 
   vim.opt.mouse =

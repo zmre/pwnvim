@@ -552,7 +552,7 @@ M.telescope = function()
     selection_caret = SimpleUI and "↪" or " ",
     -- path_display = { "smart" },
     defaults = {
-      winblend = 0, -- no transparency for telescope popups
+      winblend = 30, -- small transparency for telescope popups -- should only matter in neovide
       path_display = function(_, path)
         local tail = require("telescope.utils").path_tail(path)
         return string.format("%s (%s)", tail,
