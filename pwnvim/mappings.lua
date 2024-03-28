@@ -151,7 +151,7 @@ M.config = function()
   -- Make ctrl-p open a file finder
   -- When using ctrl-p, screen out media files that we probably don't want
   -- to open in vim. And if we really want, then we can use ,ff
-  M.mapnvic("<c-p>", require("telescope.builtin").find_files, "Find files")
+  M.mapnv("<c-p>", require("telescope.builtin").find_files, "Find files")
   M.mapnvic("<F9>", "TZAtaraxis", "Focus mode")
   -- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
   M.mapnvic("<F10>", 'silent !qlmanage -p "%"', "Quicklook (mac)")

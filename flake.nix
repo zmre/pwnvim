@@ -49,17 +49,15 @@
         inherit system;
         config = {allowUnfree = true;};
         overlays = [
-          # (self: super: {
-          #   nvim-treesitter.allGrammars = super.nvim-treesitter.allGrammars.overrideAttrs (oldAttrs: {
-          #     tree-sitter-markdown = inputs.tree-sitter-markdown // {location = "tree-sitter-markdown";};
-          #     tree-sitter-markdown-inline =
-          #       inputs.tree-sitter-markdown
-          #       // {
-          #         language = "markdown_inline";
-          #         location = "tree-sitter-markdown-inline";
-          #       };
-          #   });
-          # })
+          (self: super: {
+            languagetool = super.languagetool.overrideAttrs (old: rec {
+              version = "5.9"; # grammarous doesn't support 6+
+              src = super.fetchzip {
+                url = "https://www.languagetool.org/download/${old.pname}-${version}.zip";
+                sha256 = "sha256-x4xGgYeMi7KbD2WGHOd/ixmZ+5EY5g6CLd7/CBYldNQ=";
+              };
+            });
+          })
           (self: super: {
             vimPlugins =
               super.vimPlugins
@@ -152,6 +150,7 @@
           alejandra # better nix formatter alternative
           statix # linter for nix
           shellcheck
+          languagetool # needed by grammarous, but must be v5.9 (see overlay)
           # luajitPackages.lua-lsp
           lua-language-server
           nodePackages.pyright # python lsp (written in node? so weird)
@@ -164,6 +163,9 @@
           nodePackages.typescript-language-server
           nodePackages.bash-language-server
           nodePackages."@tailwindcss/language-server"
+          #nodePackages_latest.grammarly-languageserver # besides being a privacy issue if triggered, we have these issues:
+          # https://github.com/znck/grammarly/issues/411 grammarly sdk deprecated
+          # https://github.com/NixOS/nixpkgs/issues/293172 requires node16, which is EOL
           yaml-language-server
           mypy # static typing for python used by null-ls
           ruff # python linter used by null-ls

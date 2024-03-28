@@ -157,6 +157,10 @@ M.setupmappings = function(bufnr)
   mapvlocal("<leader>ts", require("pwnvim.tasks").scheduleTaskBulk, "Schedule")
   mapnlocal("<leader>tt", require("pwnvim.tasks").scheduleTaskTodayDirect, "Task move today")
   mapvlocal("<leader>tt", ":luado return require('pwnvim.tasks').scheduleTaskToday(line)<cr>", "Today")
+
+  -- Even when zk LSP doesn't connect, we can have formatters (including vale) give feedback -- ensure we have a way to see it
+  mapnlocal("<leader>le", vim.diagnostic.open_float, "Show Line Diags")
+  mapnviclocal("<leader>ll", require("lsp_lines").toggle, "Toggle virtual text lines")
 end
 
 M.markdownsyntax = function()

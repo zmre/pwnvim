@@ -282,8 +282,6 @@ M.diagnostics = function()
 
     local builtin = require("telescope.builtin")
 
-    vim.api.nvim_buf_set_option(bufnr, "formatexpr",
-      "v:lua.vim.lsp.formatexpr()")
     vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
     vim.api.nvim_buf_set_option(bufnr, "tagfunc", "v:lua.vim.lsp.tagfunc")
 
@@ -318,6 +316,8 @@ M.diagnostics = function()
     -- Set some keybinds conditional on server capabilities
     if client.server_capabilities.document_formatting then
       mapleadernlocal("l=", vim.lsp.buf.formatting_sync, "Format")
+      vim.api.nvim_buf_set_option(bufnr, "formatexpr",
+        "v:lua.vim.lsp.formatexpr()")
     end
     if client.server_capabilities.document_range_formatting then
       mapleadervlocal("l=", vim.lsp.buf.range_formatting, "Format range")
@@ -929,11 +929,15 @@ M.notes = function()
       "ENGLISH_WORD_REPEAT_BEGINNING_RULE", "DASH_RULE", "PLUS_MINUS",
       "PUNCTUATION_PARAGRAPH_END", "MULTIPLICATION_SIGN", "PRP_CHECKOUT",
       "CAN_CHECKOUT", "SOME_OF_THE", "DOUBLE_PUNCTUATION", "HELL",
-      "CURRENCY", "POSSESSIVE_APOSTROPHE", "ENGLISH_WORD_REPEAT_RULE",
+      "CURRENCY", "POSSESSIVE_APOSTROPHE", --"ENGLISH_WORD_REPEAT_RULE",
       "NON_STANDARD_WORD"
     }
   }
-  -- Grammar stuff
+  vim.g["grammarous#languagetool_cmd"] = 'languagetool-commandline'
+  vim.g["grammarous#use_location_list"] = 1
+  vim.g["grammarous#enable_spell_check"] = 0
+  vim.g["grammarous#show_first_error"] = 0
+  -- Below is to make mapping easier for ,ng
   vim.cmd(
     [[command StartGrammar2 lua require('pwnvim.plugins').grammar_check()]])
 end -- notes
