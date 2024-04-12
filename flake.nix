@@ -130,7 +130,9 @@
           fzy
           zoxide
           bat # previewer for telescope for now
-          zk # lsp for markdown notes
+          zk # lsp for markdown notes in zk folders
+          #markdown-oxide # lsp for any markdown
+          marksman # lsp for any markdown
           zsh # terminal requires it
           git
           curl # needed to fetch titles from urls
@@ -252,6 +254,7 @@
           # bufferline-nvim # tabs at top
           barbecue-nvim
           nvim-navic # required by barbecue
+          nvim-navbuddy
           indent-blankline-nvim # visual indent
           toggleterm-nvim # better terminal management
           nvim-treesitter.withAllGrammars
