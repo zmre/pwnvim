@@ -128,10 +128,10 @@ M.setupmappings = function(bufnr)
   mapilocal("<tab>", require('pwnvim.markdown').indent, "Indent")
   mapilocal("<s-tab>", require('pwnvim.markdown').outdent, "Outdent")
 
-  mapnviclocal("<F7>", function()
-    vim.cmd("lvimgrep /^#/ %")
-    require("trouble").toggle({ mode = "loclist", position = "right" })
-  end, "Show doc outline")
+  -- mapnviclocal("<F7>", function()
+  --   vim.cmd("lvimgrep /^#/ %")
+  --   require("trouble").toggle({ mode = "loclist", position = "right" })
+  -- end, "Show doc outline")
 
   -- visual mode mappings
   mapvlocal("gl*", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],

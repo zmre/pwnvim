@@ -295,10 +295,6 @@ M.diagnostics = function()
     mapleadernvlocal("ll", require("lsp_lines").toggle, "Toggle virtual text lines")
     mapleadernlocal("lt", vim.lsp.buf.signature_help, "Signature")
 
-    if vim.bo[bufnr].filetype ~= "markdown" then
-      -- Sometimes other LSPs attach to markdown (like tailwindcss) and so we have a race to see which F7 will win...
-      mapnviclocal("<F7>", builtin.lsp_document_symbols, "Browse document symbols")
-    end
 
     if vim.bo[bufnr].filetype == "rust" then
       local rt = require("rust-tools")
@@ -339,6 +335,10 @@ M.diagnostics = function()
       require("nvim-navbuddy").attach(client, bufnr) -- setup popup for browsing symbols
       -- mapleadernlocal("lsd", builtin.lsp_document_symbols, "Find symbol in document")
       mapleadernlocal("lsd", require("nvim-navbuddy").open, "Find symbol in document")
+      -- if vim.bo[bufnr].filetype ~= "markdown" then
+      -- Sometimes other LSPs attach to markdown (like tailwindcss) and so we have a race to see which F7 will win...
+      mapnviclocal("<F7>", require("nvim-navbuddy").open, "Browse document symbols")
+      -- end
     end
     if client.server_capabilities.workspaceSymbolProvider then
       mapleadernlocal("lsw", builtin.lsp_workspace_symbols, "Find symbol in workspace")
