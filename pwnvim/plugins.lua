@@ -288,17 +288,12 @@ M.diagnostics = function()
     mapleadernlocal("ld", vim.lsp.buf.definition, "Go to definition")
     -- override standard tag jump c-] for go to definition
     mapnlocal("<c-]>", vim.lsp.buf.definition, "Go to definition")
-    mapnlocal("K", vim.lsp.buf.hover, "Info hover")
     mapleadernlocal("lD", vim.lsp.buf.implementation, "Implementation")
     mapleadernlocal("le", vim.diagnostic.open_float, "Show Line Diags")
-    mapleadernlocal("li", vim.lsp.buf.hover, "Info hover")
-    mapleadernlocal("lr", builtin.lsp_references, "References")
     -- mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix code actions")
     mapleadernlocal("lf", "CodeActionMenu", "Fix code actions")
     mapleadernvlocal("ll", require("lsp_lines").toggle, "Toggle virtual text lines")
     mapleadernlocal("lt", vim.lsp.buf.signature_help, "Signature")
-    mapleadernlocal("lsd", builtin.lsp_document_symbols, "Find symbol in document")
-    mapleadernlocal("lsw", builtin.lsp_workspace_symbols, "Find symbol in workspace")
 
     if vim.bo[bufnr].filetype ~= "markdown" then
       -- Sometimes other LSPs attach to markdown (like tailwindcss) and so we have a race to see which F7 will win...
@@ -314,22 +309,39 @@ M.diagnostics = function()
     end
 
     -- Set some keybinds conditional on server capabilities
-    if client.server_capabilities.document_formatting then
-      mapleadernlocal("l=", vim.lsp.buf.formatting_sync, "Format")
-      vim.api.nvim_buf_set_option(bufnr, "formatexpr",
-        "v:lua.vim.lsp.formatexpr()")
+    if client.server_capabilities.hoverProvider or client.server_capabilities.hover then
+      mapleadernlocal("li", vim.lsp.buf.hover, "Info hover")
+      mapnlocal("K", vim.lsp.buf.hover, "Info hover")
     end
-    if client.server_capabilities.document_range_formatting then
+    if client.server_capabilities.documentFormattingProvider then
+      mapleadernlocal("l=", vim.lsp.buf.format, "Format file")
+      vim.api.nvim_buf_set_option(bufnr, "formatexpr", "v:lua.vim.lsp.formatexpr()")
+    end
+    if client.server_capabilities.documentRangeFormattingProvider then
       mapleadervlocal("l=", vim.lsp.buf.range_formatting, "Format range")
     end
-    if client.server_capabilities.implementation then
+    if client.server_capabilities.references or client.server_capabilities.referencesProvider then
+      mapleadernlocal("lr", builtin.lsp_references, "References")
+    end
+    if client.server_capabilities.implementationProvider or client.server_capabilities.implementation then
       mapleadernlocal("lI", require("telescope.builtin").lsp_implementations, "Implementations")
     end
-    if client.server_capabilities.rename then
+    if client.server_capabilities.renameProvider or client.server_capabilities.rename then
       mapleadernlocal("lR", vim.lsp.buf.rename, "Rename")
     end
+    -- if client.server_capabilities.foldingRangeProvider then
+    -- Not supported in neovim yet; see https://github.com/neovim/neovim/pull/14306
+    -- vim.wo.foldexpr = 'v:lua.vim.lsp.buf.foldexpr()'
+    -- vim.wo.foldmethod = "expr"
+    -- end
     if client.server_capabilities.documentSymbolProvider then
-      require("nvim-navic").attach(client, bufnr)
+      require("nvim-navic").attach(client, bufnr)    -- setup context showing header line
+      require("nvim-navbuddy").attach(client, bufnr) -- setup popup for browsing symbols
+      -- mapleadernlocal("lsd", builtin.lsp_document_symbols, "Find symbol in document")
+      mapleadernlocal("lsd", require("nvim-navbuddy").open, "Find symbol in document")
+    end
+    if client.server_capabilities.workspaceSymbolProvider then
+      mapleadernlocal("lsw", builtin.lsp_workspace_symbols, "Find symbol in workspace")
     end
     require("which-key").register({
       mode = { "n", "v" },
@@ -341,13 +353,13 @@ M.diagnostics = function()
   require('lint').linters_by_ft = {
     markdown = { 'vale' },
     css = { 'prettier' },
-    svelte = { 'eslint_d' },
+    -- svelte = { 'eslint_d' },
     python = { "mypy", "ruff" },
     nix = { "statix" },
     bash = { "shellcheck" },
-    typescript = { "prettier" },
-    javascript = { "prettier" },
-    rust = { "rustfmt" }
+    -- typescript = { "eslint_d", "prettier" },
+    -- javascript = { "eslint_d", "prettier" },
+    -- rust = { "rustfmt" }
   }
   require("conform").formatters.lua_format = {
     command = "lua-format",
@@ -358,11 +370,11 @@ M.diagnostics = function()
     "--stdin-filepath", "$FILENAME", "--tab-width", "2"
   }
 
-  require("conform").setup({
+  require("conform").setup({ -- use formatter.nvim instead?
     notify_on_error = true,
     format_on_save = {
       -- These options will be passed to conform.format()
-      timeout_ms = 500,
+      timeout_ms = 800,
       lsp_fallback = true -- if no defined or available formatter, try lsp formatter
     },
     formatters_by_ft = {
@@ -380,7 +392,7 @@ M.diagnostics = function()
       json = { { "prettier", "eslint_d" } },
       jsonc = { { "prettier", "eslint_d" } },
       yaml = { { "prettier", "eslint_d" } },
-      svelte = { { "prettier", "eslint_d" } },
+      -- svelte = { { "prettier", "eslint_d" } }, -- handled by lsp
       nix = { "alejandra" }
     }
   })
@@ -411,7 +423,22 @@ M.diagnostics = function()
     }
   })
   require("cmp-npm").setup({})
+
+  lspconfig.marksman.setup({
+    capabilities = capabilities,
+    on_attach = attached,
+    -- root_dir = lspconfig.util.root_pattern('nope'), -- this is a temp fix for an error in the lspconfig for this LS
+    single_file_support = true,
+  })
+  -- lspconfig.markdown_oxide.setup({
+  --   capabilities = capabilities,
+  --   on_attach = attached,
+  --   root_dir = lspconfig.util.root_pattern('nope'), -- this is a temp fix for an error in the lspconfig for this LS
+  --   single_file_support = true,
+  -- })
   lspconfig.yamlls.setup {
+    on_attach = attached,
+    capabilities = capabilities,
     settings = {
       yaml = {
         format = { enable = true },
@@ -439,7 +466,7 @@ M.diagnostics = function()
     }
   }
   lspconfig.tsserver
-      .setup({ capabilities = capabilities, on_attach = attached })
+      .setup({ capabilities = capabilities, on_attach = attached, init_options = { preferences = { disableSuggestions = true, } } })
   lspconfig.lua_ls.setup({
     on_attach = attached,
     capabilities = capabilities,
@@ -494,7 +521,11 @@ M.diagnostics = function()
     capabilities = capabilities,
     settings = { css = { lint = { unknownAtRules = "ignore" } } }
   })
-  lspconfig.eslint.setup({ on_attach = attached, capabilities = capabilities })
+  lspconfig.eslint.setup({
+    on_attach = attached,
+    capabilities = capabilities,
+    filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx", "vue", "astro" } -- no svelte
+  })
   lspconfig.html.setup({ on_attach = attached, capabilities = capabilities })
   lspconfig.bashls.setup({ on_attach = attached, capabilities = capabilities })
   -- TODO: investigate nvim-metals and remove line below
