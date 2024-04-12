@@ -285,16 +285,9 @@ M.diagnostics = function()
     vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
     vim.api.nvim_buf_set_option(bufnr, "tagfunc", "v:lua.vim.lsp.tagfunc")
 
-    mapleadernlocal("ld", vim.lsp.buf.definition, "Go to definition")
-    -- override standard tag jump c-] for go to definition
-    mapnlocal("<c-]>", vim.lsp.buf.definition, "Go to definition")
-    mapleadernlocal("lD", vim.lsp.buf.implementation, "Implementation")
     mapleadernlocal("le", vim.diagnostic.open_float, "Show Line Diags")
     -- mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix code actions")
-    mapleadernlocal("lf", "CodeActionMenu", "Fix code actions")
     mapleadernvlocal("ll", require("lsp_lines").toggle, "Toggle virtual text lines")
-    mapleadernlocal("lt", vim.lsp.buf.signature_help, "Signature")
-
 
     if vim.bo[bufnr].filetype == "rust" then
       local rt = require("rust-tools")
@@ -305,32 +298,48 @@ M.diagnostics = function()
     end
 
     -- Set some keybinds conditional on server capabilities
+    if client.server_capabilities.definitionProvider or client.server_capabilities.typeDefinitionProvider then
+      mapleadernlocal("ld", vim.lsp.buf.definition, "Go to definition")
+      -- override standard tag jump c-] for go to definition
+      mapnlocal("<c-]>", vim.lsp.buf.definition, "Go to definition")
+    end
+
+    if client.server_capabilities.codeActionProvider then
+      mapleadernlocal("lf", "CodeActionMenu", "Fix code actions")
+      -- range parameter is automatically populated in visual mode
+      mapleadervlocal("lf", vim.lsp.buf.code_action, "Fix code actions (range)")
+    end
+
+    if client.server_capabilities.implementationProvider then
+      mapleadernlocal("lD", vim.lsp.buf.implementation, "Implementation")
+    end
+
+    if client.server_capabilities.signatureHelpProvider then
+      mapleadernlocal("lt", vim.lsp.buf.signature_help, "Signature")
+    end
+
     if client.server_capabilities.hoverProvider or client.server_capabilities.hover then
       mapleadernlocal("li", vim.lsp.buf.hover, "Info hover")
       mapnlocal("K", vim.lsp.buf.hover, "Info hover")
     end
+
     if client.server_capabilities.documentFormattingProvider then
       mapleadernlocal("l=", vim.lsp.buf.format, "Format file")
-      vim.api.nvim_buf_set_option(bufnr, "formatexpr", "v:lua.vim.lsp.formatexpr()")
+      vim.bo.formatexpr = 'v:lua.vim.lsp.formatexpr(#{timeout_ms:500})'
+      -- vim.api.nvim_buf_set_option(bufnr, 'formatexpr', 'v:lua.vim.lsp.formatexpr(#{timeout_ms:500})')
     end
+
     if client.server_capabilities.documentRangeFormattingProvider then
-      mapleadervlocal("l=", vim.lsp.buf.range_formatting, "Format range")
+      -- range parameter is automatically populated in visual mode
+      mapleadervlocal("l=", vim.lsp.buf.format, "Format range")
     end
+
     if client.server_capabilities.references or client.server_capabilities.referencesProvider then
       mapleadernlocal("lr", builtin.lsp_references, "References")
     end
-    if client.server_capabilities.implementationProvider or client.server_capabilities.implementation then
-      mapleadernlocal("lI", require("telescope.builtin").lsp_implementations, "Implementations")
-    end
-    if client.server_capabilities.renameProvider or client.server_capabilities.rename then
-      mapleadernlocal("lR", vim.lsp.buf.rename, "Rename")
-    end
-    -- if client.server_capabilities.foldingRangeProvider then
-    -- Not supported in neovim yet; see https://github.com/neovim/neovim/pull/14306
-    -- vim.wo.foldexpr = 'v:lua.vim.lsp.buf.foldexpr()'
-    -- vim.wo.foldmethod = "expr"
-    -- end
+
     if client.server_capabilities.documentSymbolProvider then
+      print("GOT documentSymbolProvider")
       require("nvim-navic").attach(client, bufnr)    -- setup context showing header line
       require("nvim-navbuddy").attach(client, bufnr) -- setup popup for browsing symbols
       -- mapleadernlocal("lsd", builtin.lsp_document_symbols, "Find symbol in document")
@@ -340,15 +349,61 @@ M.diagnostics = function()
       mapnviclocal("<F7>", require("nvim-navbuddy").open, "Browse document symbols")
       -- end
     end
+
     if client.server_capabilities.workspaceSymbolProvider then
       mapleadernlocal("lsw", builtin.lsp_workspace_symbols, "Find symbol in workspace")
     end
+
+    if client.server_capabilities.implementationProvider or client.server_capabilities.implementation then
+      mapleadernlocal("lI", require("telescope.builtin").lsp_implementations, "Implementations")
+    end
+
+    if client.server_capabilities.renameProvider or client.server_capabilities.rename then
+      mapleadernlocal("lR", vim.lsp.buf.rename, "Rename")
+    end
+
+    -- Below is only possible because of nvim-ufo
+    -- Not supported in neovim yet; see https://github.com/neovim/neovim/pull/14306
+    if client.server_capabilities.foldingRangeProvider and vim.bo[bufnr].filetype ~= "markdown" then
+      mapnlocal('zR', require("ufo").openAllFolds, "Open all folds")
+      mapnlocal('zM', require("ufo").closeAllFolds, "Close all folds")
+      mapnlocal('zr', require('ufo').openFoldsExceptKinds, "Fold less")
+      mapnlocal('zm', require('ufo').closeFoldsWith, "Fold more")
+    end
+
     require("which-key").register({
       mode = { "n", "v" },
       ["<leader>ls"] = { name = "+symbols" },
       ["<leader>lc"] = { name = "+change" },
     })
   end
+
+  -- Allow LSP based folding, then fall back to treesitter and indent
+  -- Special handling for markdown for now
+  require('ufo').setup({
+    provider_selector = function(bufnr, filetype, _)
+      local ufoFt = {
+        markdown = "", -- no ufo for markdown
+        [""] = ""      -- no ufo for blank docs
+      }
+      local function customizeSelector()
+        local function handleFallbackException(err, providerName)
+          if type(err) == 'string' and err:match('UfoFallbackException') then
+            return require('ufo').getFolds(providerName, bufnr)
+          else
+            return require('promise').reject(err)
+          end
+        end
+
+        return require('ufo').getFolds('lsp', bufnr):catch(function(err)
+          return handleFallbackException(err, 'treesitter')
+        end):catch(function(err)
+          return handleFallbackException(err, 'indent')
+        end)
+      end
+      return ufoFt[filetype] or customizeSelector
+    end
+  })
 
   require('lint').linters_by_ft = {
     markdown = { 'vale' },
@@ -406,6 +461,11 @@ M.diagnostics = function()
   local capabilities = vim.tbl_extend("keep", vim.lsp.protocol
     .make_client_capabilities(),
     cmp_nvim_lsp.default_capabilities())
+  -- Add client folding capability, which is provided by nvim-ufo
+  capabilities.textDocument.foldingRange = {
+    dynamicRegistration = false,
+    lineFoldingOnly = true
+  }
 
   require("rust-tools").setup({
     server = {

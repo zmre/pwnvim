@@ -252,9 +252,11 @@
           lualine-nvim # nice status bar at bottom
           vim-bbye # fix bdelete buffer stuff needed with bufferline
           # bufferline-nvim # tabs at top
-          barbecue-nvim
+          barbecue-nvim # show top of screen breadcrumbs based on lsp symbols
           nvim-navic # required by barbecue
-          nvim-navbuddy
+          nvim-navbuddy # use same lsp symbols to navigate in popup
+          nvim-ufo # allow use of lsp as source for folding
+          promise-async # required by nvim-ufo
           indent-blankline-nvim # visual indent
           toggleterm-nvim # better terminal management
           nvim-treesitter.withAllGrammars
