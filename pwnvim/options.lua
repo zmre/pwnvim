@@ -42,7 +42,7 @@ M.defaults = function()
 
   vim.opt.foldenable = false
 
-  vim.opt.grepprg = "rg --vimgrep --no-heading --smart-case --color never"
+  vim.opt.grepprg = "rg --vimgrep --no-heading --hidden --smart-case --color never"
   vim.opt.grepformat = "%f:%l:%c:%m,%f:%l:%m,%f"
 
   -- ignore completions and menus for the below
