@@ -263,7 +263,7 @@
           #(nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
           playground # treesitter playground
           nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
-          # nvim-treesitter-context # keep current block header (func defn or whatever) on first line
+          nvim-treesitter-textsubjects # adds "smart" text objects
           lf-vim
           nui-nvim # needed by noice
           nvim-notify # needed by noice

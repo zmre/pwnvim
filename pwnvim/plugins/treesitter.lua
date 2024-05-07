@@ -31,6 +31,15 @@ require("nvim-treesitter.configs").setup({
     disable = { "dbout" },
     include_match_words = true
   },
+  textsubjects = {
+    enable = true,
+    --prev_selection = '.', -- thought this would be more than just what `gv` does
+    keymaps = {
+      [','] = { 'textsubjects-smart', desc = "Smart select current object" }, -- this one is great
+      --[';'] = { 'textsubjects-container-outer', desc = "Select current container outer" }, -- these rarely work :(
+      --['.'] = { 'textsubjects-container-inner', desc = "Select current container inner" }, -- "               "
+    }
+  },
   textobjects = {
     disable = {},
     select = {

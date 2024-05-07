@@ -339,7 +339,7 @@ M.diagnostics = function()
     end
 
     if client.server_capabilities.documentSymbolProvider then
-      print("GOT documentSymbolProvider")
+      -- print("GOT documentSymbolProvider")
       require("nvim-navic").attach(client, bufnr)    -- setup context showing header line
       require("nvim-navbuddy").attach(client, bufnr) -- setup popup for browsing symbols
       -- mapleadernlocal("lsd", builtin.lsp_document_symbols, "Find symbol in document")
