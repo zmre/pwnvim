@@ -201,6 +201,7 @@
           lua << EOF
             package.path = "${self}/?.lua;" .. package.path
             rustsrc_path = "${pkgs.rustPlatform.rustLibSrc}/core/Cargo.toml"
+            prettier_path = "${pkgs.nodePackages.prettier}/bin/prettier"
             vim.env.RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}"
             vim.env.RA_LOG = "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug"
             rustanalyzer_path = "${pkgs.rust-analyzer}/bin/rust-analyzer"

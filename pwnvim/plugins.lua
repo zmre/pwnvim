@@ -407,7 +407,8 @@ M.diagnostics = function()
 
   require('lint').linters_by_ft = {
     markdown = { 'vale' },
-    css = { 'prettier' },
+    -- NOTE: prettier is no longer a stock option
+    -- css = { 'prettier' },
     -- svelte = { 'eslint_d' },
     python = { "mypy", "ruff" },
     nix = { "statix" },
@@ -416,6 +417,7 @@ M.diagnostics = function()
     -- javascript = { "eslint_d", "prettier" },
     -- rust = { "rustfmt" }
   }
+
   require("conform").formatters.lua_format = {
     command = "lua-format",
     args = { "-i", "--no-use-tab", "--indent-width=2" },
@@ -431,6 +433,12 @@ M.diagnostics = function()
       -- These options will be passed to conform.format()
       timeout_ms = 800,
       lsp_fallback = true -- if no defined or available formatter, try lsp formatter
+    },
+    formatters = {
+      prettier = {
+        -- below path set in init.lua which is made in flake.nix
+        command = prettier_path
+      }
     },
     formatters_by_ft = {
       -- lua = {{"lua_format", "stylua"}},
