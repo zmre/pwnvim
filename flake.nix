@@ -155,7 +155,7 @@
           languagetool # needed by grammarous, but must be v5.9 (see overlay)
           # luajitPackages.lua-lsp
           lua-language-server
-          nodePackages.pyright # python lsp (written in node? so weird)
+          pyright # python lsp (written in node? so weird)
           nodePackages.eslint_d # js/ts code formatter and linter
           nodePackages.prettier # ditto
           nodePackages.prisma
@@ -355,7 +355,7 @@
             ''
             + oldAddrs.preConfigure;
           # Options for built type are: RelWithDebInfo, Release, and Debug
-          cmakeFlags = oldAddrs.cmakeFlags ++ ["-DCMAKE_BUILD_TYPE=RelWithDebInfo"];
+          cmakeFlags = ["-DCMAKE_BUILD_TYPE=RelWithDebInfo"];
         }))
         {buildInputs = dependencies;}
       ];

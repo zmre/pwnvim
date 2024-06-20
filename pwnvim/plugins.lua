@@ -656,7 +656,7 @@ M.telescope = function()
     os.execute("open '" .. entry.value .. "'")
   end
 
-  local trouble = require("trouble.providers.telescope")
+  local trouble = require("trouble.sources.telescope")
   require("telescope").setup({
     file_ignore_patterns = {
       "*.bak", ".git/", "node_modules", ".zk/", "Caches/", "Backups/"
@@ -678,7 +678,7 @@ M.telescope = function()
       -- path_display = { "truncate" },
       mappings = {
         n = {
-          ["<c-t>"] = trouble.open_with_trouble,
+          ["<c-t>"] = trouble.open,
           ["<C-y>"] = yank_selected_entry,
           ["<C-o>"] = system_open_selected_entry,
           ["<F10>"] = quicklook_selected_entry,
@@ -686,7 +686,7 @@ M.telescope = function()
           ["q"] = require("telescope.actions").close
         },
         i = {
-          ["<c-t>"] = trouble.open_with_trouble,
+          ["<c-t>"] = trouble.open,
           ["<c-h>"] = "which_key",
           ["<C-y>"] = yank_selected_entry,
           ["<F10>"] = quicklook_selected_entry,
