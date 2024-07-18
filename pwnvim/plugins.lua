@@ -96,8 +96,8 @@ M.ui = function()
       -- annotate = false,
       -- },
       mappings = {
-        delete_line = "dm-",
-        delete = "dm",
+        -- delete_line = "dm-",
+        -- delete = "dm",
         preview = "m:",
         next = "]'",
         prev = "['"
@@ -380,10 +380,10 @@ M.diagnostics = function()
       mapnlocal('zm', require('ufo').closeFoldsWith, "Fold more")
     end
 
-    require("which-key").register({
+    require("which-key").add({
       mode = { "n", "v" },
-      ["<leader>ls"] = { name = "+symbols" },
-      ["<leader>lc"] = { name = "+change" },
+      { "<leader>ls", group = "symbols" },
+      { "<leader>lc", group = "change" },
     })
   end
 

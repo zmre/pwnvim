@@ -103,21 +103,21 @@ M.config = function()
     -- triggers_nowait = {"'", '"', "y", "d"}
   })
 
-  which_key.register({
+  which_key.add({
     mode = { "n", "v" },
-    ["]"] = { name = "+next" },
-    ["["] = { name = "+prev" },
-    ["<leader>f"] = { name = "+find" },
-    ["<leader>g"] = { name = "+git" },
-    ["<leader>gt"] = { name = "+git toggle" },
-    ["<leader>gw"] = { name = "+git workspace" },
-    ["<leader>h"] = { name = "+hunk" },
-    ["<leader>i"] = { name = "+indent" },
-    ["<leader>l"] = { name = "+lsp" },
-    ["<leader>ls"] = { name = "+symbols" },
-    ["<leader>lc"] = { name = "+change" },
-    ["<leader>n"] = { name = "+notes" },
-    ["<leader>t"] = { name = "+tasks" },
+    { "]",          group = "next" },
+    { "[",          group = "prev" },
+    { "<leader>f",  group = "find" },
+    { "<leader>g",  group = "git" },
+    { "<leader>gt", group = "git toggle" },
+    { "<leader>gw", group = "git workspace" },
+    { "<leader>h",  group = "hunk" },
+    { "<leader>i",  group = "indent" },
+    { "<leader>l",  group = "lsp" },
+    { "<leader>ls", group = "symbols" },
+    { "<leader>lc", group = "change" },
+    { "<leader>n",  group = "notes" },
+    { "<leader>t",  group = "tasks" },
   })
 
   -- This file is for mappings that will work regardless of filetype. Always available.
@@ -380,7 +380,7 @@ M.config = function()
   -- Browse git things
   M.mapleadernv("gs", require('telescope.builtin').git_status, "Status")
   M.mapleadernv("gb", require('telescope.builtin').git_branches, "Branches")
-  M.mapleadernv("gc", require('telescope.builtin').git_commits, "Commits")
+  M.mapleadernv("gm", require('telescope.builtin').git_commits, "Commits")
   -- Worktree stuff
   M.mapleadernv("gws", require('telescope').extensions.git_worktree.git_worktrees, "Switch worktree")
   M.mapleadernv("gwn", require('telescope').extensions.git_worktree.create_git_worktree, "New worktree")
@@ -449,49 +449,49 @@ M.config = function()
 
 
   -- Setup tpope unimpaired-like forward/backward shortcuts reminders
-  which_key.register({
-    ["[A"] = "First file arg",
-    ["[a"] = "Prev file arg",
-    ["]a"] = "Next file arg",
-    ["]A"] = "Last file arg",
-    ["[B"] = "First buffer",
-    ["]B"] = "Last buffer",
-    ["[b"] = { "<Cmd>bprev<CR>", "Prev buffer" },
-    ["]b"] = { "<Cmd>bnext<CR>", "Next buffer" },
+  which_key.add({
+    { "[A",    desc = "First file arg" },
+    { "[a",    desc = "Prev file arg" },
+    { "]a",    desc = "Next file arg" },
+    { "]A",    desc = "Last file arg" },
+    { "[B",    desc = "First buffer" },
+    { "]B",    desc = "Last buffer" },
+    { "[b",    "<Cmd>bprev<CR>",                     desc = "Prev buffer" },
+    { "]b",    "<Cmd>bnext<CR>",                     desc = "Next buffer" },
     -- ["[b"] = { "<Cmd>BufferLineCyclePrev<CR>", "Prev buffer" },
     -- ["]b"] = { "<Cmd>BufferLineCycleNext<CR>", "Next buffer" },
-    ["[c"] = "Prev git hunk",
-    ["]c"] = "Next git hunk",
-    ["[f"] = "Prev file in dir of cur file",
-    ["]f"] = "Next file in dir of cur file",
-    ["[L"] = "First loclist item",
-    ["[l"] = "Prev loclist item",
-    ["]l"] = "Next loclist item",
-    ["]L"] = "Last loclist item",
-    ["[Q"] = "First quicklist item",
-    ["[q"] = "Prev quicklist item",
-    ["]q"] = "Next quicklist item",
-    ["]Q"] = "Last quicklist item",
-    ["]p"] = "Put below",
-    ["]P"] = "Put below",
-    ["[t"] = { "<Cmd>tabprevious<cr>", "Prev tab" },
-    ["[T"] = { "<Cmd>tabfirst<cr>", "First tab" },
-    ["]t"] = { "<Cmd>tabnext<cr>", "Next tab" },
-    ["]T"] = { "<Cmd>tablast<cr>", "Last tab" },
-    ["[n"] = "Prev conflict",
-    ["]n"] = "Next conflict",
-    ["[ "] = "Add blank line before",
-    ["] "] = "Add blank line after",
-    ["[e"] = "Swap line with previous",
-    ["]e"] = "Swap line with next",
-    ["[x"] = "XML encode",
-    ["]x"] = "XML decode",
-    ["[u"] = "URL encode",
-    ["]u"] = "URL decode",
-    ["[y"] = "C escape",
-    ["]y"] = "C unescape",
-    ["[d"] = { vim.diagnostic.goto_prev, "Prev diagnostic" },
-    ["]d"] = { vim.diagnostic.goto_next, "Next diagnostic" },
+    { "[c",    desc = "Prev git hunk" },
+    { "]c",    desc = "Next git hunk" },
+    { "[f",    desc = "Prev file in dir of cur file" },
+    { "]f",    desc = "Next file in dir of cur file" },
+    { "[L",    desc = "First loclist item" },
+    { "[l",    desc = "Prev loclist item" },
+    { "]l",    desc = "Next loclist item" },
+    { "]L",    desc = "Last loclist item" },
+    { "[Q",    desc = "First quicklist item" },
+    { "[q",    desc = "Prev quicklist item" },
+    { "]q",    desc = "Next quicklist item" },
+    { "]Q",    desc = "Last quicklist item" },
+    { "]p",    desc = "Put below" },
+    { "]P",    desc = "Put below" },
+    { "[t",    "<Cmd>tabprevious<cr>",               desc = "Prev tab" },
+    { "[T",    "<Cmd>tabfirst<cr>",                  desc = "First tab" },
+    { "]t",    "<Cmd>tabnext<cr>",                   desc = "Next tab" },
+    { "]T",    "<Cmd>tablast<cr>",                   desc = "Last tab" },
+    { "[n",    desc = "Prev conflict" },
+    { "]n",    desc = "Next conflict" },
+    { "[ ",    desc = "Add blank line before" },
+    { "] ",    desc = "Add blank line after" },
+    { "[e",    desc = "Swap line with previous" },
+    { "]e",    desc = "Swap line with next" },
+    { "[x",    desc = "XML encode" },
+    { "]x",    desc = "XML decode" },
+    { "[u",    desc = "URL encode" },
+    { "]u",    desc = "URL decode" },
+    { "[y",    desc = "C escape" },
+    { "]y",    desc = "C unescape" },
+    { "[d",    vim.diagnostic.goto_prev,             desc = "Prev diagnostic" },
+    { "]d",    vim.diagnostic.goto_next,             desc = "Next diagnostic" },
     -- ["[1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "Go to buffer 1" },
     -- ["]1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "Go to buffer 1" },
     -- ["[2"] = { "<cmd>BufferLineGoToBuffer 2<CR>", "Go to buffer 2" },
@@ -510,8 +510,8 @@ M.config = function()
     -- ["]8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "Go to buffer 8" },
     -- ["[9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "Go to buffer 9" },
     -- ["]9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "Go to buffer 9" },
-    ["<S-h>"] = { "<cmd>bn<CR>", "Go to next buffer" },
-    ["<S-l>"] = { "<cmd>bp<CR>", "Go to prev buffer" },
+    { "<S-h>", "<cmd>bn<CR>",                        desc = "Go to next buffer" },
+    { "<S-l>", "<cmd>bp<CR>",                        desc = "Go to prev buffer" },
     -- ["<S-h>"] = { "<cmd>BufferLineCyclePrev<CR>", "Go to next buffer" },
     -- ["<S-l>"] = { "<cmd>BufferLineCycleNext<CR>", "Go to prev buffer" },
   }, { mode = "n", silent = true })
@@ -522,8 +522,8 @@ M.config = function()
   -- Flash automatically enhances search (with / or ?) and char search (f, F, t, T)
 
   -- ctrl-s will toggle that enhancement for search when in the midst of searching
-  which_key.register({
-    ["<c-s>"] = { require("flash").toggle, "Toggle Flash Search" }
+  which_key.add({
+    { "<c-s>", require("flash").toggle, desc = "Toggle Flash Search" }
   }, { mode = "c" })
 
   -- Start visual mode and then adjust selection by treesitter nodes with s
