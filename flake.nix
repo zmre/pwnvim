@@ -405,68 +405,76 @@
       ];
     in rec {
       packages.pwnvim =
-        pkgs.wrapNeovim augmentedNeovim {
-          viAlias = true;
-          vimAlias = true;
+        (pkgs.wrapNeovim augmentedNeovim {
+            viAlias = true;
+            vimAlias = true;
+            withNodeJs = false;
+            withPython3 = false;
+            withRuby = false;
+            extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
+            # make sure impatient is loaded before everything else to speed things up
+            configure = {
+              inherit customRC;
+              packages.myPlugins = {
+                start = requiredPlugins;
+                opt = optionalPlugins;
+              };
+            };
+          }
+          // {buildInputs = dependencies;})
+        .overrideAttrs (old: {
+          name = "pwnvim-" + old.version + "-" + self.lastModifiedDate;
+        });
+      packages.pwnvim-python =
+        (pkgs.wrapNeovim augmentedNeovimPython {
+          viAlias = false;
+          vimAlias = false;
           withNodeJs = false;
-          withPython3 = false;
+          withPython3 = true;
+          extraLuaPackages = ps: [ps.magick];
+          extraPython3Packages = extraPythonPkgs;
+          # python3Env = pythonEnv;
           withRuby = false;
           extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
           # make sure impatient is loaded before everything else to speed things up
           configure = {
-            inherit customRC;
-            packages.myPlugins = with pkgs.vimPlugins; {
-              start = requiredPlugins;
+            customRC =
+              customRC
+              + ''
+                lua << EOF
+                vim.g.molten_image_provider = "image.nvim"
+                vim.g.molten_output_win_max_height = 20
+                vim.g.molten_auto_open_output = false
+                vim.g.loaded_python3_provider = nil
+                vim.g.python3_host_prog = "${pythonEnv}/bin/python"
+                require("image").setup({
+                  backend = "kitty",
+                  max_width = 100,
+                  max_height = 12,
+                  max_height_window_percentage = math.huge,
+                  max_width_window_percentage = math.huge,
+                  window_overlap_clear_enabled = true,
+                  window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" }
+                })
+                EOF
+              '';
+            packages.myPlugins = {
+              start =
+                requiredPlugins
+                ++ (with pkgs.vimPlugins; [
+                  molten-nvim # jupyter notebook runner inside vim
+                  image-nvim # display images in kitty inside nvim for markdown and jupyter notebooks -- to experiment with
+                ]);
               opt = optionalPlugins;
             };
           };
-        }
-        // {buildInputs = dependencies;};
-      packages.pwnvim-python = pkgs.wrapNeovim augmentedNeovimPython {
-        viAlias = false;
-        vimAlias = false;
-        withNodeJs = false;
-        withPython3 = true;
-        extraLuaPackages = ps: [ps.magick];
-        extraPython3Packages = extraPythonPkgs;
-        # python3Env = pythonEnv;
-        withRuby = false;
-        extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
-        # make sure impatient is loaded before everything else to speed things up
-        configure = {
-          customRC =
-            customRC
-            + ''
-              lua << EOF
-              vim.g.molten_image_provider = "image.nvim"
-              vim.g.molten_output_win_max_height = 20
-              vim.g.molten_auto_open_output = false
-              vim.g.loaded_python3_provider = nil
-              vim.g.python3_host_prog = "${pythonEnv}/bin/python"
-              require("image").setup({
-                backend = "kitty",
-                max_width = 100,
-                max_height = 12,
-                max_height_window_percentage = math.huge,
-                max_width_window_percentage = math.huge,
-                window_overlap_clear_enabled = true,
-                window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" }
-              })
-              EOF
-            '';
-          packages.myPlugins = with pkgs.vimPlugins; {
-            start =
-              requiredPlugins
-              ++ (with pkgs.vimPlugins; [
-                molten-nvim # jupyter notebook runner inside vim
-                image-nvim # display images in kitty inside nvim for markdown and jupyter notebooks -- to experiment with
-              ]);
-            opt = optionalPlugins;
-          };
-        };
-      };
+        })
+        .overrideAttrs (old: {
+          name = "pwnvim-python-" + old.version + "-" + self.lastModifiedDate;
+        });
       apps.pwnvim = flake-utils.lib.mkApp {
-        drv = packages.pwnvim;
+        drv =
+          packages.pwnvim;
         name = "pwnvim";
         exePath = "/bin/nvim";
       };
