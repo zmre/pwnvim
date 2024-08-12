@@ -3,11 +3,11 @@
     "catppuccin": {
       "flake": false,
       "locked": {
-        "lastModified": 1721318810,
-        "narHash": "sha256-JhKJQDdHiiDcCtbc8xvdLa6W5oRBDcftM+G5aVEMi6Q=",
+        "lastModified": 1723376150,
+        "narHash": "sha256-dcRibCHu8wm1VqETUUWt91vOZ/+bOKaC5fazEAfnN58=",
         "owner": "catppuccin",
         "repo": "nvim",
-        "rev": "0b5df9c9e641b1212b21a0762ccad4434fd41322",
+        "rev": "18bab5ec4c782cdf7d7525dbe89c60bfa02fc195",
         "type": "github"
       },
       "original": {
@@ -35,11 +35,11 @@
     "conform-nvim": {
       "flake": false,
       "locked": {
-        "lastModified": 1721278438,
-        "narHash": "sha256-owot6sRos1nV4UgHM8a2cGbt5mxtyQw6kW8OYkxGSuI=",
+        "lastModified": 1723322956,
+        "narHash": "sha256-EE0YvXHgwFb8ADlerPPR9KfHi+EniG2Up5wVumB0/y4=",
         "owner": "stevearc",
         "repo": "conform.nvim",
-        "rev": "acc7d93f4a080fec587a99fcb36cffa29adc4bad",
+        "rev": "667102f26106709cddd2dff1f699610df5b94d7f",
         "type": "github"
       },
       "original": {
@@ -56,11 +56,11 @@
         "rust-analyzer-src": "rust-analyzer-src"
       },
       "locked": {
-        "lastModified": 1721284082,
-        "narHash": "sha256-hmV7TZraahF8LwYbBXJE+9dp+z+XsdBh+yMYUauoV9Q=",
+        "lastModified": 1723444276,
+        "narHash": "sha256-ErWXmB84hedrDmeaHOaFFfNShC21AopTfM4x4rlvk3c=",
         "owner": "nix-community",
         "repo": "fenix",
-        "rev": "2d55ed5e2c098416bc677f4fa8658b0a5ea36491",
+        "rev": "70c22198ab822aa93c92a7ec0933908b17131edd",
         "type": "github"
       },
       "original": {
@@ -105,11 +105,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1721303309,
-        "narHash": "sha256-/+Yw4tW/mcTRKmkEAO64ObzCQClpSUZpk2flUD9GDHE=",
+        "lastModified": 1723221148,
+        "narHash": "sha256-7pjpeQlZUNQ4eeVntytU3jkw9dFK3k1Htgk2iuXjaD8=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "7e2fb8e0eb807e139d42b05bf8e28da122396bed",
+        "rev": "154bcb95ad51bc257c2ce4043a725de6ca700ef6",
         "type": "github"
       },
       "original": {
@@ -122,11 +122,11 @@
     "onedarkpro": {
       "flake": false,
       "locked": {
-        "lastModified": 1720173397,
-        "narHash": "sha256-mI4aPA6zvEeH4dP89huVYXUOXAeRkXeG1ehZDlzFd8Y=",
+        "lastModified": 1723138016,
+        "narHash": "sha256-b1A6XYeVkIuDt295lMQMeQ15Mkl2ud3VXBjNOB4wIWQ=",
         "owner": "olimorris",
         "repo": "onedarkpro.nvim",
-        "rev": "f90c110a4944d8d520229d6c6bd8040bfca31a63",
+        "rev": "c097acadb6c277be49a92e3d4bd185b2bb2b4d4c",
         "type": "github"
       },
       "original": {
@@ -144,18 +144,17 @@
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
-        "onedarkpro": "onedarkpro",
-        "vscode-langservers-custom": "vscode-langservers-custom"
+        "onedarkpro": "onedarkpro"
       }
     },
     "rust-analyzer-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1721209698,
-        "narHash": "sha256-PHHNfx6LMf9jRM15fcNWMdZaNDPBHBlWoSr0p1wVsy0=",
+        "lastModified": 1723304838,
+        "narHash": "sha256-xAxVDxuvCs8WWkrxVWjCiqxTkHhGj7sSppr1YMuEdT8=",
         "owner": "rust-lang",
         "repo": "rust-analyzer",
-        "rev": "a62ea0a59e18ded8836af1dbce9cb8f5d07a744c",
+        "rev": "0daeb5c0b05cfdf2101b0f078c27539099bf38e6",
         "type": "github"
       },
       "original": {
@@ -177,23 +176,6 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
-        "type": "github"
-      }
-    },
-    "vscode-langservers-custom": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1697905592,
-        "narHash": "sha256-sGnxmEQ0J74zNbhRpsgF/cYoXwn4jh9yBVjk6UiUdK0=",
-        "owner": "hrsh7th",
-        "repo": "vscode-langservers-extracted",
-        "rev": "fc325a94765910bd8ee684bf57f33cfdd0173346",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hrsh7th",
-        "ref": "v4.8.0",
-        "repo": "vscode-langservers-extracted",
         "type": "github"
       }
     }
