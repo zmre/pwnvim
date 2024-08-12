@@ -27,8 +27,6 @@
     # clipboard-image.url = "github:ekickx/clipboard-image.nvim";
     clipboard-image.url = "github:postfen/clipboard-image.nvim";
     clipboard-image.flake = false;
-    vscode-langservers-custom.url = "github:hrsh7th/vscode-langservers-extracted/v4.8.0";
-    vscode-langservers-custom.flake = false;
     conform-nvim.url = "github:stevearc/conform.nvim";
     conform-nvim.flake = false;
     # tree-sitter-markdown.url = "github:MDeiml/tree-sitter-markdown/v0.1.7";
@@ -86,40 +84,6 @@
                 };
               };
           })
-          (self: super: {
-            nodePackages =
-              super.nodePackages
-              // {
-                vscode-langservers-custom = super.buildNpmPackage {
-                  # see https://github.com/Lord-Valen/nixpkgs/blob/master/pkgs/development/tools/language-servers/vscode-langservers-extracted/default.nix
-                  # we have this custom because they don't have the eslint server and they hard code
-                  # some vscodium paths that we don't care about
-                  pname = "vscode-langservers-custom";
-                  version = "4.8.0";
-                  src = inputs.vscode-langservers-custom;
-                  npmDepsHash = "sha256-LFWC87Ahvjf2moijayFze1Jk0TmTc7rOUd/s489PHro=";
-
-                  buildPhase = let
-                    extensions =
-                      if super.stdenv.isDarwin
-                      then "${super.vscodium}/Applications/VSCodium.app/Contents/Resources/app/extensions"
-                      else "${super.vscodium}/lib/vscode/resources/app/extensions";
-                  in ''
-                    npx babel ${extensions}/css-language-features/server/dist/node \
-                      --out-dir lib/css-language-server/node/
-                    npx babel ${extensions}/html-language-features/server/dist/node \
-                      --out-dir lib/html-language-server/node/
-                    npx babel ${extensions}/json-language-features/server/dist/node \
-                      --out-dir lib/json-language-server/node/
-                    npx babel ${extensions}/markdown-language-features/server/dist/node \
-                      --out-dir lib/markdown-language-server/node/
-                    cp -r ${super.vscode-extensions.dbaeumer.vscode-eslint}/share/vscode/extensions/dbaeumer.vscode-eslint/server/out \
-                      lib/eslint-language-server
-                    mv lib/markdown-language-server/node/workerMain.js lib/markdown-language-server/node/main.js
-                  '';
-                };
-              };
-          })
         ];
       };
 
@@ -156,10 +120,10 @@
           # luajitPackages.lua-lsp
           lua-language-server
           pyright # python lsp (written in node? so weird)
+          vscode-langservers-extracted # lsp servers for json, html, css, eslint
           nodePackages.eslint_d # js/ts code formatter and linter
           nodePackages.prettier # ditto
           nodePackages.prisma
-          nodePackages.vscode-langservers-custom # lsp servers for json, html, css, eslint
           nodePackages.svelte-language-server
           nodePackages.diagnostic-languageserver
           nodePackages.typescript-language-server
@@ -175,9 +139,10 @@
           rust-analyzer # lsp for rust
           # rust-analyzer is currently in a partially broken state as it cannot find rust sources so can't
           # help with native language things, which sucks. Here are some issues to track:
-          # https://github.com/rust-lang/rust/issues/95736
-          # https://github.com/rust-lang/rust-analyzer/issues/13393
+          # https://github.com/rust-lang/rust/issues/95736 - FIXED
+          # https://github.com/rust-lang/rust-analyzer/issues/13393 - CLOSED NOT RESOLVED
           # https://github.com/mozilla/nixpkgs-mozilla/issues/238
+          #                     - suggestion to do export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src" which is like what we're doing below in customRC, I think
           # https://github.com/rust-lang/cargo/issues/10096
           rustfmt
           cargo # have this as a fallback when a local flake isn't in place
