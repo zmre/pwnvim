@@ -24,6 +24,7 @@
     fenix.url = "github:nix-community/fenix";
     fenix.inputs.nixpkgs.follows = "nixpkgs";
     # ekickx doesn't seem to be maintaing. postfen's fork worth using for now. TODO: revisit
+    # Note: dfendr's fork could also be one to use.
     # clipboard-image.url = "github:ekickx/clipboard-image.nvim";
     clipboard-image.url = "github:postfen/clipboard-image.nvim";
     clipboard-image.flake = false;
@@ -104,7 +105,7 @@
           vale # linter for prose
           proselint # ditto
           luaformatter # ditto for lua
-          prisma-engines # ditto for schema.prisma files
+          #prisma-engines # ditto for schema.prisma files # TODO: bring back when rust compile issues are fixed 2024-08-26
           # Nix language servers summary 2023-11-23
           # rnix-lsp -- seems abandoned
           # nil -- way better than rnix and generally great, but
@@ -123,7 +124,7 @@
           vscode-langservers-extracted # lsp servers for json, html, css, eslint
           nodePackages.eslint_d # js/ts code formatter and linter
           nodePackages.prettier # ditto
-          nodePackages.prisma
+          #nodePackages.prisma # dependency prisma-engines not compiling right now 2024-08-26
           nodePackages.svelte-language-server
           nodePackages.diagnostic-languageserver
           nodePackages.typescript-language-server
