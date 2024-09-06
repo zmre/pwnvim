@@ -103,7 +103,7 @@ M.setupmappings = function(bufnr)
   local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
   local mapilocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapi)
   local mapvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapv)
-  local mapnviclocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapnvic)
+  local mapnvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapnv)
 
   mapnlocal("<leader>m", ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview")
   mapnlocal("gl*", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],
@@ -163,7 +163,7 @@ M.setupmappings = function(bufnr)
 
   -- Even when zk LSP doesn't connect, we can have formatters (including vale) give feedback -- ensure we have a way to see it
   mapnlocal("<leader>le", vim.diagnostic.open_float, "Show Line Diags")
-  mapnviclocal("<leader>ll", require("lsp_lines").toggle, "Toggle virtual text lines")
+  mapnvlocal("<leader>ll", require("lsp_lines").toggle, "Toggle virtual text lines")
 end
 
 M.markdownsyntax = function()
