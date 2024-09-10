@@ -393,7 +393,8 @@
           }
           // {buildInputs = dependencies;})
         .overrideAttrs (old: {
-          name = "pwnvim-" + old.version + "-" + self.lastModifiedDate;
+          name = "pwnvim";
+          version = old.version + "-" + self.lastModifiedDate;
         });
       packages.pwnvim-python =
         (pkgs.wrapNeovim augmentedNeovimPython {
