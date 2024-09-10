@@ -226,8 +226,6 @@
           promise-async # required by nvim-ufo
           indent-blankline-nvim # visual indent
           toggleterm-nvim # better terminal management
-          nvim-treesitter.withAllGrammars
-          #(nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
           playground # treesitter playground
           nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
           nvim-treesitter-textsubjects # adds "smart" text objects
@@ -283,6 +281,11 @@
           impatient-nvim # speeds startup times by caching lua bytecode
           which-key-nvim
           vim-startuptime
+
+          # Something was obliterating rtp and making grammars disappear. Putting this on the bottom of the list
+          # fixes the issue for me 2024-09-10.
+          nvim-treesitter.withAllGrammars
+          #(nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
         ]
         ++ pkgs.lib.optionals (!pkgs.stdenv.isDarwin) [
           telescope-media-files-nvim # only works on linux, requires ueberzug, but gives image preview
