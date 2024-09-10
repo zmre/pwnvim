@@ -186,7 +186,8 @@
 
           # Syntax / Language Support ##########################
           # Removing 2022-11-30 as it is slow and treesitter generally does the same thing
-          # vim-polyglot # lazy load all the syntax plugins for all the languages
+          # Reinstating 2024-09-10 so I get fallbacks again
+          vim-polyglot # lazy load all the syntax plugins for all the languages
           rust-tools-nvim # lsp stuff and more for rust
           nvim-lspconfig # setup LSP for intelligent coding
           nvim-lint # replace null-ls for linting bits
