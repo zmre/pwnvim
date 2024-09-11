@@ -36,6 +36,11 @@
     onedarkpro.flake = false;
     catppuccin.url = "github:catppuccin/nvim";
     catppuccin.flake = false;
+
+    # Need to manually roll back Noice to commig d9328ef until Folke resolves https://github.com/folke/noice.nvim/issues/923
+    # Otherwise neovide goes crazy on me when I'm in the command line
+    noice-nvim.url = "github:folke/noice.nvim?ref=d9328ef";
+    noice-nvim.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -82,6 +87,11 @@
                   name = "conform-nvim";
                   pname = "conform-nvim";
                   src = inputs.conform-nvim;
+                };
+                noice-nvim = super.vimUtils.buildVimPlugin {
+                  name = "noice-nvim";
+                  pname = "noice-nvim";
+                  src = inputs.noice-nvim;
                 };
               };
           })
@@ -391,7 +401,7 @@
               };
             };
           }
-          // {buildInputs = dependencies;})
+          // {buildInputs = dependencies;}) # this last line is needed so neovide can pull in same ones
         .overrideAttrs (old: {
           name = "pwnvim";
           version = old.version + "-" + self.lastModifiedDate;

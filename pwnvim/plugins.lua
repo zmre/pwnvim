@@ -439,15 +439,6 @@ M.diagnostics = function()
     -- rust = { "rustfmt" }
   }
 
-  require("conform").formatters.lua_format = {
-    command = "lua-format",
-    args = { "-i", "--no-use-tab", "--indent-width=2" },
-    stdin = true
-  }
-  require("conform.formatters.prettier").args = {
-    "--stdin-filepath", "$FILENAME", "--tab-width", "2"
-  }
-
   require("conform").setup({ -- use formatter.nvim instead?
     notify_on_error = true,
     format_on_save = {
@@ -458,24 +449,35 @@ M.diagnostics = function()
     formatters = {
       prettier = {
         -- below path set in init.lua which is made in flake.nix
-        command = prettier_path
+        command = prettier_path,
+        args = { "--stdin-filepath", "$FILENAME", "--tab-width", "2" }
+      },
+      lua_format = {
+        command = "lua-format",
+        args = { "-i", "--no-use-tab", "--indent-width=2" },
+        stdin = true
+      },
+      alejandra = {
+        command = "alejandra",
+        args = { "-q", "-q" }
       }
+
     },
     formatters_by_ft = {
       -- lua = {{"lua_format", "stylua"}},
       python = { "black" },
       -- Use a sub-list to run only the first available formatter
-      javascript = { { "prettier", "eslint_d" } },
-      javascriptreact = { { "prettier", "eslint_d" } },
-      typescript = { { "prettier", "eslint_d" } },
-      typescriptreact = { { "prettier", "eslint_d" } },
-      vue = { { "prettier", "eslint_d" } },
-      scss = { { "prettier", "eslint_d" } },
-      html = { { "prettier", "eslint_d" } },
-      css = { { "prettier", "eslint_d" } },
-      json = { { "prettier", "eslint_d" } },
-      jsonc = { { "prettier", "eslint_d" } },
-      yaml = { { "prettier", "eslint_d" } },
+      -- javascript = { "prettier", "eslint_d" }, -- handled by lsp
+      -- javascriptreact = { "prettier", "eslint_d" }, -- handled by lsp
+      -- typescript = { "prettier", "eslint_d" }, -- handled by lsp
+      -- typescriptreact = { "prettier", "eslint_d" }, -- handled by lsp
+      vue = { "prettier", "eslint_d" },
+      scss = { "prettier", "eslint_d" },
+      html = { "prettier", "eslint_d" },
+      css = { "prettier", "eslint_d" },
+      json = { "prettier", "eslint_d" },
+      jsonc = { "prettier", "eslint_d" },
+      yaml = { "prettier", "eslint_d" },
       -- svelte = { { "prettier", "eslint_d" } }, -- handled by lsp
       nix = { "alejandra" }
     }

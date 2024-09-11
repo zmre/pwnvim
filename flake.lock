@@ -119,6 +119,23 @@
         "type": "github"
       }
     },
+    "noice-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1721839776,
+        "narHash": "sha256-UgUSvb03sSgAWXOPbXxD1f/KAzRLY07BGHkNOVhwmF4=",
+        "owner": "folke",
+        "repo": "noice.nvim",
+        "rev": "d9328ef903168b6f52385a751eb384ae7e906c6f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "folke",
+        "ref": "d9328ef",
+        "repo": "noice.nvim",
+        "type": "github"
+      }
+    },
     "onedarkpro": {
       "flake": false,
       "locked": {
@@ -144,6 +161,7 @@
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
+        "noice-nvim": "noice-nvim",
         "onedarkpro": "onedarkpro"
       }
     },
