@@ -149,7 +149,7 @@ M.defaults = function()
 
   -- map the leader key
   vim.api.nvim_set_keymap('n', ',', '', {}) -- first unset it though
-  vim.g.mapleader = ','                     -- Namespace for custom shortcuts
+  vim.g.mapleader = ' '                     -- Namespace for custom shortcuts
 
   vim.api.nvim_exec([[
     filetype plugin indent on
