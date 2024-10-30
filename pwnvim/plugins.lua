@@ -117,6 +117,7 @@ M.ui = function()
     }
   end
 
+  require("pwnvim.plugins.undotree")
   require("pwnvim.plugins.lualine")
   require("pwnvim.plugins.treesitter")
   -- require("pwnvim.plugins.bufferline")

@@ -69,7 +69,7 @@ M.config = function()
     group = filetypes
   })
   autocmd("FileType", {
-    pattern = { "gitcommit" },     -- markdown, but we don't want most markdown things setup, just our shortcuts
+    pattern = { "gitcommit" }, -- markdown, but we don't want most markdown things setup, just our shortcuts
     callback = function(ev)
       local bufnr = ev.buf
       require('pwnvim.markdown').setupmappings(bufnr)

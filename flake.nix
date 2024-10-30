@@ -292,6 +292,7 @@
           impatient-nvim # speeds startup times by caching lua bytecode
           which-key-nvim
           vim-startuptime
+          undotree
 
           # Something was obliterating rtp and making grammars disappear. Putting this on the bottom of the list
           # fixes the issue for me 2024-09-10.
