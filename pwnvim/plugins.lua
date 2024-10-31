@@ -556,8 +556,9 @@ M.diagnostics = function()
       },
     }
   }
-  lspconfig.tsserver
+  lspconfig.ts_ls
       .setup({ capabilities = capabilities, on_attach = attached, init_options = { preferences = { disableSuggestions = true, } } })
+
   lspconfig.lua_ls.setup({
     on_attach = attached,
     capabilities = capabilities,
