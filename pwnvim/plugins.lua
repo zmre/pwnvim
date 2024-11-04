@@ -256,7 +256,9 @@ M.diagnostics = function()
           filter = { event = "msg_show", min_height = 20 },
         },
         -- suppress "E36: Not enough room" error
-        { filter = { event = "msg_show", find = "E36" }, opts = { skip = true } }
+        { filter = { event = "msg_show", find = "E36" },                 opts = { skip = true } },
+        -- suppress "semantic_tokens.lua" error
+        { filter = { event = "msg_show", find = "semantic_tokens.lua" }, opts = { skip = true } }
       },
     })
   end
