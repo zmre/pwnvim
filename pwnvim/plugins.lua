@@ -245,12 +245,19 @@ M.diagnostics = function()
         enabled = true,
         view = "notify"
       },
-      -- routes = {
-      --   {
-      --     filter = { event = "msg_show", kind = "search_count" },
-      --     opts = { skip = true },
-      --   },
-      -- },
+      routes = {
+        {
+          filter = { event = "msg_show", kind = "search_count" },
+          opts = { skip = true },
+        },
+        -- always route any messages with more than 20 lines to the split view
+        {
+          view = "split",
+          filter = { event = "msg_show", min_height = 20 },
+        },
+        -- suppress "E36: Not enough room" error
+        { filter = { event = "msg_show", find = "E36" }, opts = { skip = true } }
+      },
     })
   end
 
