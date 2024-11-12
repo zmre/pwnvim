@@ -111,6 +111,7 @@ M.config = function()
     { "]",          group = "next" },
     { "[",          group = "prev" },
     { "<leader>f",  group = "find" },
+    { "<leader>q",  group = "trouble" },
     { "<leader>g",  group = "git" },
     { "<leader>gt", group = "git toggle" },
     { "<leader>gw", group = "git workspace" },
@@ -338,7 +339,16 @@ M.config = function()
   M.mapleadernv("e", "Oil", "Find current file in file browser")
   M.mapleadernv("/", "nohlsearch", "Clear highlight")
   M.mapleadernv("x", "Bdelete!", "Close buffer")
-  M.mapleadernv("q", "TroubleToggle", "Toggle trouble quicklist")
+
+  -- Trouble windows
+  M.mapleadernv("qq", "Trouble qflist toggle", "Quicklist (Trouble)")
+  M.mapleadernv("ql", "Trouble loclist toggle", "Location list (Trouble)")
+  M.mapleadernv("qd", "Trouble diagnostics toggle", "Diagnostics (Trouble)")
+  M.mapleadernv("qe", "Trouble diagnostics toggle filter.buf=0", "Buffer Diagnostics (Trouble)")
+  M.mapleadernv("qs", "Trouble symbols toggle focus=false", "Symbols (Trouble)")
+  M.mapleadernv("qs", "Trouble lsp toggle focus=false win.position=right", "LSP Defs/Refs/... (Trouble)")
+
+  -- Find group
   M.mapleadernv("fb",
     function() require('telescope.builtin').buffers(require('telescope.themes').get_dropdown { previewer = false }) end,
     "Buffers")

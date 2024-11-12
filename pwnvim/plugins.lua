@@ -288,7 +288,7 @@ M.diagnostics = function()
 
   require("trouble").setup({
     group = true, -- group results by file
-    icons = true,
+    --icons = true,
     auto_preview = true,
     auto_close = true,
     signs = {
