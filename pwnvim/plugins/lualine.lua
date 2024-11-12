@@ -1,4 +1,19 @@
 local lualine = require('lualine')
+
+-- Functions to show word count and reading time in markdown files
+-- Credit: https://yieldcode.blog/snippets/neovim-reading-time/
+local function wordcount()
+  return tostring(vim.fn.wordcount().words) .. ' words'
+end
+
+local function readingtime()
+  return tostring(math.ceil(vim.fn.wordcount().words / 200.0)) .. ' min'
+end
+
+local function is_markdown()
+  return vim.bo.filetype == "markdown"
+end
+
 local paper = {
   options = {
     theme = 'papercolor_light',
@@ -14,7 +29,7 @@ local paper = {
     lualine_b = { 'branch' },
     lualine_c = { 'filename' },
     lualine_x = { 'encoding', 'fileformat', 'filetype' },
-    lualine_y = { 'progress', 'location' },
+    lualine_y = { 'progress', 'location', { wordcount, cond = is_markdown }, { readingtime, cond = is_markdown } },
     lualine_z = {
       --{
       -- require("noice").api.statusline.mode.get,
@@ -170,6 +185,8 @@ ins_left { 'location' }
 
 ins_left { 'progress', color = { fg = colors.fg, gui = 'bold' } }
 
+ins_left { wordcount, cond = is_markdown, color = { fg = colors.green } }
+ins_left { readingtime, cond = is_markdown, color = { fg = colors.green } }
 ins_left {
   'diagnostics',
   sources = { 'nvim_diagnostic' },
