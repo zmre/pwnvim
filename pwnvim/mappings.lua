@@ -444,6 +444,7 @@ M.config = function()
   M.map({ "n" }, "Y", "y$", "Yank to end of line")
   M.mapnv("-", "Oil", "Find current file in file browser")
   M.mapnv("_", "Oil .", "File browser from project root")
+  M.mapleadernv("-", require("yazi").yazi, "Open Yazi")
 
   -- TODO Have ctrl-l continue to do what it did, but also temp clear search match highlighting
 

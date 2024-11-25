@@ -77,6 +77,7 @@ M.setup = function(ev)
 
   vim.cmd('packadd todo-comments.nvim')
   require("pwnvim.plugins.todo-comments") -- show todo's in markdown, too
+  require("todo-comments.config").options.highlight.comments_only = false
 
   -- I have historically always used spaces for indents wherever possible including markdown
   -- Changing now to use tabs because NotePlan 3 can't figure out nested lists that are space

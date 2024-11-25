@@ -246,6 +246,7 @@
           noice-nvim # show progress and add other UI improvements
           lsp_lines-nvim # use virtual text to inline errors and warnings
           marks-nvim # show marks in the gutter
+          yazi-nvim # another file manager which i've started using; not replacing oil yet so side by side for now
 
           # Editor Features ####################################
           vim-abolish # better abbreviations / spelling fixer

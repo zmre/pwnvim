@@ -1087,7 +1087,7 @@ M.grammar_check = function()
 end
 
 ----------------------- MISC --------------------------------
--- rooter, kommentary, autopairs, tmux, toggleterm, matchup
+-- rooter, kommentary, autopairs, toggleterm, matchup, yazi
 M.misc = function()
   vim.g.lf_map_keys = 0              -- lf.vim disable default keymapping
   vim.g.matchup_surround_enabled = 0 -- disallows ds type selections
@@ -1142,6 +1142,9 @@ M.misc = function()
     ignore_lsp = {}
   })
   require("telescope").load_extension("projects")
+  require("yazi").setup({
+    open_for_directories = false
+  })
 end -- misc
 
 M.telescope_get_folder_common_folders = function(search_folders, depth, callback)
