@@ -79,6 +79,22 @@ M.setup = function(ev)
   require("pwnvim.plugins.todo-comments") -- show todo's in markdown, too
   require("todo-comments.config").options.highlight.comments_only = false
 
+  local autocmd = vim.api.nvim_create_autocmd
+  local mdsave = vim.api.nvim_create_augroup("mdsave", { clear = true })
+  -- markdown processors can optionally create smart quotes and stuff, but we want the source clean
+  -- so spell check and other things work as expected
+  autocmd("BufWritePre", {
+    pattern = { "*.markdown", "*.md" },
+    desc = "Remove smart quotes from markdown files",
+    group = mdsave,
+    callback = function()
+      local curpos = vim.api.nvim_win_get_cursor(0)
+      vim.cmd([[keeppatterns %s/[‘’′]/'/eg]])
+      vim.cmd([[keeppatterns %s/[“”“”″]/"/eg]])
+      vim.api.nvim_win_set_cursor(0, curpos)
+    end
+  })
+
   -- I have historically always used spaces for indents wherever possible including markdown
   -- Changing now to use tabs because NotePlan 3 can't figure out nested lists that are space
   -- indented and I go back and forth between that and nvim (mainly for iOS access to notes).
