@@ -56,6 +56,8 @@ M.ui = function()
     autopush = false
   })
 
+
+
   if not SimpleUI then
     require("colorizer").setup({})
     require("dressing").setup({
@@ -145,6 +147,7 @@ M.ui = function()
     }
   })
 end -- UI setup
+
 
 ----------------------- DIAGNOSTICS --------------------------------
 M.diagnostics = function()
@@ -664,6 +667,63 @@ M.diagnostics = function()
   })
 end -- Diagnostics setup
 
+M.llms = function()
+  local isOllamaRunning = require("plenary.curl").get("http://localhost:11434", {
+    timeout = 50,
+    on_error = function(e) return { status = e.exit } end,
+  }).status == 200
+
+  if isOllamaRunning then
+    vim.g.codecompanion_adapter = "ollama"
+  else
+    vim.g.codecompanion_adapter = "copilot"
+  end
+
+  require("codecompanion").setup({
+    display = {
+      chat = {
+        render_headers = false,
+        show_settings = true
+      }
+    },
+    adapters = {
+      ollama = function()
+        return require("codecompanion.adapters").extend("ollama", {
+          env = {
+            url = "http://127.0.0.1:11434",
+          },
+          schema = {
+            model = {
+              default = "qwen2.5-coder:32b",
+            },
+          },
+          headers = {
+            ["Content-Type"] = "application/json",
+          },
+          parameters = {
+            sync = true,
+          },
+        })
+      end,
+      opts = {
+        allow_insecure = true, -- Allow insecure connections?
+      },
+    },
+    strategies = {
+      chat = {
+        adapter = (isOllamaRunning and "ollama" or "copilot"),
+      },
+      inline = {
+        adapter = (isOllamaRunning and "ollama" or "copilot"),
+      },
+      agent = {
+        adapter = (isOllamaRunning and "ollama" or "copilot"),
+      },
+    },
+  })
+  vim.cmd([[cab cc CodeCompanion]])
+end
+
 ----------------------- TELESCOPE --------------------------------
 M.telescope = function()
   local actions = require("telescope.actions")
@@ -781,6 +841,7 @@ M.telescope = function()
   end
 end -- telescope
 
+
 ----------------------- COMPLETIONS --------------------------------
 -- cmp, luasnip
 M.completions = function()
@@ -860,7 +921,8 @@ M.completions = function()
           nvim_lsp_signature_help = "[LSPS]",
           -- luasnip = "[Snippet]",
           buffer = "[Buffer]",
-          path = "[Path]"
+          path = "[Path]",
+          Copilot = "[Copilot]",
         })[entry.source.name]
         return vim_item
       end

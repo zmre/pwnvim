@@ -47,6 +47,53 @@ M.setup = function(ev)
   -- vim.api.nvim_buf_add_user_command(0, 'PasteUrl', function(opts) require('pwnvim.markdown').pasteUrl() end, {})
   vim.cmd("command! PasteUrl lua require('pwnvim.markdown').pasteUrl()")
 
+  vim.cmd('packadd render-markdown.nvim')
+  require('render-markdown').setup({
+    file_types = { 'markdown', "codecompanion" }
+  })
+  require('render-markdown').enable()
+
+  -- Image plugin still slow and buggy 2024-12-01
+  -- if os.getenv("TERM") == "wezterm" or os.getenv("TERM") == "kitty" then
+  --   vim.cmd('packadd image.nvim')
+  --   require("image").setup({
+  --     backend = "kitty",
+  --     processor = "magick_rock", -- or "magick_cli"
+  --     integrations = {
+  --       markdown = {
+  --         enabled = true,
+  --         clear_in_insert_mode = false,
+  --         download_remote_images = true,
+  --         only_render_image_at_cursor = false,
+  --         filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
+  --       },
+  --       neorg = {
+  --         enabled = true,
+  --         filetypes = { "norg" },
+  --       },
+  --       typst = {
+  --         enabled = true,
+  --         filetypes = { "typst" },
+  --       },
+  --       html = {
+  --         enabled = false,
+  --       },
+  --       css = {
+  --         enabled = false,
+  --       },
+  --     },
+  --     max_width = nil,
+  --     max_height = nil,
+  --     max_width_window_percentage = nil,
+  --     max_height_window_percentage = 50,
+  --     window_overlap_clear_enabled = false,                                               -- toggles images when windows are overlapped
+  --     window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
+  --     editor_only_render_when_focused = false,                                            -- auto show/hide images when the editor gains/looses focus
+  --     tmux_show_only_in_active_window = false,                                            -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+  --     hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
+  --   })
+  -- end
+
   -- Hologram displays image thumbnails in-terminal while editing markdown in vim
   -- This is wonderful when it's working, but I sometimes get too many open files errors that seem to come from this plugin. Plus
   -- some weirdness where my entire terminal (kitty) completely hangs for a time. Especially when typing in an alt description.
@@ -77,7 +124,13 @@ M.setup = function(ev)
 
   vim.cmd('packadd todo-comments.nvim')
   require("pwnvim.plugins.todo-comments") -- show todo's in markdown, too
-  require("todo-comments.config").options.highlight.comments_only = false
+  if require("todo-comments.config").options["highlight"] ~= nil then
+    require("todo-comments.config").options.highlight.comments_only = false
+  else
+    require("todo-comments.config").options["highlight"] = {
+      comments_only = false
+    }
+  end
 
   local autocmd = vim.api.nvim_create_autocmd
   local mdsave = vim.api.nvim_create_augroup("mdsave", { clear = true })

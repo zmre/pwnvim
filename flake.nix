@@ -163,6 +163,7 @@
           #lldb # for debugging rust
           #vscode-extensions.vadimcn.vscode-lldb # for debugging rust
           metals # lsp for scala
+          # imagemagick # for image-nvim plugin
         ]
         ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
           ueberzug
@@ -273,6 +274,7 @@
           cmp-emoji # complete :emojis:
           cmp-nvim-lsp-signature-help # help complete function call by showing args
           cmp-npm # complete node packages in package.json
+          codecompanion-nvim
           nvim-autopairs # balances parens as you type
           nvim-ts-autotag # balance or rename html
           vim-emoji # TODO: redundant now?
@@ -312,6 +314,8 @@
         comment-nvim # code commenter
         crates-nvim # inline intelligence for Cargo.toml
         todo-comments-nvim # highlight comments like NOTE
+        render-markdown-nvim # prettier markdown files
+        # image-nvim
       ];
 
       recursiveMerge = attrList: let
@@ -392,6 +396,7 @@
             withNodeJs = false;
             withPython3 = false;
             withRuby = false;
+            extraLuaPackages = ps: [ps.lua-curl];
             extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
             # make sure impatient is loaded before everything else to speed things up
             configure = {

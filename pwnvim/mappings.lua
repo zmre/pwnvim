@@ -122,6 +122,7 @@ M.config = function()
     { "<leader>lc", group = "change" },
     { "<leader>n",  group = "notes" },
     { "<leader>t",  group = "tasks" },
+    { "<leader>cc", group = "codecompanion ai" },
   })
 
   -- This file is for mappings that will work regardless of filetype. Always available.
@@ -399,6 +400,13 @@ M.config = function()
   M.mapleadernv("gwn", require('telescope').extensions.git_worktree.create_git_worktree, "New worktree")
   -- Bunch more will be mapped locally with gitsigns when it loads. See ./gitsigns.lua
 
+  -- Codecompanion bindings
+  M.mapleadernv("ccl", "CodeCompanion", "AI Inline")
+  M.mapi("<C-a>", "CodeCompanion", "AI Inline")
+  M.mapleadernv("ccc", "CodeCompanionChat Toggle", "AI Chat")
+  M.mapleadernv("cca", "CodeCompanionActions", "AI Actions")
+  M.mapleadernv("cce", function() require("codecompanion").prompt("explain") end, "AI Explain")
+  M.mapv("ga", "CodeCompanionChat Add", "AI add code block")
 
   -- Set cwd to current file's dir
   M.mapleadernv("lcd", "lcd %:h", "Change local dir to path of current file")
