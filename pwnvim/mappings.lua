@@ -405,8 +405,19 @@ M.config = function()
   M.mapi("<C-a>", "CodeCompanion", "AI Inline")
   M.mapleadernv("ccc", "CodeCompanionChat Toggle", "AI Chat")
   M.mapleadernv("cca", "CodeCompanionActions", "AI Actions")
-  M.mapleadernv("cce", function() require("codecompanion").prompt("explain") end, "AI Explain")
-  M.mapv("ga", "CodeCompanionChat Add", "AI add code block")
+  M.mapleaderv("cce", function() require("codecompanion").prompt("explain") end, "AI Explain")
+  M.mapleaderv("ccs", function() require("codecompanion").prompt("summarize") end, "AI Summarize")
+  M.mapleaderv("cct", function() require("codecompanion").prompt("tests") end, "AI Generate Unit Tests")
+  M.mapleaderv("ccf", function() require("codecompanion").prompt("fix") end, "AI Fix Code")
+  M.mapleadernv("ccd", function() require("codecompanion").prompt("lsp") end, "AI Explain Diagnostics")
+  M.mapleadernv("ccg", function() require("codecompanion").prompt("commit") end, "AI Gen Commit Message From Diff")
+  M.mapleadernv("ccm",
+    function()
+      vim.ui.select({ "ollamacode", "ollamaprose", "copilot", "openai" }, { prompt = 'Pick a service:' },
+        function(choice) vim.g.codecompanion_adapter = choice end)
+    end, "Choose an AI service")
+
+  -- M.mapv("ga", "CodeCompanionChat Add", "AI add code block")
 
   -- Set cwd to current file's dir
   M.mapleadernv("lcd", "lcd %:h", "Change local dir to path of current file")

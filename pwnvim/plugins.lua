@@ -668,27 +668,38 @@ M.diagnostics = function()
 end -- Diagnostics setup
 
 M.llms = function()
+  local constants = {
+    LLM_ROLE = "llm",
+    USER_ROLE = "user",
+    SYSTEM_ROLE = "system",
+  }
+  local fmt = string.format
+
   local isOllamaRunning = require("plenary.curl").get("http://localhost:11434", {
     timeout = 50,
     on_error = function(e) return { status = e.exit } end,
   }).status == 200
 
   if isOllamaRunning then
-    vim.g.codecompanion_adapter = "ollama"
+    vim.g.codecompanion_adapter = "ollamacode"
   else
     vim.g.codecompanion_adapter = "copilot"
   end
 
   require("codecompanion").setup({
+    action_palette = {
+      provider = "telescope"
+    },
     display = {
       chat = {
         render_headers = false,
-        show_settings = true
+        show_settings = false
       }
     },
     adapters = {
-      ollama = function()
+      ollamacode = function()
         return require("codecompanion.adapters").extend("ollama", {
+          name = "ollamacode",
           env = {
             url = "http://127.0.0.1:11434",
           },
@@ -705,20 +716,94 @@ M.llms = function()
           },
         })
       end,
+      ollamaprose = function()
+        return require("codecompanion.adapters").extend("ollama", {
+          name = "ollamaprose",
+          env = {
+            url = "http://127.0.0.1:11434",
+          },
+          schema = {
+            model = {
+              default = "llama3.2:3b",
+            },
+          },
+          headers = {
+            ["Content-Type"] = "application/json",
+          },
+          parameters = {
+            sync = true,
+          },
+        })
+      end,
+      openai = function()
+        return require("codecompanion.adapters").extend("openai", {
+          schema = {
+            model = {
+              default = "gpt-4o-mini",
+            },
+          },
+          env = {
+            api_key = "cmd:security find-generic-password -l openaikey -g -w |tr -d '\n'"
+          }
+        })
+      end,
       opts = {
         allow_insecure = true, -- Allow insecure connections?
       },
+
     },
     strategies = {
       chat = {
-        adapter = (isOllamaRunning and "ollama" or "copilot"),
+        adapter = (isOllamaRunning and "ollamacode" or "copilot"),
       },
       inline = {
-        adapter = (isOllamaRunning and "ollama" or "copilot"),
+        adapter = (isOllamaRunning and "ollamacode" or "copilot"),
       },
       agent = {
-        adapter = (isOllamaRunning and "ollama" or "copilot"),
+        adapter = (isOllamaRunning and "ollamacode" or "copilot"),
       },
+    },
+    prompt_library = {
+      ["Summarize"] = {
+        strategy = "chat",
+        description = "Summarize some text",
+        opts = {
+          index = 3,
+          is_default = true,
+          modes = { "v" },
+          short_name = "summarize",
+          is_slash_cmd = false,
+          auto_submit = true,
+          user_prompt = false,
+          stop_context_insertion = true,
+        },
+        prompts = {
+          {
+            role = constants.SYSTEM_ROLE,
+            content =
+            [[I want you to act as a senior editor at a newspaper whose job is to make short summaries of articles for search engines.]],
+            opts = {
+              visible = false,
+              tag = "system_tag",
+            },
+          },
+          {
+            role = constants.USER_ROLE,
+            content = function(context)
+              local prose = require("codecompanion.helpers.actions").get_code(context.start_line, context.end_line)
+              return fmt(
+                [[Summarize the contents of the article that starts below the "---". Make your summary be 150 to 170 characters long to fit in a web page meta description:
+
+                ---
+                %s
+
+                Summarize that in 150 characters.
+                ]], prose
+              )
+            end
+          }
+        },
+      }
     },
   })
   vim.cmd([[cab cc CodeCompanion]])
