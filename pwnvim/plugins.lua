@@ -675,12 +675,16 @@ M.llms = function()
   }
   local fmt = string.format
 
-  local isOllamaRunning = require("plenary.curl").get("http://localhost:11434", {
-    timeout = 50,
-    on_error = function(e) return { status = e.exit } end,
-  }).status == 200
+  -- status is true if the function ran without errors; isOllamaRunning is true if we had a successful connection
+  -- the on_error function should avoid any errors propagating, but it seems that doesn't always work, hence the pcall
+  local status, isOllamaRunning = pcall(function()
+    return require("plenary.curl").get("http://localhost:11434", {
+      timeout = 50,
+      on_error = function(e) return { status = e.exit } end,
+    }).status == 200
+  end)
 
-  if isOllamaRunning then
+  if status and isOllamaRunning then
     vim.g.codecompanion_adapter = "ollamacode"
   else
     vim.g.codecompanion_adapter = "copilot"
