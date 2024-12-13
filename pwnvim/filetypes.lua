@@ -1,6 +1,23 @@
 local M = {}
 
 M.config = function()
+  -- Make detection of zola templates with jinja2-like syntax automatic
+  -- See :h vim.filetype.add
+  vim.filetype.add({
+    pattern = {
+      ['.*templates/.*%.html'] = {
+        function(path, bufnr)
+          -- vim.notify("executing pat " .. path)
+          local content = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1] or ''
+          if vim.regex([[{%]]):match_str(content) ~= nil then
+            -- vim.notify("detected jinja pat " .. path)
+            return 'twig'
+          end
+        end,
+        { priority = math.huge },
+      },
+    },
+  })
   local filetypes = vim.api.nvim_create_augroup("filetypes", { clear = true })
   local autocmd = vim.api.nvim_create_autocmd
   autocmd("BufRead", {
@@ -23,16 +40,16 @@ M.config = function()
     command = "setlocal filetype=muttrc",
     group = filetypes
   })
-  autocmd("BufRead", {
-    pattern = { "*.*html*" },
-    command = "setlocal filetype=html",
-    group = filetypes
-  })
-  autocmd("BufRead", {
-    pattern = { "*.css*" },
-    command = "setlocal filetype=css",
-    group = filetypes
-  })
+  -- autocmd("BufRead", {
+  --   pattern = { "*.*html*" },
+  --   command = "setlocal filetype=html",
+  --   group = filetypes
+  -- })
+  -- autocmd("BufRead", {
+  --   pattern = { "*.css*" },
+  --   command = "setlocal filetype=css",
+  --   group = filetypes
+  -- })
   autocmd("BufRead", {
     pattern = { "*.rss" },
     command = "setlocal filetype=xml",
@@ -69,7 +86,7 @@ M.config = function()
     group = filetypes
   })
   autocmd("FileType", {
-    pattern = { "gitcommit" },     -- markdown, but we don't want most markdown things setup, just our shortcuts
+    pattern = { "gitcommit" }, -- markdown, but we don't want most markdown things setup, just our shortcuts
     callback = function(ev)
       local bufnr = ev.buf
       require('pwnvim.markdown').setupmappings(bufnr)
@@ -120,7 +137,7 @@ M.rust = function(ev)
   vim.cmd("compiler cargo")
   vim.g.rustfmt_autosave = 1
   vim.g.rust_fold = 1
-  vim.api.nvim_exec([[
+  vim.api.nvim_exec2([[
     augroup rustquickfix
       autocmd!
       autocmd BufReadPost quickfix setlocal foldmethod=expr
@@ -128,7 +145,7 @@ M.rust = function(ev)
       autocmd BufEnter quickfix setlocal foldexpr=getline(v:lnum)[0:1]=='\|\|'
       autocmd BufReadPost quickfix setlocal foldlevel=0
     augroup END
-  ]], false)
+  ]], { output = false })
 end
 
 M.c = function(ev)

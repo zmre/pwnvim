@@ -37,6 +37,10 @@
     catppuccin.url = "github:catppuccin/nvim";
     catppuccin.flake = false;
 
+    # commenting out as the lsp seems to not function properly; leaving here to try again at a future point 2024-12-10
+    # jinja-lsp.url = "github:uros-5/jinja-lsp";
+    # jinja-lsp.flake = false;
+
     # Need to manually roll back Noice to commig d9328ef until Folke resolves https://github.com/folke/noice.nvim/issues/923
     # Otherwise neovide goes crazy on me when I'm in the command line
     noice-nvim.url = "github:folke/noice.nvim?ref=d9328ef";
@@ -62,6 +66,19 @@
               };
             });
           })
+          # (self: super: {
+          #   jinja-lsp = super.rustPlatform.buildRustPackage {
+          #     name = "jinja-lsp";
+          #     pname = "jinja-lsp";
+          #     cargoLock = {lockFile = inputs.jinja-lsp + /Cargo.lock;};
+          #     # buildDependencies = [prev.glib];
+          #     buildInputs =
+          #       [super.pkg-config super.libiconv]
+          #       ++ super.lib.optionals super.stdenv.isDarwin
+          #       [super.darwin.apple_sdk.frameworks.Security];
+          #     src = inputs.jinja-lsp;
+          #   };
+          # })
           (self: super: {
             vimPlugins =
               super.vimPlugins
@@ -144,6 +161,7 @@
           # https://github.com/znck/grammarly/issues/411 grammarly sdk deprecated
           # https://github.com/NixOS/nixpkgs/issues/293172 requires node16, which is EOL
           yaml-language-server
+          # jinja-lsp # jinja is an html template language; i'm using zola right now which uses the tera language, which is a lot like jinja
           mypy # static typing for python used by null-ls
           ruff # python linter used by null-ls
           black # python formatter
@@ -198,7 +216,8 @@
           # Syntax / Language Support ##########################
           # Removing 2022-11-30 as it is slow and treesitter generally does the same thing
           # Reinstating 2024-09-10 so I get fallbacks again
-          vim-polyglot # lazy load all the syntax plugins for all the languages
+          # Removing again 2024-12-12 because it isn't respecting the ftdetect disable and is overriding my detections
+          #vim-polyglot # lazy load all the syntax plugins for all the languages
           rust-tools-nvim # lsp stuff and more for rust
           nvim-lspconfig # setup LSP for intelligent coding
           nvim-lint # replace null-ls for linting bits

@@ -143,27 +143,27 @@ M.defaults = function()
   end
 
   -- Globals
-  vim.g.vimsyn_embed = 'l' -- Highlight Lua code inside .vim files
-  -- vim.g.polyglot_disabled = { 'sensible', 'autoindent' } -- preserve in case I want to bring back polyglot
+  vim.g.vimsyn_embed = 'l'                                           -- Highlight Lua code inside .vim files
+  vim.g.polyglot_disabled = { 'sensible', 'autoindent', 'ftdetect' } -- preserve in case I want to bring back polyglot
   vim.opt.foldlevelstart = 10
 
   -- map the leader key
   vim.api.nvim_set_keymap('n', ',', '', {}) -- first unset it though
   vim.g.mapleader = ','                     -- Namespace for custom shortcuts
 
-  vim.api.nvim_exec([[
+  vim.api.nvim_exec2([[
     filetype plugin indent on
     syntax off
     syntax sync minlines=2000
-  ]], false)
+  ]], { output = false })
 
   -- Brief highlight on yank
-  vim.api.nvim_exec([[
+  vim.api.nvim_exec2([[
     augroup YankHighlight
         autocmd!
         autocmd TextYankPost * silent! lua vim.highlight.on_yank()
     augroup end
-    ]], false)
+    ]], { output = false })
 end
 
 M.colors_cat = function()
@@ -503,11 +503,11 @@ M.gui = function()
 
   -- nvim-qt options
   -- Disable GUI Tabline
-  vim.api.nvim_exec([[
+  vim.api.nvim_exec2([[
       if exists(':GuiTabline')
           GuiTabline 0
       endif
-    ]], false)
+    ]], { output = false })
 end
 
 M.twospaceindent = function()
@@ -563,12 +563,12 @@ M.programming = function(ev)
 
   -- Could be a performance penalty on this
   -- Will make periodic checks to see if the file changed
-  vim.api.nvim_exec([[
+  vim.api.nvim_exec2([[
     augroup programming
       autocmd!
       autocmd CursorHold,CursorHoldI * silent! checktime
     augroup END
-  ]], false)
+  ]], { output = false })
 
   -- Load direnv when we're in a programming file as we may want
   -- the nix environment provided. Run explicitly since the autocmds

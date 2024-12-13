@@ -597,6 +597,7 @@ M.diagnostics = function()
     }
   })
   lspconfig.svelte.setup({ on_attach = attached, capabilities = capabilities })
+  -- lspconfig.jinja_lsp.setup({ filetypes = { 'jinja', 'jinja2', 'twig', 'html' } })
   lspconfig.tailwindcss.setup({
     on_attach = attached,
     capabilities = capabilities,

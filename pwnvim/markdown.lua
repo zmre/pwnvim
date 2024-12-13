@@ -237,7 +237,7 @@ M.setupmappings = function(bufnr)
 end
 
 M.markdownsyntax = function()
-  vim.api.nvim_exec([[
+  vim.api.nvim_exec2([[
     let m = matchadd("bareLink", "\\<https:[a-zA-Z?&,;=$+%#/.!~':@0-9_-]*")
     " let m = matchadd("markdownCheckboxChecked", "[*-] \\[x\\] ")
     let m = matchadd("markdownCheckboxCanceled", "[*-] \\[-\\] .\\+")
@@ -248,7 +248,7 @@ M.markdownsyntax = function()
     let m = matchadd("markdownStrikethrough", "\\~\\~[^~]*\\~\\~")
     let m = matchadd("doneTag", '@done(20[^)]*)')
     let m = matchadd("highPrioTask", "[*-] \\[ \\] .\\+!!!")
-  ]], false)
+  ]], { output = false })
 end
 
 local check_backspace = function()
@@ -325,7 +325,15 @@ end
 
 M.newGeneralNote = function()
   local zk = require("zk.commands")
-  M.telescope_get_folder_and_title(vim.env.ZK_NOTEBOOK_DIR, 'Notes', function(folder, title)
+  local zkfolder = require("zk.util").resolve_notebook_path(0)
+  local subdir = ""
+  if vim.fn.isdirectory(zkfolder .. "/Notes") == 1 then
+    subdir = 'Notes'
+  elseif vim.fn.isdirectory(zkfolder .. "/content") == 1 then
+    subdir = "content"
+  end
+
+  M.telescope_get_folder_and_title(zkfolder, subdir, function(folder, title)
     zk.get('ZkNew')({ dir = folder, title = title })
   end)
 end
