@@ -325,12 +325,17 @@ end
 
 M.newGeneralNote = function()
   local zk = require("zk.commands")
-  local zkfolder = require("zk.util").resolve_notebook_path(0)
+  local zkfolder = require("zk.util").notebook_root(vim.api.nvim_buf_get_name(0))
   local subdir = ""
-  if vim.fn.isdirectory(zkfolder .. "/Notes") == 1 then
+  if not zkfolder then
+    zkfolder = vim.env.ZK_NOTEBOOK_DIR
     subdir = 'Notes'
-  elseif vim.fn.isdirectory(zkfolder .. "/content") == 1 then
-    subdir = "content"
+  else
+    if vim.fn.isdirectory(zkfolder .. "/Notes") == 1 then
+      subdir = 'Notes'
+    elseif vim.fn.isdirectory(zkfolder .. "/content") == 1 then
+      subdir = "content"
+    end
   end
 
   M.telescope_get_folder_and_title(zkfolder, subdir, function(folder, title)
