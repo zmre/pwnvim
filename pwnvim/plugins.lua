@@ -327,7 +327,7 @@ M.diagnostics = function()
       -- the scope filter is supported in diagnostics, but not yet in inlay hints as far as I know, but
       -- i'm adding it so things will improve when nvim does
       vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled(), { bufnr = 0, scope = "line" })
-      vim.diagnostic.config({ virtual_text = vim.lsp.inlay_hint.isenabled() })
+      vim.diagnostic.config({ virtual_text = vim.lsp.inlay_hint.is_enabled() })
     end, "Toggle virtual text lines")
 
     if vim.bo[bufnr].filetype == "rust" then
@@ -1087,7 +1087,7 @@ M.notes = function()
             -- the scope filter is supported in diagnostics, but not yet in inlay hints as far as I know, but
             -- i'm adding it so things will improve when nvim does
             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled(), { bufnr = 0, scope = "line" })
-            vim.diagnostic.config({ virtual_text = vim.lsp.inlay_hint.isenabled() })
+            vim.diagnostic.config({ virtual_text = vim.lsp.inlay_hint.is_enabled() })
           end, "Toggle virtual text lines")
           mapleadervlocal("np",
             function() require('zk.commands').get("ZkNewFromTitleSelection")({ dir = vim.fn.expand('%:p:h') }) end,
