@@ -177,9 +177,7 @@
           cargo # have this as a fallback when a local flake isn't in place
           rustc # have this as a fallback when a local flake isn't in place
           # TODO: add back the following when https://github.com/NixOS/nixpkgs/issues/202507 hits
-          #llvm # for debugging rust
-          #lldb # for debugging rust
-          #vscode-extensions.vadimcn.vscode-lldb # for debugging rust
+          vscode-extensions.vadimcn.vscode-lldb.adapter # for debugging rust
           metals # lsp for scala
           # imagemagick # for image-nvim plugin
         ]
@@ -218,13 +216,13 @@
           # Reinstating 2024-09-10 so I get fallbacks again
           # Removing again 2024-12-12 because it isn't respecting the ftdetect disable and is overriding my detections
           #vim-polyglot # lazy load all the syntax plugins for all the languages
-          rust-tools-nvim # lsp stuff and more for rust
+          rustaceanvim # lsp stuff and more for rust; replaces rust-tools-nvim which is now archived
           nvim-lspconfig # setup LSP for intelligent coding
           nvim-lint # replace null-ls for linting bits
           conform-nvim # replace null-ls and lsp-format-nvim for formatting
           trouble-nvim # navigate all warnings and errors in quickfix-like window
-          #nvim-dap # debugging functionality used by rust-tools-nvim
-          #nvim-dap-ui # ui for debugging
+          nvim-dap # debugging functionality used by rust-tools-nvim
+          nvim-dap-ui # ui for debugging
           neodev-nvim # help for neovim lua api
           SchemaStore-nvim # json schemas
           vim-matchup # replaces built-in matchit and matchparen with better matching and faster
@@ -264,7 +262,6 @@
           nui-nvim # needed by noice
           nvim-notify # needed by noice
           noice-nvim # show progress and add other UI improvements
-          lsp_lines-nvim # use virtual text to inline errors and warnings
           marks-nvim # show marks in the gutter
           yazi-nvim # another file manager which i've started using; not replacing oil yet so side by side for now
 

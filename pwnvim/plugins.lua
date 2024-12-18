@@ -166,7 +166,6 @@ M.diagnostics = function()
     end,
     lspconfig = true
   })
-  require("lsp_lines").setup()
 
   if not SimpleUI then
     require("notify").setup({
@@ -320,14 +319,25 @@ M.diagnostics = function()
 
     mapleadernlocal("le", vim.diagnostic.open_float, "Show Line Diags")
     -- mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix code actions")
-    mapleadernvlocal("ll", require("lsp_lines").toggle, "Toggle virtual text lines")
+    --
+    -- There should be a check on this for server_capabilities.inlayHint, but that doesn't exist and
+    -- I should probably differentiate between inline hints and inline diagnostics, but for now,
+    -- either all on or all off
+    mapleadernvlocal("ll", function()
+      -- the scope filter is supported in diagnostics, but not yet in inlay hints as far as I know, but
+      -- i'm adding it so things will improve when nvim does
+      vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled(), { bufnr = 0, scope = "line" })
+      vim.diagnostic.config({ virtual_text = vim.lsp.inlay_hint.isenabled() })
+    end, "Toggle virtual text lines")
 
     if vim.bo[bufnr].filetype == "rust" then
-      local rt = require("rust-tools")
-      mapleadernlocal("rr", rt.runnables.runnables, "Runnables")
-      mapleadernlocal("re", rt.expand_macro.expand_macro, "Expand macro")
-      mapleadernlocal("rh", rt.hover_actions.hover_actions, "Rust hover actions")
-      mapleadernlocal("ra", rt.code_action_group.code_action_group, "Rust code actions")
+      mapleadernlocal("rr", "RustLsp runnables", "Runnables")
+      mapleadernlocal("rt", "RustLsp testables", "Testables")
+      mapleadernlocal("re", "RustLsp explainError", "Explain error")
+      mapleadernlocal("rh", "RustLsp hover actions", "Rust hover actions")
+      mapleadervlocal("rh", "RustLsp hover range", "Rust hover")
+      mapleadernlocal("ra", "RustLsp codeAction", "Rust code actions")
+      mapleadernlocal("rd", "RustLsp openDocs", "Rust docs for symbol under cursor")
     end
 
     -- Set some keybinds conditional on server capabilities
@@ -510,23 +520,19 @@ M.diagnostics = function()
     lineFoldingOnly = true
   }
 
-  -- TODO: replace rust-tools with vimPlugins.rustaceanvim https://github.com/mrcjkb/rustaceanvim
-  -- It's a newer and more featureful fork of rust-tools
-  require("rust-tools").setup({
+  vim.g.rustaceanvim = {
+    tools = {
+      -- test_executor = 'background'
+    },
     server = {
       on_attach = attached,
       capabilities = capabilities,
-      standalone = true,
-      settings = {
+      default_settings = {
         ["rust-analyzer"] = { files = { excludeDirs = { ".direnv" } } }
       }
-    },
-    tools = {
-      autoSetHints = true,
-      inlay_hints = { auto = true, only_current_line = true },
-      runnables = { use_telescope = true }
     }
-  })
+  }
+
   -- Fix an issue with current rust analyzer by suppressing a bogus message
   -- See https://github.com/neovim/neovim/issues/30985
   for _, method in ipairs({ 'textDocument/diagnostic', 'workspace/diagnostic' }) do
@@ -538,6 +544,8 @@ M.diagnostics = function()
       return default_diagnostic_handler(err, result, context, config)
     end
   end
+
+
   require("cmp-npm").setup({})
 
   lspconfig.marksman.setup({
@@ -1075,7 +1083,12 @@ M.notes = function()
           -- mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix code actions")
           mapleadernlocal("lf", "CodeActionMenu", "Fix code actions")
           mapleadernlocal("le", vim.diagnostic.open_float, "Show line diags")
-          mapleadernvlocal("ll", require("lsp_lines").toggle, "Toggle virtual text lines")
+          mapleadernvlocal("ll", function()
+            -- the scope filter is supported in diagnostics, but not yet in inlay hints as far as I know, but
+            -- i'm adding it so things will improve when nvim does
+            vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled(), { bufnr = 0, scope = "line" })
+            vim.diagnostic.config({ virtual_text = vim.lsp.inlay_hint.isenabled() })
+          end, "Toggle virtual text lines")
           mapleadervlocal("np",
             function() require('zk.commands').get("ZkNewFromTitleSelection")({ dir = vim.fn.expand('%:p:h') }) end,
             "New peer note (same dir) selection for title")
