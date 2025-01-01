@@ -270,7 +270,7 @@ M.config = function()
   -- ../README.md
   -- ~/Desktop/Screen Shot 2018-04-06 at 5.19.32 PM.png
   -- [abc](https://github.com/adsr/mle/commit/e4dc4314b02a324701d9ae9873461d34cce041e5.patch)
-  M.mapn("gx", ':silent !open "<c-r><c-f>" || xdg-open "<c-r><c-f>"<CR>', "Launch URL or path")
+  -- M.mapn("gx", ':silent !open "<c-r><c-f>" || xdg-open "<c-r><c-f>"<CR>', "Launch URL or path")
   M.mapn("*",
     function()
       local text = "\\<" .. string.gsub(vim.fn.expand("<cword>"), "/", "\\/") ..
@@ -308,7 +308,7 @@ M.config = function()
   -- M.mapn("[0", "BufferLinePick", "Pick buffer by letter")
   -- M.mapn("]0", "BufferLinePick", "Pick buffer by letter")
 
-  M.map("v", "gx", '"0y:silent !open "<c-r>0" || xdg-open "<c-r>0"<cr>gv', "Launch URL or path")
+  -- M.map("v", "gx", '"0y:silent !open "<c-r>0" || xdg-open "<c-r>0"<cr>gv', "Launch selected URL or path")
   -- When pasting over selected text, keep original register value
   M.map("v", "p", '"_dP', "Paste over selected no store register")
   -- keep visual block so you can move things repeatedly
@@ -468,8 +468,9 @@ M.config = function()
   -- TODO Have ctrl-l continue to do what it did, but also temp clear search match highlighting
 
   -- Make nvim terminal more sane
-  M.map({ "t" }, "<esc>", [[<C-\><C-n>]], "Get to normal mode in terminal")
-  M.map({ "t" }, "<M-[>", "<esc>", "Send escape to terminal")
+  -- Big change! Switching the escape/alt-escape meanings 2025-01-01
+  M.map({ "t" }, "<M-[>", [[<C-\><C-n>]], "Get to normal mode in terminal")
+  --M.map({ "t" }, "<esc>", "<esc>", "Send escape to terminal")
   M.map({ "t" }, "<C-v><Esc>", "<esc>", "Send escape to terminal")
   M.mapt("<c-j>", "wincmd j", "Move one window down")
   M.mapt("<c-h>", "wincmd h", "Move one window left")
