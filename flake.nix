@@ -30,21 +30,6 @@
     clipboard-image.flake = false;
     conform-nvim.url = "github:stevearc/conform.nvim";
     conform-nvim.flake = false;
-    # tree-sitter-markdown.url = "github:MDeiml/tree-sitter-markdown/v0.1.7";
-    # tree-sitter-markdown.flake = false;
-    onedarkpro.url = "github:olimorris/onedarkpro.nvim";
-    onedarkpro.flake = false;
-    catppuccin.url = "github:catppuccin/nvim";
-    catppuccin.flake = false;
-
-    # commenting out as the lsp seems to not function properly; leaving here to try again at a future point 2024-12-10
-    # jinja-lsp.url = "github:uros-5/jinja-lsp";
-    # jinja-lsp.flake = false;
-
-    # Need to manually roll back Noice to commig d9328ef until Folke resolves https://github.com/folke/noice.nvim/issues/923
-    # Otherwise neovide goes crazy on me when I'm in the command line
-    noice-nvim.url = "github:folke/noice.nvim?ref=d9328ef";
-    noice-nvim.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -66,34 +51,10 @@
               };
             });
           })
-          # (self: super: {
-          #   jinja-lsp = super.rustPlatform.buildRustPackage {
-          #     name = "jinja-lsp";
-          #     pname = "jinja-lsp";
-          #     cargoLock = {lockFile = inputs.jinja-lsp + /Cargo.lock;};
-          #     # buildDependencies = [prev.glib];
-          #     buildInputs =
-          #       [super.pkg-config super.libiconv]
-          #       ++ super.lib.optionals super.stdenv.isDarwin
-          #       [super.darwin.apple_sdk.frameworks.Security];
-          #     src = inputs.jinja-lsp;
-          #   };
-          # })
           (self: super: {
             vimPlugins =
               super.vimPlugins
               // {
-                # Adding overlay to get latest onedarkpro (not in nixpkgs yet) following issues with ts name changes
-                onedarkpro-nvim = super.vimUtils.buildVimPlugin {
-                  name = "onedarkpro-nvim";
-                  pname = "onedarkpro-nvim";
-                  src = inputs.onedarkpro;
-                };
-                catppuccin-nvim = super.vimUtils.buildVimPlugin {
-                  name = "catppuccin-nvim";
-                  pname = "catppuccin-nvim";
-                  src = inputs.catppuccin;
-                };
                 clipboard-image = super.vimUtils.buildVimPlugin {
                   name = "clipboard-image.nvim";
                   pname = "clipboard-image.nvim";
@@ -104,11 +65,6 @@
                   name = "conform-nvim";
                   pname = "conform-nvim";
                   src = inputs.conform-nvim;
-                };
-                noice-nvim = super.vimUtils.buildVimPlugin {
-                  name = "noice-nvim";
-                  pname = "noice-nvim";
-                  src = inputs.noice-nvim;
                 };
               };
           })
@@ -177,7 +133,7 @@
           cargo # have this as a fallback when a local flake isn't in place
           rustc # have this as a fallback when a local flake isn't in place
           # TODO: add back the following when https://github.com/NixOS/nixpkgs/issues/202507 hits
-          vscode-extensions.vadimcn.vscode-lldb.adapter # for debugging rust
+          #vscode-extensions.vadimcn.vscode-lldb.adapter # for debugging rust
           metals # lsp for scala
           # imagemagick # for image-nvim plugin
         ]
@@ -248,8 +204,7 @@
           lualine-nvim # nice status bar at bottom
           vim-bbye # fix bdelete buffer stuff needed with bufferline
           # bufferline-nvim # tabs at top
-          barbecue-nvim # show top of screen breadcrumbs based on lsp symbols
-          nvim-navic # required by barbecue
+          dropbar-nvim # replacing the now archived barbecue (sad!)
           nvim-navbuddy # use same lsp symbols to navigate in popup
           nvim-ufo # allow use of lsp as source for folding
           promise-async # required by nvim-ufo
@@ -406,7 +361,7 @@
       ];
     in rec {
       packages.pwnvim =
-        (pkgs.wrapNeovim augmentedNeovim {
+        (pkgs.wrapNeovim pkgs.neovim-unwrapped {
             viAlias = true;
             vimAlias = true;
             withNodeJs = false;

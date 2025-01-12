@@ -122,10 +122,6 @@ M.ui = function()
   require("pwnvim.plugins.lualine")
   require("pwnvim.plugins.treesitter")
   -- require("pwnvim.plugins.bufferline")
-  require("barbecue").setup({
-    attach_navic = false, -- we'll attach when lsp attaches if it supports symbols
-    show_modified = true,
-  })
   require("pwnvim.plugins.indent-blankline")
   require("flash").setup({
     modes = {
