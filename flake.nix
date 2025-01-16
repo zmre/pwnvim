@@ -84,6 +84,7 @@
           zsh # terminal requires it
           git
           curl # needed to fetch titles from urls
+          sqlite # needed by smart-open and maybe other things, too
           # todo: research https://github.com/artempyanykh/marksman
           vale # linter for prose
           proselint # ditto
@@ -192,6 +193,7 @@
           #zephyr-nvim # alternate colorscheme
           telescope-nvim # da best popup fuzzy finder
           telescope-fzy-native-nvim # with fzy gives better results
+          smart-open-nvim # search multiple sources (buffers, git, recent files) and use frecency to sort
           # telescope-frecency-nvim # and frecency comes in handy too
           #sqlite-lua # needed by frecency plugin -- beta support to remove dep
           dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope

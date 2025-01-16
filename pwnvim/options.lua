@@ -428,8 +428,8 @@ M.colors_onedark = function()
         underline = not SimpleUI,
         undercurl = not SimpleUI,
         cursorline = true,
-        transparency = false,    -- better to let neovide define
-        terminal_colors = false, -- leave terminal windows alone
+        transparency = false,   -- better to let neovide define
+        terminal_colors = true, -- leave terminal windows alone
         highlight_inactive_windows = true
       },
       colors = {

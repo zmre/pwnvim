@@ -156,7 +156,9 @@ M.config = function()
   -- Make ctrl-p open a file finder
   -- When using ctrl-p, screen out media files that we probably don't want
   -- to open in vim. And if we really want, then we can use ,ff
-  M.mapnv("<c-p>", require("telescope.builtin").find_files, "Find files")
+  -- 2025-01-15 trying smart-open
+  --M.mapnv("<c-p>", require("telescope.builtin").find_files, "Find files")
+  M.mapnv("<c-p>", require("telescope").extensions.smart_open.smart_open, "Find files (smart)")
   M.mapnvic("<F9>", "TZAtaraxis", "Focus mode")
   -- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
   M.mapnvic("<F10>", 'silent !qlmanage -p "%"', "Quicklook (mac)")
@@ -356,7 +358,10 @@ M.config = function()
   M.mapleadernv("fc", function() require('telescope.builtin').live_grep({ search_dirs = { vim.fn.expand('%:p:h') } }) end,
     "Grep from dir of current file")
   M.mapleadernv("fd", require('telescope.builtin').lsp_document_symbols, "Document symbols search")
+  -- 2025-01-15 trying smart open; reverting to find_files behavior but leaving smart_open for ctrl-p for now
   M.mapleadernv("ff", require('telescope.builtin').find_files, "Files")
+  --M.mapleadernv("ff", require("telescope").extensions.smart_open.smart_open, "Files (smart)")
+
   M.mapleadernv("fg", require('telescope.builtin').live_grep, "Grep")
   M.mapleadernv("fh", function()
     require('telescope.builtin').oldfiles { only_cwd = true }

@@ -142,6 +142,22 @@ M.ui = function()
       }
     }
   })
+
+  require("dropbar").setup({
+    bar = {
+      -- enable = ... can be a function
+      update_debounce = 50,
+      update_events = {
+        buf = {
+          'BufModifiedSet',
+          'FileChangedShellPost',
+          'TextChanged',
+          --'ModeChanged', -- Don't know why modechanged is needed
+        }
+      }
+
+    }
+  })
 end -- UI setup
 
 
@@ -921,10 +937,10 @@ M.telescope = function()
 
     extensions = {
       fzy_native = {
-        override_generic_sorter = true,
+        override_generic_sorter = false,
         override_file_sorter = true
       },
-      frecency = {
+      --[[ frecency = {
         ignore_patterns = { "*.git/*", "*/tmp/*", ".*ignore", "*.DS_Store*", "Caches", "Backups", "/Applications",
           "/bin", "*/.localized" },
         -- show the tail for "LSP", "CWD" and "FOO"
@@ -932,10 +948,16 @@ M.telescope = function()
         show_scores = true,
         show_unindexed = false,
         use_sqlite = false
+      }, ]]
+      smart_open = {
+        match_algorithm = "fzy",
+        disable_devicons = false,
+        result_limit = 50,
       }
     }
   })
   require("telescope").load_extension("fzy_native")
+  require("telescope").load_extension("smart_open")
   require("telescope").load_extension("zk")
   if not SimpleUI then
     require("telescope").load_extension("noice")
