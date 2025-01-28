@@ -147,23 +147,11 @@ M.ui = function()
   -- catppuccin green #a6da95
   -- catppuccin red #ed8796
   -- catppuccin mauve #c6a0f6
-  vim.api.nvim_set_hl(0, 'DropBarFileName', { fg = '#c6a0f6', bold = true })
+  vim.api.nvim_set_hl(0, 'DropBarKindFile', { fg = '#c6a0f6', italic = false, bold = true })
   vim.api.nvim_set_hl(0, 'DropBarFileNameDirty', { fg = '#ed8796', italic = true, bold = true })
-  local dropbar_custom_path = {
-    get_symbols = function(buff, win, cursor)
-      local symbols = require('dropbar.sources').path.get_symbols(buff, win, cursor)
-      if vim.bo[buff].modified then
-        symbols[#symbols].name = symbols[#symbols].name .. ' [+]'
-        symbols[#symbols].name_hl = 'DropBarFileNameDirty' -- this turns it green but removes the bold
-      else
-        symbols[#symbols].name_hl = 'DropBarFileName'
-      end
-      return symbols
-    end,
-  }
   require("dropbar").setup({
     bar = {
-      -- below adds dropbar to oil and fugitive windows
+      -- below adds dropbar to oil windows
       enable = function(buf, win, _)
         if
             not vim.api.nvim_buf_is_valid(buf)
@@ -181,14 +169,15 @@ M.ui = function()
         end
 
         return vim.bo[buf].ft == 'markdown'
-            or vim.bo[buf].ft == 'oil' -- enable in oil buffers
-            -- or vim.bo[buf].ft == 'fugitive' -- enable in fugitive buffers
+            or vim.bo[buf].ft == 'oil'      -- enable in oil buffers
+            or vim.bo[buf].ft == 'fugitive' -- enable in fugitive buffers
             or pcall(vim.treesitter.get_parser, buf)
             or not vim.tbl_isempty(vim.lsp.get_clients({
               bufnr = buf,
               method = 'textDocument/documentSymbol',
             }))
       end,
+      truncate = false,
       update_debounce = 50,
       update_events = {
         buf = {
@@ -198,48 +187,22 @@ M.ui = function()
           --'ModeChanged', -- Don't know why modechanged is needed
         }
       },
-      sources = function(buf, _)
-        local sources = require('dropbar.sources')
-        local utils = require('dropbar.utils')
-        if vim.bo[buf].ft == 'markdown' then
-          return {
-            dropbar_custom_path,
-            sources.markdown,
-          }
-        end
-        if vim.bo[buf].buftype == 'terminal' then
-          return {
-            sources.terminal,
-          }
-        end
-        return {
-          dropbar_custom_path,
-          utils.source.fallback {
-            sources.lsp,
-            sources.treesitter,
-          },
-        }
-      end,
     },
+
     sources = {
       path = {
-        -- Delete out leading bufname stuff for oil and fugitive to have relative paths properly
-        relative_to = function(buf, win)
-          -- Show full path in oil or fugitive buffers
-          local bufname = vim.api.nvim_buf_get_name(buf)
-          if vim.startswith(bufname, 'oil://') or vim.startswith(bufname, 'fugitive://') then
-            local root = bufname:gsub('^%S+://', '', 1)
-            while root and root ~= vim.fs.dirname(root) do
-              root = vim.fs.dirname(root)
-            end
-            return root
-          end
-
-          local ok, cwd = pcall(vim.fn.getcwd, win)
-          return ok and cwd or vim.fn.getcwd()
+        max_depth = 7,
+        modified = function(sym)
+          return sym:merge({
+            name = sym.name .. ' [+]',
+            -- icon = ' ',
+            icon = '',
+            name_hl = 'DropBarFileNameDirty',
+            icon_hl = 'DropBarFileNameDirty',
+          })
         end,
-      },
-    },
+      }
+    }
   })
 end -- UI setup
 
