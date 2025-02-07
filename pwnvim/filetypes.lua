@@ -95,6 +95,11 @@ M.config = function()
 
   })
   autocmd("FileType", {
+    pattern = { "oil" },
+    command = "syntax enable", -- fix issue where IDs weren't always hidden, particularly if no programming files had been opened previously
+    group = filetypes,
+  })
+  autocmd("FileType", {
     pattern = { "lua", "xml" },
     callback = require('pwnvim.filetypes').lua,
     group = filetypes
