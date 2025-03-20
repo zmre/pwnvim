@@ -776,9 +776,12 @@ M.llms = function()
     },
     display = {
       chat = {
-        render_headers = false,
+        render_headers = true,
         show_settings = false
       }
+    },
+    opts = {
+      -- log_level = "DEBUG",
     },
     adapters = {
       ollamacode = function()
@@ -819,11 +822,20 @@ M.llms = function()
           },
         })
       end,
+      copilot_o3 = function()
+        return require("codecompanion.adapters").extend("copilot", {
+          schema = {
+            model = {
+              default = "o3-mini",
+            },
+          },
+        })
+      end,
       openai = function()
         return require("codecompanion.adapters").extend("openai", {
           schema = {
             model = {
-              default = "gpt-4o-mini",
+              default = "o3-mini",
             },
           },
           env = {
@@ -832,19 +844,19 @@ M.llms = function()
         })
       end,
       opts = {
-        allow_insecure = true, -- Allow insecure connections?
+        allow_insecure = isOllamaRunning, -- Allow insecure connections? yes if we're using ollama
       },
 
     },
     strategies = {
       chat = {
-        adapter = (isOllamaRunning and "ollamacode" or "copilot"),
+        adapter = (isOllamaRunning and "ollamacode" or "openai"),
       },
       inline = {
-        adapter = (isOllamaRunning and "ollamacode" or "copilot"),
+        adapter = (isOllamaRunning and "ollamacode" or "copilot_o3"),
       },
       agent = {
-        adapter = (isOllamaRunning and "ollamacode" or "copilot"),
+        adapter = (isOllamaRunning and "ollamacode" or "openai"),
       },
     },
     prompt_library = {
@@ -1363,9 +1375,12 @@ M.misc = function()
     close_on_exit = true
   })
   -- vim.api.nvim_set_keymap("t", [[<C-\>]], "<Cmd>ToggleTermToggleAll<cr>", { noremap = true })
-  vim.api.nvim_set_keymap("t", [[<C-\>]],
-    "<Cmd>exe v:count1 . 'ToggleTerm'<cr>",
-    { noremap = true })
+  -- This is just needed so that I can switch terms when in a term, which isn't default behavior
+  require("pwnvim.mappings").mapt([[<C-\>]],
+    "<Cmd>exe v:count1 . 'ToggleTerm'<cr>", "Toggle on or off specific terms from inside term")
+  require("pwnvim.mappings").mapnvict("<C-]>", "ToggleTerm direction=horizontal size=30 name=bottom",
+    "Bottom of screen terminal window")
+
 
   require("project_nvim").setup({
     active = true,

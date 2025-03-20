@@ -38,6 +38,9 @@ end
 M.mapnvic = function(lhs, rhs, desc, opts)
   M.map({ "n", "v", "i", "c" }, lhs, addcommand(rhs), desc, opts)
 end
+M.mapnvict = function(lhs, rhs, desc, opts)
+  M.map({ "n", "v", "i", "c", "t" }, lhs, addcommand(rhs), desc, opts)
+end
 M.mapi = function(lhs, rhs, desc, opts)
   -- in insert mode, don't assume <cmd> as we might be using keystrokes in insert mode on purpose
   M.map("i", lhs, rhs, desc, opts)
@@ -476,7 +479,8 @@ M.config = function()
   -- Big change! Switching the escape/alt-escape meanings 2025-01-01
   M.map({ "t" }, "<M-[>", [[<C-\><C-n>]], "Get to normal mode in terminal")
   --M.map({ "t" }, "<esc>", "<esc>", "Send escape to terminal")
-  M.map({ "t" }, "<C-v><Esc>", "<esc>", "Send escape to terminal")
+  -- M.map({ "t" }, "<C-v><Esc>", "<esc>", "Send escape to terminal")
+  M.map({ "t" }, "<C-v><Esc>", [[<C-\><C-n>]], "Get to normal mode in terminal")
   M.mapt("<c-j>", "wincmd j", "Move one window down")
   M.mapt("<c-h>", "wincmd h", "Move one window left")
   M.mapt("<c-k>", "wincmd k", "Move one window up")
