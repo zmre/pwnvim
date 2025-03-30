@@ -48,14 +48,14 @@ M.ui = function()
 
   require("pwnvim.plugins.gitsigns")
   require("diffview").setup({})
-  require("git-worktree").setup({
+  vim.g.git_worktree = {
     change_directory_command = "lcd",
     update_on_change = true,
     update_on_change_command = "e .",
+    confirm_telescope_deletions = true,
     clearjumps_on_change = true,
     autopush = false
-  })
-
+  }
 
 
   if not SimpleUI then
@@ -1007,15 +1007,9 @@ M.telescope = function()
         show_unindexed = false,
         use_sqlite = false
       }, ]]
-      smart_open = {
-        match_algorithm = "fzy",
-        disable_devicons = false,
-        result_limit = 50,
-      }
     }
   })
   require("telescope").load_extension("fzy_native")
-  require("telescope").load_extension("smart_open")
   require("telescope").load_extension("zk")
   if not SimpleUI then
     require("telescope").load_extension("noice")
