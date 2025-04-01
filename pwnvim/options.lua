@@ -555,6 +555,7 @@ M.programming = function(ev)
   local mapleadervlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleaderv)
   local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
   local mapvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapv)
+  local mapnviclocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapnvic)
 
   vim.opt.number = true
   vim.wo.number = true
@@ -606,6 +607,8 @@ M.programming = function(ev)
   mapvlocal("g/", "<Plug>(comment_toggle_linewise_visual)", "Toggle comments")
   mapleadernlocal("c<space>", "<Plug>(comment_toggle_linewise_current)", "Toggle comments")
   mapleadervlocal("c<space>", "<Plug>(comment_toggle_linewise_visual)", "Toggle comments")
+
+  mapnviclocal("<F5>", "make", "Build program")
 
   vim.cmd('packadd crates.nvim')
   require("crates").setup({})

@@ -60,11 +60,6 @@ M.config = function()
     command = "setlocal filetype=json",
     group = filetypes
   })
-  autocmd("FileType", {
-    pattern = { "code-action-menu-*" },
-    command = "syn on",
-    group = filetypes
-  })
 
   -- autocmd("FileType", {
   --   pattern = {"sql", "mysql", "plsql"},
@@ -138,8 +133,21 @@ end
 M.rust = function(ev)
   require('pwnvim.options').programming(ev)
   require('pwnvim.options').fourspaceindent()
-  vim.bo.makeprg = "cargo"
   vim.cmd("compiler cargo")
+  vim.bo.makeprg = "cargo --color never $*"
+  vim.bo.errorformat = [[%Eerror: %\%%(aborting %\|could not compile%\)%\@!%m,]]
+      .. [[%Eerror[E%n]: %m,]]
+      .. [[%Inote: %m,]]
+      .. [[%Wwarning: %\%%(%.%# warning%\)%\@!%m,]]
+      .. [[%C %#--> %f:%l:%c,]]
+      .. [[%E  left:%m,%C right:%m %f:%l:%c,%Z,]]
+      .. [[%.%#panicked at \'%m\'\, %f:%l:%c]]
+  local bufnr = ev.buf
+  local mapnviclocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapnvic)
+  mapnviclocal("<F5>", "make build", "Build rust program")
+
+
+  vim.cmd("syntax on")
   vim.g.rustfmt_autosave = 1
   vim.g.rust_fold = 1
   vim.api.nvim_exec2([[

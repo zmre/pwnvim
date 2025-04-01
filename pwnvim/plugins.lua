@@ -376,7 +376,6 @@ M.diagnostics = function()
     vim.api.nvim_buf_set_option(bufnr, "tagfunc", "v:lua.vim.lsp.tagfunc")
 
     mapleadernlocal("le", vim.diagnostic.open_float, "Show Line Diags")
-    -- mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix code actions")
     --
     -- There should be a check on this for server_capabilities.inlayHint, but that doesn't exist and
     -- I should probably differentiate between inline hints and inline diagnostics, but for now,
@@ -406,7 +405,7 @@ M.diagnostics = function()
     end
 
     if client.server_capabilities.codeActionProvider then
-      mapleadernlocal("lf", "CodeActionMenu", "Fix code actions")
+      mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix code actions")
       -- range parameter is automatically populated in visual mode
       mapleadervlocal("lf", vim.lsp.buf.code_action, "Fix code actions (range)")
     end
@@ -741,9 +740,11 @@ M.diagnostics = function()
   })
   require("nvim-lightbulb").setup({
     autocmd = { enabled = true },
-    sign = { enabled = false },
-    virtual_text = { enabled = true, },
-    float = { enabled = false }
+    sign = { enabled = true },
+    virtual_text = { enabled = false, },
+    float = { enabled = false },
+    action_kinds = { "quickfix", "source.fixAll" },
+    hide_in_unfocused_buffer = true,
   })
 end -- Diagnostics setup
 
@@ -910,7 +911,7 @@ M.telescope = function()
   local actions = require("telescope.actions")
   local action_state = require("telescope.actions.state")
 
-  local function quicklook_selected_entry(prompt_bufnr)
+  local function quicklook_selected_entry(_prompt_bufnr)
     local entry = action_state.get_selected_entry()
     -- actions.close(prompt_bufnr)
     vim.cmd("silent !qlmanage -p '" .. entry.value .. "'")
@@ -1037,7 +1038,7 @@ M.completions = function()
   cmp.setup({
     enabled = function()
       local context = require("cmp.config.context")
-      local buftype = vim.api.nvim_buf_get_option(0, "buftype")
+      local buftype = vim.api.nvim_get_option_value('buftype', {})
       -- prevent completions in prompts like telescope prompt
       if buftype == "prompt" then return false end
       -- allow completions in command mode
@@ -1150,8 +1151,7 @@ M.notes = function()
           mapleadernlocal("nr", require("telescope.builtin").lsp_references, "References to this note")
           mapleadernlocal("lr", require("telescope.builtin").lsp_references, "References to this note") -- for muscle memory
           mapleadernlocal("li", vim.lsp.buf.hover, "Info hover")
-          -- mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix code actions")
-          mapleadernlocal("lf", "CodeActionMenu", "Fix code actions")
+          mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix code actions")
           mapleadernlocal("le", vim.diagnostic.open_float, "Show line diags")
           mapleadernvlocal("ll", function()
             -- the scope filter is supported in diagnostics, but not yet in inlay hints as far as I know, but
@@ -1372,7 +1372,7 @@ M.misc = function()
   -- This is just needed so that I can switch terms when in a term, which isn't default behavior
   require("pwnvim.mappings").mapt([[<C-\>]],
     "<Cmd>exe v:count1 . 'ToggleTerm'<cr>", "Toggle on or off specific terms from inside term")
-  require("pwnvim.mappings").mapnvict("<C-]>", "ToggleTerm direction=horizontal size=30 name=bottom",
+  require("pwnvim.mappings").mapnvict("<C-'>", "ToggleTerm direction=horizontal size=30 name=bottom",
     "Bottom of screen terminal window")
 
 
