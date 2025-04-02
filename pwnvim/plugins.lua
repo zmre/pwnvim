@@ -585,7 +585,21 @@ M.diagnostics = function()
       on_attach = attached,
       capabilities = capabilities,
       default_settings = {
-        ["rust-analyzer"] = { files = { excludeDirs = { ".direnv" } } }
+        ["rust-analyzer"] = {
+          files = { excludeDirs = { ".direnv" } },
+          cargo = {
+            allFeatures = true,
+          },
+          checkOnSave = {
+            command = 'clippy',
+          },
+          diagnostics = {
+            enable = true,
+            experimental = {
+              enable = true,
+            }
+          }
+        }
       }
     }
   }
