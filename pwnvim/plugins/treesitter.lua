@@ -33,12 +33,6 @@ require("nvim-treesitter.configs").setup({
   },
   textsubjects = {
     enable = true,
-    --prev_selection = '.', -- thought this would be more than just what `gv` does
-    keymaps = {
-      [','] = { 'textsubjects-smart', desc = "Smart select current object" }, -- this one is great
-      --[';'] = { 'textsubjects-container-outer', desc = "Select current container outer" }, -- these rarely work :(
-      --['.'] = { 'textsubjects-container-inner', desc = "Select current container inner" }, -- "               "
-    }
   },
   textobjects = {
     disable = {},
@@ -84,14 +78,11 @@ require("nvim-treesitter.configs").setup({
     }
   }
 })
--- require("treesitter-context").setup({
---   enable = true,
---   trim_scope = "outer",
---   zindex = 20,
---   mode = "cursor",
---   multiline_threshold = 2,
---   min_window_height = 0,
---   line_numbers = true,
---   max_lines = 4, -- no max window height
---   patterns = { markdown = { "atx_heading" } }
--- })
+require('nvim-treesitter-textsubjects').configure({
+  prev_selection = '\'',
+  keymaps = {
+    ['.'] = 'textsubjects-smart',
+    [';'] = 'textsubjects-container-outer',
+    ['i;'] = 'textsubjects-container-inner',
+  },
+})

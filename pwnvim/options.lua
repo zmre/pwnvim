@@ -147,8 +147,10 @@ M.defaults = function()
   vim.g.polyglot_disabled = { 'sensible', 'autoindent', 'ftdetect' } -- preserve in case I want to bring back polyglot
   vim.opt.foldlevelstart = 10
 
-  -- map the leader key
+  -- map the leader key to ,
+  -- note: comma would typically go backwards in a f or t character search (where ; goes ahead)
   vim.api.nvim_set_keymap('n', ',', '', {}) -- first unset it though
+  vim.api.nvim_set_keymap('v', ',', '', {}) -- first unset it though
   vim.g.mapleader = ','                     -- Namespace for custom shortcuts
 
   vim.api.nvim_exec2([[
