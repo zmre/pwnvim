@@ -372,8 +372,8 @@ M.diagnostics = function()
 
     local builtin = require("telescope.builtin")
 
-    vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-    vim.api.nvim_buf_set_option(bufnr, "tagfunc", "v:lua.vim.lsp.tagfunc")
+    vim.api.nvim_set_option_value("omnifunc", "v:lua.vim.lsp.omnifunc", { buf = bufnr })
+    vim.api.nvim_set_option_value("tagfunc", "v:lua.vim.lsp.tagfunc", { buf = bufnr })
 
     mapleadernlocal("le", vim.diagnostic.open_float, "Show Line Diags")
     --
@@ -796,7 +796,8 @@ M.llms = function()
       }
     },
     opts = {
-      -- log_level = "DEBUG",
+      log_level = "ERROR", -- TRACE|DEBUG|ERROR|INFO
+      language = "English",
     },
     adapters = {
       ollamacode = function()
