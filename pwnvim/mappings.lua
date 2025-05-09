@@ -113,6 +113,7 @@ M.config = function()
     mode = { "n", "v" },
     { "]",          group = "next" },
     { "[",          group = "prev" },
+    { "<leader>d",  group = "debug" },
     { "<leader>f",  group = "find" },
     { "<leader>q",  group = "trouble" },
     { "<leader>g",  group = "git" },

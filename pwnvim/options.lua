@@ -552,6 +552,7 @@ M.retab = function() vim.cmd('%retab!') end
 
 M.programming = function(ev)
   local bufnr = ev.buf
+  local mapleadernv = require("pwnvim.mappings").mapleadernv
   local mapleadernlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadern)
   local mapleadervlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleaderv)
   local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
@@ -616,6 +617,48 @@ M.programming = function(ev)
 
   vim.cmd('packadd todo-comments.nvim')
   require("pwnvim.plugins.todo-comments")
+
+  local dap, dapui = require("dap"), require("dapui")
+  dapui.setup()
+  mapleadernlocal("dv", function()
+    if dap.session() == nil then
+      dap.continue()
+    else
+      dapui.toggle()
+    end
+  end
+  , "Toggle dap debugger")
+  mapleadervlocal("dv", dapui.eval, "dap debugger eval selection")
+  local add_debugger_bindings = function()
+    mapleadernv("dc", dap.continue, "Continue")
+    mapleadernv("<F5>", dap.continue, "Continue")
+    mapleadernv("do", dap.step_over, "Step over")
+    mapleadernv("<F10>", dap.step_over, "Step over")
+    mapleadernv("di", dap.step_into, "Step into")
+    mapleadernv("<F11>", dap.step_into, "Step into")
+    mapleadernv("du", dap.step_out, "Step up/out")
+    mapleadernv("<F12>", dap.step_out, "Step up/out")
+    mapleadernv("db", dap.toggle_breakpoint, "Toggle breakpoint")
+    mapleadernv("dB", dap.set_breakpoint, "Set breakpoint")
+    mapleadernv("dr", dap.repl.open, "Open REPL")
+    mapleadernv("dl", dap.run_last, "Run last")
+    mapleadernv("dh", require("dap.ui.widgets").hover, "Hover widget")
+    mapleadernv("dp", require("dap.ui.widgets").preview, "Preview widget")
+  end
+  dap.listeners.before.attach.dapui_config = function()
+    add_debugger_bindings()
+    dapui.open()
+  end
+  dap.listeners.before.launch.dapui_config = function()
+    add_debugger_bindings()
+    dapui.open()
+  end
+  dap.listeners.before.event_terminated.dapui_config = function()
+    dapui.close()
+  end
+  dap.listeners.before.event_exited.dapui_config = function()
+    dapui.close()
+  end
 end
 
 return M

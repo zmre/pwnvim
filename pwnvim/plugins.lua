@@ -576,33 +576,48 @@ M.diagnostics = function()
     dynamicRegistration = false,
     lineFoldingOnly = true
   }
+  vim.g.rustaceanvim = (function()
+    local uname = vim.uv.os_uname().sysname
 
-  vim.g.rustaceanvim = {
-    tools = {
-      -- test_executor = 'background'
-    },
-    server = {
-      on_attach = attached,
-      capabilities = capabilities,
-      default_settings = {
-        ["rust-analyzer"] = {
-          files = { excludeDirs = { ".direnv" } },
-          cargo = {
-            allFeatures = true,
-          },
-          checkOnSave = {
-            command = 'clippy',
-          },
-          diagnostics = {
-            enable = true,
-            experimental = {
+    local codelldb_path = lldb_path_base .. "/share/vscode/extensions/vadimcn.vscode-lldb/adapter/codelldb"
+    local codelldb_lib = lldb_path_base ..
+        "/share/vscode/extensions/vadimcn.vscode-lldb/adapter/libcodelldb" .. (uname == "Linux" and ".so" or ".dylib")
+    local cfg = require('rustaceanvim.config')
+    return {
+      dap = {
+        adapter = cfg.get_codelldb_adapter(codelldb_path, codelldb_lib),
+        autoload_configurations = true,
+        configuration = {
+          stopOnEntry = true,
+        },
+        load_rust_types = true,
+      },
+      tools = {
+        -- test_executor = 'background'
+      },
+      server = {
+        on_attach = attached,
+        capabilities = capabilities,
+        default_settings = {
+          ["rust-analyzer"] = {
+            files = { excludeDirs = { ".direnv" } },
+            cargo = {
+              allFeatures = true,
+            },
+            checkOnSave = {
+              command = 'clippy',
+            },
+            diagnostics = {
               enable = true,
+              experimental = {
+                enable = true,
+              }
             }
           }
         }
       }
     }
-  }
+  end)()
 
   -- Fix an issue with current rust analyzer by suppressing a bogus message
   -- See https://github.com/neovim/neovim/issues/30985

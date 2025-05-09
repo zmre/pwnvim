@@ -132,8 +132,9 @@
           rustfmt
           cargo # have this as a fallback when a local flake isn't in place
           rustc # have this as a fallback when a local flake isn't in place
-          # TODO: add back the following when https://github.com/NixOS/nixpkgs/issues/202507 hits
-          #vscode-extensions.vadimcn.vscode-lldb.adapter # for debugging rust
+          vscode-extensions.vadimcn.vscode-lldb.adapter # for debugging rust
+          (python3.withPackages (ps: with ps; [debugpy])) # required for debugging python, but better if that's per project installed since we don't have python
+
           metals # lsp for scala
           # imagemagick # for image-nvim plugin
         ]
@@ -151,6 +152,7 @@
             package.path = "${self}/?.lua;" .. package.path
             rustsrc_path = "${pkgs.rustPlatform.rustLibSrc}/core/Cargo.toml"
             prettier_path = "${pkgs.nodePackages.prettier}/bin/prettier"
+            lldb_path_base = "${pkgs.vscode-extensions.vadimcn.vscode-lldb}"
             vim.env.RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}"
             vim.env.RA_LOG = "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug"
             rustanalyzer_path = "${pkgs.rust-analyzer}/bin/rust-analyzer"
@@ -179,6 +181,10 @@
           trouble-nvim # navigate all warnings and errors in quickfix-like window
           nvim-dap # debugging functionality used by rust-tools-nvim
           nvim-dap-ui # ui for debugging
+          nvim-dap-python
+          nvim-nio # needed by dap-ui
+          neotest
+          neotest-rust
           neodev-nvim # help for neovim lua api
           SchemaStore-nvim # json schemas
           vim-matchup # replaces built-in matchit and matchparen with better matching and faster
@@ -316,6 +322,7 @@
       ];
       extraPythonPkgs = ps:
         with ps; [
+          debugpy
           jupyter
           ipython
           ipykernel
@@ -359,29 +366,28 @@
         }
       ];
     in rec {
-      packages.pwnvim =
-        (pkgs.wrapNeovim pkgs.neovim-unwrapped {
-            viAlias = true;
-            vimAlias = true;
-            withNodeJs = false;
-            withPython3 = false;
-            withRuby = false;
-            extraLuaPackages = ps: [ps.lua-curl];
-            extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
-            # make sure impatient is loaded before everything else to speed things up
-            configure = {
-              inherit customRC;
-              packages.myPlugins = {
-                start = requiredPlugins;
-                opt = optionalPlugins;
-              };
+      packages.pwnvim = (pkgs.wrapNeovim pkgs.neovim-unwrapped {
+          viAlias = true;
+          vimAlias = true;
+          withNodeJs = false;
+          withPython3 = false;
+          withRuby = false;
+          extraLuaPackages = ps: [ps.lua-curl];
+          extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
+          # make sure impatient is loaded before everything else to speed things up
+          configure = {
+            inherit customRC;
+            packages.myPlugins = {
+              start = requiredPlugins;
+              opt = optionalPlugins;
             };
-          }
-          // {buildInputs = dependencies;}) # this last line is needed so neovide can pull in same ones
+          };
+        }
+        // {buildInputs = dependencies;}) # this last line is needed so neovide can pull in same ones
         .overrideAttrs (old: {
-          name = "pwnvim";
-          version = old.version + "-" + self.lastModifiedDate;
-        });
+        name = "pwnvim";
+        version = old.version + "-" + self.lastModifiedDate;
+      });
       packages.pwnvim-python =
         (pkgs.wrapNeovim augmentedNeovimPython {
           viAlias = false;

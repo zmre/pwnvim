@@ -81,6 +81,11 @@ M.config = function()
     group = filetypes
   })
   autocmd("FileType", {
+    pattern = { "python" },
+    callback = function() require("dap-python").setup("python3") end,
+    group = filetypes
+  })
+  autocmd("FileType", {
     pattern = { "gitcommit" }, -- markdown, but we don't want most markdown things setup, just our shortcuts
     callback = function(ev)
       local bufnr = ev.buf
