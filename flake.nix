@@ -188,7 +188,7 @@
           neodev-nvim # help for neovim lua api
           SchemaStore-nvim # json schemas
           vim-matchup # replaces built-in matchit and matchparen with better matching and faster
-          nvim-lightbulb # show code actions available
+          #nvim-lightbulb # show code actions available ; 2025-06-09 removing due to huge number of deprecations that have been ignored for a long time
 
           # UI #################################################
           onedarkpro-nvim # colorscheme
@@ -206,7 +206,7 @@
           git-worktree-nvim # jump between worktrees
           gitsigns-nvim # git status in gutter
           # symbols-outline-nvim # navigate the current file better
-          lualine-nvim # nice status bar at bottom
+          lualine-nvim # nice status bar at bottom ; TODO 2025-06-09 time to find an alternative? tons of undealt with deprecations
           vim-bbye # fix bdelete buffer stuff needed with bufferline
           # bufferline-nvim # tabs at top
           dropbar-nvim # replacing the now archived barbecue (sad!)
@@ -250,7 +250,7 @@
           cmp-emoji # complete :emojis:
           cmp-nvim-lsp-signature-help # help complete function call by showing args
           cmp-npm # complete node packages in package.json
-          codecompanion-nvim
+          codecompanion-nvim # llm access in context; TODO 2025-06-09 find an alternative? riddled with deprecated function calls
           nvim-autopairs # balances parens as you type
           nvim-ts-autotag # balance or rename html
           vim-emoji # TODO: redundant now?
@@ -266,7 +266,8 @@
           # Misc
           vim-fugitive # git management
           diffview-nvim
-          project-nvim
+          #project-nvim # TODO: abandoned. replace with maybe https://github.com/nvim-telescope/telescope-project.nvim/
+          telescope-project-nvim
           vim-tmux-navigator # navigate vim and tmux panes together
           impatient-nvim # speeds startup times by caching lua bytecode
           which-key-nvim
@@ -386,6 +387,7 @@
         // {buildInputs = dependencies;}) # this last line is needed so neovide can pull in same ones
         .overrideAttrs (old: {
         name = "pwnvim";
+        __intentionallyOverridingVersion = true;
         version = old.version + "-" + self.lastModifiedDate;
       });
       packages.pwnvim-python =

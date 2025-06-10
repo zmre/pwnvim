@@ -767,14 +767,14 @@ M.diagnostics = function()
     },
     capabilities = capabilities
   })
-  require("nvim-lightbulb").setup({
-    autocmd = { enabled = true },
-    sign = { enabled = true },
-    virtual_text = { enabled = false, },
-    float = { enabled = false },
-    action_kinds = { "quickfix", "source.fixAll" },
-    hide_in_unfocused_buffer = true,
-  })
+  -- require("nvim-lightbulb").setup({
+  --   autocmd = { enabled = true },
+  --   sign = { enabled = true },
+  --   virtual_text = { enabled = false, },
+  --   float = { enabled = false },
+  --   action_kinds = { "quickfix", "source.fixAll" },
+  --   hide_in_unfocused_buffer = true,
+  -- })
 end -- Diagnostics setup
 
 M.llms = function()
@@ -1028,6 +1028,21 @@ M.telescope = function()
       fzy_native = {
         override_generic_sorter = false,
         override_file_sorter = true
+      },
+      project = {
+        base_dirs = {
+          { '~/src', max_depth = 3 },
+          '~/.config/nixpkgs',
+          '~/Documents',
+          '~/Notes'
+        },
+        ignore_missing_dirs = true,
+        order_by = "recent",
+        on_project_selected = function(prompt_bufnr)
+          require("telescope._extensions.project.actions").change_working_directory(prompt_bufnr, false)
+          require("telescope._extensions.project.utils").update_last_accessed_project_time(vim.fn.getcwd())
+          require('telescope.builtin').find_files()
+        end,
       },
       --[[ frecency = {
         ignore_patterns = { "*.git/*", "*/tmp/*", ".*ignore", "*.DS_Store*", "Caches", "Backups", "/Applications",
@@ -1323,23 +1338,25 @@ M.misc = function()
     "Bottom of screen terminal window")
 
 
-  require("project_nvim").setup({
-    active = true,
-    on_config_done = nil,
-    manual_mode = false,
-    detection_methods = { "lsp", "pattern" },
-    exclude_dirs = { "/nix/store/*" },
-    scope_chdir = "tab",
-    patterns = {
-      ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json",
-      ".zk", "build.sbt", "Package.swift", "Makefile.in", "README.md",
-      "flake.nix"
-    },
-    show_hidden = false,
-    silent_chdir = true,
-    ignore_lsp = {}
-  })
-  require("telescope").load_extension("projects")
+  -- require("project_nvim").setup({
+  --   active = true,
+  --   on_config_done = nil,
+  --   manual_mode = false,
+  --   detection_methods = { "lsp", "pattern" },
+  --   exclude_dirs = { "/nix/store/*" },
+  --   scope_chdir = "tab",
+  --   patterns = {
+  --     ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json",
+  --     ".zk", "build.sbt", "Package.swift", "Makefile.in", "README.md",
+  --     "flake.nix"
+  --   },
+  --   show_hidden = false,
+  --   silent_chdir = true,
+  --   ignore_lsp = {}
+  -- })
+
+  -- require("telescope").load_extension("projects")
+  require("telescope").load_extension("project")
   require("yazi").setup({
     open_for_directories = false
   })

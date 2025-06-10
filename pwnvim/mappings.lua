@@ -370,7 +370,11 @@ M.config = function()
   M.mapleadernv("fl", require('telescope.builtin').loclist, "Loclist")
   M.mapleadernv("fn", function() require('zk.commands').get("ZkNotes")({ sort = { 'modified' } }) end, "Find notes")
   M.mapleadernv("fo", require('telescope.builtin').oldfiles, "Old file history global")
-  M.mapleadernv("fp", require("telescope").extensions.projects.projects, "Projects")
+  -- M.mapleadernv("fp", require("telescope").extensions.projects.projects, "Projects")
+  M.mapleadernv("fp",
+    function() require("telescope").extensions.project.project({ display_type = 'full', hide_workspace = true }) end,
+    "Projects")
+
   M.mapleadernv("fq", require('telescope.builtin').quickfix, "Quickfix")
   -- ,fs mapping done inside lsp attach functions
   M.mapleadernv("ft",
