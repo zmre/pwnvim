@@ -28,8 +28,8 @@
     # clipboard-image.url = "github:ekickx/clipboard-image.nvim";
     clipboard-image.url = "github:postfen/clipboard-image.nvim";
     clipboard-image.flake = false;
-    conform-nvim.url = "github:stevearc/conform.nvim";
-    conform-nvim.flake = false;
+    # conform-nvim.url = "github:stevearc/conform.nvim";
+    # conform-nvim.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -61,11 +61,11 @@
                   src = inputs.clipboard-image;
                   # buildInputs = [ super.curl ];
                 };
-                conform-nvim = super.vimUtils.buildVimPlugin {
-                  name = "conform-nvim";
-                  pname = "conform-nvim";
-                  src = inputs.conform-nvim;
-                };
+                # conform-nvim = super.vimUtils.buildVimPlugin {
+                #   name = "conform-nvim";
+                #   pname = "conform-nvim";
+                #   src = inputs.conform-nvim;
+                # };
               };
           })
         ];
@@ -122,6 +122,7 @@
           ruff # python linter used by null-ls
           black # python formatter
           rust-analyzer # lsp for rust
+          clippy
           # rust-analyzer is currently in a partially broken state as it cannot find rust sources so can't
           # help with native language things, which sucks. Here are some issues to track:
           # https://github.com/rust-lang/rust/issues/95736 - FIXED
@@ -154,7 +155,7 @@
             prettier_path = "${pkgs.nodePackages.prettier}/bin/prettier"
             lldb_path_base = "${pkgs.vscode-extensions.vadimcn.vscode-lldb}"
             vim.env.RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}"
-            vim.env.RA_LOG = "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug"
+            --vim.env.RA_LOG = "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug"
             rustanalyzer_path = "${pkgs.rust-analyzer}/bin/rust-analyzer"
             vim.g.loaded_python3_provider = 0
         ''
@@ -241,15 +242,16 @@
           # vim-dadbod-completion
 
           # Autocompletion
-          nvim-cmp # generic autocompleter
-          cmp-nvim-lsp # use lsp as source for completions
-          cmp-nvim-lua # makes vim config editing better with completions
-          cmp-buffer # any text in open buffers
-          cmp-path # complete paths
-          cmp-cmdline # completing in :commands
-          cmp-emoji # complete :emojis:
-          cmp-nvim-lsp-signature-help # help complete function call by showing args
-          cmp-npm # complete node packages in package.json
+          #nvim-cmp # generic autocompleter
+          #cmp-nvim-lsp # use lsp as source for completions
+          #cmp-nvim-lua # makes vim config editing better with completions
+          #cmp-buffer # any text in open buffers
+          #cmp-path # complete paths
+          #cmp-cmdline # completing in :commands
+          #cmp-emoji # complete :emojis:
+          #cmp-nvim-lsp-signature-help # help complete function call by showing args
+          #cmp-npm # complete node packages in package.json
+          blink-cmp
           codecompanion-nvim # llm access in context; TODO 2025-06-09 find an alternative? riddled with deprecated function calls
           nvim-autopairs # balances parens as you type
           nvim-ts-autotag # balance or rename html

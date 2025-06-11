@@ -236,7 +236,7 @@ M.diagnostics = function()
         override = {
           -- ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
           ["vim.lsp.util.stylize_markdown"] = false,
-          ["cmp.entry.get_documentation"] = true
+          -- ["cmp.entry.get_documentation"] = true
         },
         progress = {
           enabled = true,
@@ -566,16 +566,19 @@ M.diagnostics = function()
   })
 
   local lspconfig = require("lspconfig")
-  local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
-  local capabilities = vim.tbl_extend("keep", vim.lsp.protocol
+  local capabilities = vim.tbl_extend("force", vim.lsp.protocol
     .make_client_capabilities(),
-    cmp_nvim_lsp.default_capabilities())
-  -- Add client folding capability, which is provided by nvim-ufo
-  capabilities.textDocument.foldingRange = {
-    dynamicRegistration = false,
-    lineFoldingOnly = true
-  }
+    require('blink.cmp').get_lsp_capabilities({}, false))
+  capabilities = vim.tbl_deep_extend('force', capabilities, {
+    textDocument = {
+      foldingRange = {
+        dynamicRegistration = false,
+        lineFoldingOnly = true
+      }
+    }
+  })
+
   vim.g.rustaceanvim = (function()
     local uname = vim.uv.os_uname().sysname
 
@@ -583,6 +586,15 @@ M.diagnostics = function()
     local codelldb_lib = lldb_path_base ..
         "/share/vscode/extensions/vadimcn.vscode-lldb/adapter/libcodelldb" .. (uname == "Linux" and ".so" or ".dylib")
     local cfg = require('rustaceanvim.config')
+
+    -- capabilities = vim.tbl_deep_extend('force', capabilities, {
+    --   workspace = {
+    --     didChangeWatchedFiles = {
+    --       dynamicRegistration = true
+    --     }
+    --   }
+    -- })
+
     return {
       dap = {
         adapter = cfg.get_codelldb_adapter(codelldb_path, codelldb_lib),
@@ -599,13 +611,38 @@ M.diagnostics = function()
         on_attach = attached,
         capabilities = capabilities,
         default_settings = {
+          extraEnv = {
+            RA_LOG = "info"
+          },
+          files = {
+            watcherExclude = {
+              ["**/.git/**"] = true,
+              ["**/.direnv/**"] = true,
+              ["**/target/**"] = true,
+              ["/nix/**"] = true,
+            }
+          },
+
           ["rust-analyzer"] = {
-            files = { excludeDirs = { ".direnv" } },
-            cargo = {
-              allFeatures = true,
+            files = {
+              excludeDirs = {
+                ".direnv",
+                "_build",
+                ".git",
+                ".venv",
+                "target"
+              }
             },
-            checkOnSave = {
-              command = 'clippy',
+            cargo = {
+              allFeatures = false, -- compile with --features-all
+            },
+            checkOnSave = true,
+            check = {
+              extraArgs = {
+                "--no-deps"
+              },
+              command =
+              "cargo-clippy" -- the default "clippy" command is not available, but our installed clippy is cargo-clippy
             },
             diagnostics = {
               enable = true,
@@ -631,8 +668,6 @@ M.diagnostics = function()
     end
   end
 
-
-  require("cmp-npm").setup({})
 
   lspconfig.marksman.setup({
     capabilities = capabilities,
@@ -1072,100 +1107,21 @@ end -- telescope
 ----------------------- COMPLETIONS --------------------------------
 -- cmp, luasnip
 M.completions = function()
-  -- require("luasnip/loaders/from_vscode").lazy_load()
-  -- local luasnip = require("luasnip")
   local check_backspace = function()
     local col = vim.fn.col(".") - 1
     return col == 0 or
         vim.fn.getline(vim.fn.line(".")):sub(col, col):match("%s")
   end
-  local cmp = require("cmp")
-  cmp.setup({
-    enabled = function()
-      local context = require("cmp.config.context")
-      local buftype = vim.api.nvim_get_option_value('buftype', {})
-      -- prevent completions in prompts like telescope prompt
-      if buftype == "prompt" then return false end
-      -- allow completions in command mode
-      if vim.api.nvim_get_mode().mode == "c" then return true end
-      -- forbid completions in comments
-      return not context.in_treesitter_capture("comment") and
-          not context.in_syntax_group("Comment")
-    end,
-    mapping = {
-      ["<C-p>"] = cmp.mapping.select_prev_item(),
-      ["<C-n>"] = cmp.mapping.select_next_item(),
-      ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-      ["<C-f>"] = cmp.mapping.scroll_docs(4),
-      ["<C-Space>"] = cmp.mapping.complete({}),
-      ["<C-e>"] = cmp.mapping.close(),
-      ["<CR>"] = cmp.mapping.confirm({
-        behavior = cmp.ConfirmBehavior.Replace,
-        select = false
-      }),
-      ["<Tab>"] = cmp.mapping(function(fallback)
-        if cmp.visible() then
-          cmp.select_next_item()
-          -- elseif luasnip.expandable() then
-          --   luasnip.expand({})
-          -- elseif luasnip.expand_or_jumpable() then
-          --   luasnip.expand_or_jump()
-        elseif check_backspace() then
-          fallback()
-        else
-          cmp.mapping.complete({})
-          -- fallback()
-        end
-      end, { "i", "s" }),
-      ["<S-Tab>"] = cmp.mapping(function(fallback)
-        if cmp.visible() then
-          cmp.select_prev_item()
-          -- elseif luasnip.jumpable(-1) then
-          --   luasnip.jump(-1)
-        else
-          fallback()
-        end
-      end, { "i", "s" })
+  require("blink.cmp").setup({
+    keymap = { preset = 'super-tab' },
+    appearance = {
+      nerd_font_variant = 'mono'
     },
-    -- window = { documentation = cmp.config.window.bordered() },
+    completion = { documentation = { auto_show = true } },
     sources = {
-      { name = "nvim_lsp" },
-      -- { name = "nvim_lsp_signature_help" },
-      { name = "nvim_lua" }, { name = "emoji" },
-      -- { name = "luasnip" },
-      { name = "path" }, { name = "crates" },
-      { name = "npm",    keyword_length = 3 },
-      { name = "buffer", keyword_length = 3 }
+      default = { 'lsp', 'path', 'snippets', 'buffer' }
     },
-    formatting = {
-      fields = { "kind", "abbr", "menu" },
-      format = function(entry, vim_item)
-        -- Kind icons
-        vim_item.kind = string.format("%s",
-          signs.kind_icons[vim_item.kind])
-        vim_item.menu = ({
-          nvim_lsp = "[LSP]",
-          nvim_lsp_signature_help = "[LSPS]",
-          -- luasnip = "[Snippet]",
-          buffer = "[Buffer]",
-          path = "[Path]",
-          Copilot = "[Copilot]",
-        })[entry.source.name]
-        return vim_item
-      end
-    },
-    -- snippet = { expand = function(args) luasnip.lsp_expand(args.body) end }
   })
-  --[[ cmp.setup.cmdline("/", {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = { { name = "buffer" } }
-  })
-  cmp.setup.cmdline(":", {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = cmp.config.sources({ { name = "path" } }, {
-      { name = "cmdline", option = { ignore_cmds = { "Man", "!" } } }
-    })
-  }) ]]
 end -- completions
 
 
