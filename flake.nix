@@ -147,6 +147,7 @@
         ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
         [pngpaste]; # needed by vim clipboard-image plugin
 
+      # I don't think the vim.env.whatever = value stuff below actually works
       customRC =
         ''
           lua << EOF
@@ -154,8 +155,6 @@
             rustsrc_path = "${pkgs.rustPlatform.rustLibSrc}/core/Cargo.toml"
             prettier_path = "${pkgs.nodePackages.prettier}/bin/prettier"
             lldb_path_base = "${pkgs.vscode-extensions.vadimcn.vscode-lldb}"
-            vim.env.RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}"
-            --vim.env.RA_LOG = "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug"
             rustanalyzer_path = "${pkgs.rust-analyzer}/bin/rust-analyzer"
             vim.g.loaded_python3_provider = 0
         ''
@@ -376,7 +375,13 @@
           withPython3 = false;
           withRuby = false;
           extraLuaPackages = ps: [ps.lua-curl];
-          extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
+
+          # vim.env.RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}"
+          # vim.env.RA_LOG = "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug"
+          # --vim.env.RA_LOG = "info"
+          # --vim.env.RA_PROFILE = "*>50"
+
+          extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}" --prefix RA_LOG : "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug" --prefix RUST_SRC_PATH : "${pkgs.rustPlatform.rustLibSrc}"'';
           # make sure impatient is loaded before everything else to speed things up
           configure = {
             inherit customRC;

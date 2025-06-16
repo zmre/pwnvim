@@ -595,6 +595,8 @@ M.diagnostics = function()
     --   }
     -- })
 
+    local logfile = vim.fn.tempname() .. '-rust-analyzer.log'
+
     return {
       dap = {
         adapter = cfg.get_codelldb_adapter(codelldb_path, codelldb_lib),
@@ -610,10 +612,13 @@ M.diagnostics = function()
       server = {
         on_attach = attached,
         capabilities = capabilities,
+        cmd = { rustanalyzer_path, "--log-file", logfile }, -- rustanalyzer_path is a global set in flake.nix
+        logfile = logfile,
         default_settings = {
-          extraEnv = {
-            RA_LOG = "info"
-          },
+          -- below doesn't work -- wrong place?  check flake.nix for where these are set in the environment on startup
+          -- extraEnv = {
+          --   RA_LOG = "info",
+          -- },
           files = {
             watcherExclude = {
               ["**/.git/**"] = true,
@@ -634,15 +639,16 @@ M.diagnostics = function()
               }
             },
             cargo = {
-              allFeatures = false, -- compile with --features-all
+              allFeatures = false, -- compile with --features-all? no!
             },
             checkOnSave = true,
             check = {
               extraArgs = {
                 "--no-deps"
               },
+              -- "cargo check" shows only compiler issues whereas "cargo clippy" shows code suggestions as well
               command =
-              "cargo-clippy" -- the default "clippy" command is not available, but our installed clippy is cargo-clippy
+              "clippy" -- note: assuming here that this is calling "cargo clippy"; if not, we need "cargo-clippy" here
             },
             diagnostics = {
               enable = true,
