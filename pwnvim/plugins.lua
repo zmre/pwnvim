@@ -263,13 +263,13 @@ M.diagnostics = function()
           enabled = true,
           auto_open = {
             enabled = true,
-            trigger = true,  -- Automatically show signature help when typing a trigger character from the LSP
-            luasnip = false, -- Will open signature help when jumping to Luasnip insert nodes
-            throttle = 50    -- Debounce lsp signature help request by 50ms
+            trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
+            luasnip = true, -- Will open signature help when jumping to Luasnip insert nodes
+            throttle = 50   -- Debounce lsp signature help request by 50ms
           },
-          view = nil,        -- when nil, use defaults from documentation
+          view = nil,       -- when nil, use defaults from documentation
           ---@type NoiceViewOptions
-          opts = {}          -- merged with defaults from documentation
+          opts = {}         -- merged with defaults from documentation
         },
         message = {
           -- Messages shown by lsp servers
@@ -350,7 +350,46 @@ M.diagnostics = function()
     group = true, -- group results by file
     --icons = true,
     auto_preview = true,
-    auto_close = true,
+    auto_close = false,
+    preview = {
+      type = "float",
+      relative = "editor",
+      border = "rounded",
+      title = "Preview",
+      title_pos = "center",
+      position = { 0, -2 },
+      size = { width = 0.3, height = 0.3 },
+      zindex = 200,
+    },
+    modes = {
+      mydiags = {
+        mode = "diagnostics", -- inherit from diagnostics mode
+        filter = {
+          any = {
+            buf = 0,                                    -- current buffer
+            {
+              severity = vim.diagnostic.severity.ERROR, -- errors only
+              -- limit to files in the current project
+              function(item)
+                return item.filename:find((vim.loop or vim.uv).cwd(), 1, true)
+              end,
+            },
+          },
+        },
+      },
+      cascade = {
+        mode = "diagnostics", -- inherit from diagnostics mode
+        filter = function(items)
+          local severity = vim.diagnostic.severity.HINT
+          for _, item in ipairs(items) do
+            severity = math.min(severity, item.severity)
+          end
+          return vim.tbl_filter(function(item)
+            return item.severity == severity
+          end, items)
+        end,
+      },
+    },
     signs = {
       error = signs.error,
       warning = signs.warn,

@@ -267,6 +267,19 @@ M.config = function()
   M.map("n", "N", "Nzzzv", "Center search hits vertically on screen and expand folds if hit is inside")
   M.map("n", "<c-d>", "<c-d>zz", "Half scroll down keep cursor center screen")
   M.map("n", "<c-u>", "<c-u>zz", "Half scroll up keep cursor center screen")
+
+  -- Below allows scrolling in Noice popups including docs and hover info windows
+  M.map({ "n", "i", "s" }, "<c-f>", function()
+    if not require("noice.lsp").scroll(4) then
+      return "<c-f>"
+    end
+  end, "", { silent = true, expr = true })
+  M.map({ "n", "i", "s" }, "<c-b>", function()
+    if not require("noice.lsp").scroll(-4) then
+      return "<c-b>"
+    end
+  end, "", { silent = true, expr = true })
+
   -- gx is a built-in to open URLs under the cursor, but when
   -- not using netrw, it doesn't work right. Or maybe it's just me
   -- but anyway this command works great.
@@ -351,7 +364,10 @@ M.config = function()
   M.mapleadernv("qd", "Trouble diagnostics toggle", "Diagnostics (Trouble)")
   M.mapleadernv("qe", "Trouble diagnostics toggle filter.buf=0", "Buffer Diagnostics (Trouble)")
   M.mapleadernv("qs", "Trouble symbols toggle focus=false", "Symbols (Trouble)")
-  M.mapleadernv("qs", "Trouble lsp toggle focus=false win.position=right", "LSP Defs/Refs/... (Trouble)")
+  M.mapleadernv("qs", "Trouble lsp toggle focus=false win.position=right warn_no_results=false open_no_results=true",
+    "LSP Defs/Refs/... (Trouble)")
+  M.mapleadernv("qc", "Trouble cascade toggle focus=false", "Cascade errors or warnings (Trouble)")
+  M.mapleadernv("qm", "Trouble mydiags toggle focus=false", "Local diags, global errors (Trouble)")
 
   -- Find group
   M.mapleadernv("fb",

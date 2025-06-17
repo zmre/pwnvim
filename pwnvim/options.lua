@@ -291,6 +291,10 @@ M.colors_cat = function()
         ["@markup.link.url.markdown_inline"] = { fg = colors.blue },
         ["@markup.list.unchecked"] = { fg = "#ffffff", bg = "", style = { "bold" } },
         ["@markup.list.checked"] = { fg = colors.green, style = { "bold" } },
+
+        -- Trouble windows
+        TroubleNormalNC = { bg = "#221133" },
+        TroubleNormal = { bg = "#222244" },
       }
     end
 
@@ -427,6 +431,10 @@ M.colors_onedark = function()
         -- TelescopeNormal = { bg = "#000000" },
         -- TelescopeSelection = { bg = "${telescope_prompt}" },
         -- PmenuSel = { blend = 0 },
+
+        -- Trouble windows
+        TroubleNormalNC = { bg = "#221133" },
+        TroubleNormal = { bg = "#222244" },
       },
       styles = {                -- Choose from "bold,italic,underline"
         virtual_text = "italic" -- Style that is applied to virtual text
