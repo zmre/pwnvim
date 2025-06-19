@@ -68,12 +68,12 @@ require("nvim-treesitter.configs").setup({
       goto_previous_end = { ["[M"] = "@function.outer", ["[]"] = "@class.outer" }
     },
     lsp_interop = {
-      enable = true,
+      enable = false,
       border = "none",
       floating_preview_opts = {},
       peek_definition_code = {
-        ["<leader>df"] = "@function.outer",
-        ["<leader>dF"] = "@class.outer"
+        -- ["<leader>df"] = "@function.outer",
+        -- ["<leader>dF"] = "@class.outer"
       }
     }
   }

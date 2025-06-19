@@ -1158,7 +1158,11 @@ M.completions = function()
         vim.fn.getline(vim.fn.line(".")):sub(col, col):match("%s")
   end
   require("blink.cmp").setup({
-    keymap = { preset = 'super-tab' },
+    keymap = {
+      preset = 'super-tab',
+      --['<CR>'] = { 'accept', 'fallback' }, -- i have muscle memory for accepting with enter, but on second thought, that sometimes annoys
+    },
+    cmdline = { enabled = true },
     appearance = {
       nerd_font_variant = 'mono'
     },

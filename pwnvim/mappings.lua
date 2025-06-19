@@ -363,10 +363,10 @@ M.config = function()
   M.mapleadernv("ql", "Trouble loclist toggle", "Location list (Trouble)")
   M.mapleadernv("qd", "Trouble diagnostics toggle", "Diagnostics (Trouble)")
   M.mapleadernv("qe", "Trouble diagnostics toggle filter.buf=0", "Buffer Diagnostics (Trouble)")
-  M.mapleadernv("qs", "Trouble symbols toggle focus=false", "Symbols (Trouble)")
-  M.mapleadernv("qs", "Trouble lsp toggle focus=false win.position=right warn_no_results=false open_no_results=true",
+  M.mapleadernv("qs", "Trouble symbols toggle focus=false win.position=right", "Symbols (Trouble)")
+  M.mapleadernv("qr", "Trouble lsp toggle focus=false win.position=right warn_no_results=false open_no_results=true",
     "LSP Defs/Refs/... (Trouble)")
-  M.mapleadernv("qc", "Trouble cascade toggle focus=false", "Cascade errors or warnings (Trouble)")
+  M.mapleadernv("qc", "Trouble cascade toggle focus=false", "Cascade errors before warnings (Trouble)")
   M.mapleadernv("qm", "Trouble mydiags toggle focus=false", "Local diags, global errors (Trouble)")
 
   -- Find group
