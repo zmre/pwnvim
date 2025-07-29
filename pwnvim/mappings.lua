@@ -439,7 +439,19 @@ M.config = function()
   M.mapleadernv("ccm",
     function()
       vim.ui.select({ "ollamacode", "ollamaprose", "copilot", "openai" }, { prompt = 'Pick a service:' },
-        function(choice) vim.g.codecompanion_adapter = choice end)
+        function(choice)
+          -- vim.g.codecompanion_adapter = choice
+          require("codecompanion").setup({
+            strategies = {
+              chat = {
+                adapter = {
+                  name = choice,
+                  -- model = "claude-sonnet-4-20250514",
+                },
+              },
+            },
+          })
+        end)
     end, "Choose an AI service")
 
   -- M.mapv("ga", "CodeCompanionChat Add", "AI add code block")

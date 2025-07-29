@@ -49,9 +49,15 @@ M.setup = function(ev)
 
   vim.cmd('packadd render-markdown.nvim')
   require('render-markdown').setup({
-    file_types = { 'markdown', "codecompanion" }
+    file_types = { 'markdown', "codecompanion" },
+    completions = { lsp = { enabled = false } },
+    render_modes = { 'n', 'c', 't' },
+    anti_conceal = {
+      enabled = true,
+    },
   })
-  require('render-markdown').enable()
+  -- require('render-markdown').enable()
+  require('render-markdown').buf_enable()
 
   -- Image plugin still slow and buggy 2024-12-01
   -- if os.getenv("TERM") == "wezterm" or os.getenv("TERM") == "kitty" then

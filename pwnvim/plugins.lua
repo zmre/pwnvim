@@ -881,9 +881,9 @@ M.llms = function()
   end
 
   require("codecompanion").setup({
-    action_palette = {
-      provider = "telescope"
-    },
+    -- action_palette = {
+    --   provider = "telescope"
+    -- },
     display = {
       chat = {
         render_headers = true,
@@ -933,20 +933,20 @@ M.llms = function()
           },
         })
       end,
-      copilot_o3 = function()
-        return require("codecompanion.adapters").extend("copilot", {
-          schema = {
-            model = {
-              default = "o3-mini",
-            },
-          },
-        })
-      end,
+      -- copilot_o3 = function()
+      --   return require("codecompanion.adapters").extend("copilot", {
+      --     schema = {
+      --       model = {
+      --         default = "o3",
+      --       },
+      --     },
+      --   })
+      -- end,
       openai = function()
         return require("codecompanion.adapters").extend("openai", {
           schema = {
             model = {
-              default = "o3-mini",
+              default = "o4-mini",
             },
           },
           env = {
@@ -956,15 +956,16 @@ M.llms = function()
       end,
       opts = {
         allow_insecure = isOllamaRunning, -- Allow insecure connections? yes if we're using ollama
+        show_model_choices = true,
       },
 
     },
     strategies = {
       chat = {
-        adapter = (isOllamaRunning and "ollamacode" or "openai"),
+        adapter = (isOllamaRunning and "ollamacode" or "copilot"),
       },
       inline = {
-        adapter = (isOllamaRunning and "ollamacode" or "copilot_o3"),
+        adapter = (isOllamaRunning and "ollamacode" or "copilot"),
       },
       agent = {
         adapter = (isOllamaRunning and "ollamacode" or "openai"),
