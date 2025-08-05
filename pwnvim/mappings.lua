@@ -360,6 +360,7 @@ M.config = function()
 
   -- Trouble windows
   M.mapleadernv("qq", "Trouble qflist toggle", "Quicklist (Trouble)")
+  M.mapleadernv("qt", "Trouble todo toggle", "Trouble todo quicklist")
   M.mapleadernv("ql", "Trouble loclist toggle", "Location list (Trouble)")
   M.mapleadernv("qd", "Trouble diagnostics toggle", "Diagnostics (Trouble)")
   M.mapleadernv("qe", "Trouble diagnostics toggle filter.buf=0", "Buffer Diagnostics (Trouble)")
