@@ -137,6 +137,7 @@
           (python3.withPackages (ps: with ps; [debugpy])) # required for debugging python, but better if that's per project installed since we don't have python
 
           metals # lsp for scala
+          yazi # my alt file manager triggered with ,-
           # imagemagick # for image-nvim plugin
         ]
         ++ pkgs.lib.optionals pkgs.stdenv.isLinux [

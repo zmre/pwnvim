@@ -867,18 +867,19 @@ M.llms = function()
 
   -- status is true if the function ran without errors; isOllamaRunning is true if we had a successful connection
   -- the on_error function should avoid any errors propagating, but it seems that doesn't always work, hence the pcall
-  local status, isOllamaRunning = pcall(function()
-    return require("plenary.curl").get("http://localhost:11434", {
-      timeout = 50,
-      on_error = function(e) return { status = e.exit } end,
-    }).status == 200
-  end)
+  -- local status, isOllamaRunning = pcall(function()
+  --   return require("plenary.curl").get("http://localhost:11434", {
+  --     timeout = 50,
+  --     on_error = function(e) return { status = e.exit } end,
+  --   }).status == 200
+  -- end)
 
-  if status and isOllamaRunning then
+  --[[ if status and isOllamaRunning then
     vim.g.codecompanion_adapter = "ollamacode"
   else
     vim.g.codecompanion_adapter = "copilot"
-  end
+  end ]]
+  vim.g.codecompanion_adapter = "gptoss"
 
   require("codecompanion").setup({
     -- action_palette = {
@@ -887,15 +888,15 @@ M.llms = function()
     display = {
       chat = {
         render_headers = true,
-        show_settings = false
+        show_settings = false, -- can't change models when this is true
       }
     },
     opts = {
-      log_level = "ERROR", -- TRACE|DEBUG|ERROR|INFO
+      log_level = "TRACE", -- TRACE|DEBUG|ERROR|INFO
       language = "English",
     },
     adapters = {
-      ollamacode = function()
+      --[[ ollamacode = function()
         return require("codecompanion.adapters").extend("ollama", {
           name = "ollamacode",
           env = {
@@ -932,7 +933,7 @@ M.llms = function()
             sync = true,
           },
         })
-      end,
+      end, ]]
       -- copilot_o3 = function()
       --   return require("codecompanion.adapters").extend("copilot", {
       --     schema = {
@@ -944,23 +945,66 @@ M.llms = function()
       -- end,
       openai = function()
         return require("codecompanion.adapters").extend("openai", {
-          schema = {
-            model = {
-              default = "o4-mini",
-            },
-          },
+          -- schema = {
+          -- model = {
+          -- default = "o4-mini",
+          -- },
+          -- },
           env = {
             api_key = "cmd:security find-generic-password -l openaikey -g -w |tr -d '\n'"
           }
         })
       end,
+      -- below definition is for llama-cpp
+      --[[ gptoss = function()
+        return require("codecompanion.adapters").extend("openai_compatible", {
+          name = "gptoss",
+          env = {
+            url = "http://aironcore.savannah-basilisk.ts.net:8080", -- optional: default value is ollama url http://127.0.0.1:11434
+            chat_url = "/v1/chat/completions",
+            models_endpoint = "/v1/models",
+
+          },
+          schema = {
+            model = {
+              default = "/home/pwalsh/.cache/llama.cpp/ggml-org_gpt-oss-20b-GGUF_gpt-oss-20b-mxfp4.gguf",
+              -- default = "gpt-oss-20b-GGUF", -- define llm model to be used
+              -- default = "ggml-org_gpt-oss-20b-GGUF_gpt-oss-20b-mxfp4.gguf", -- define llm model to be used
+            },
+          }
+        })
+      end, ]]
+      -- below definition is for ollama with gpgoss
+      --[[ gptoss = function()
+        return require("codecompanion.adapters").extend("ollama", {
+          name = "gptoss",
+          opts = {
+            vision = false,
+            stream = true,
+          },
+          env = {
+            url = "http://aironcore.savannah-basilisk.ts.net:11434",
+          },
+          schema = {
+            model = {
+              default = "gpt-oss:20b",
+            },
+          },
+          -- headers = {
+          --   ["Content-Type"] = "application/json",
+          -- },
+          parameters = {
+            sync = true,
+          },
+        })
+      end, ]]
       opts = {
-        allow_insecure = isOllamaRunning, -- Allow insecure connections? yes if we're using ollama
+        allow_insecure = false, -- Allow insecure connections? yes if we're using ollama
         show_model_choices = true,
       },
 
     },
-    strategies = {
+    --[[ strategies = {
       chat = {
         adapter = (isOllamaRunning and "ollamacode" or "copilot"),
       },
@@ -970,7 +1014,7 @@ M.llms = function()
       agent = {
         adapter = (isOllamaRunning and "ollamacode" or "openai"),
       },
-    },
+    }, ]]
     prompt_library = {
       ["Summarize"] = {
         strategy = "chat",
