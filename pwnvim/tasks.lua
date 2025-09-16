@@ -56,7 +56,7 @@ M.scheduleTask = function(line, newyear, newmonth, newday)
 
 
   -- Step 5: take current task and copy it to Calendar/YYYYmmdd.md
-  local target = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar/' .. newyear .. newmonth .. newday .. '.md'
+  local target = vim.env.ZK_NOTEBOOK_DIR .. '/daily/' .. newyear .. newmonth .. newday .. '.md'
   vim.api.nvim_command('edit ' .. target)
   vim.api.nvim_buf_set_lines(0, -1, -1, false, { line })
 

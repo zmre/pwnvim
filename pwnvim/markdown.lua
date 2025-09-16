@@ -323,7 +323,7 @@ end
 
 M.newMeetingNote = function()
   local zk = require("zk.commands")
-  M.telescope_get_folder_and_title(vim.env.ZK_NOTEBOOK_DIR, 'Notes/meetings', function(folder, title)
+  M.telescope_get_folder_and_title(vim.env.ZK_NOTEBOOK_DIR, 'meetings', function(folder, title)
     zk.get('ZkNew')({ dir = folder, title = title })
   end)
 end
@@ -334,10 +334,10 @@ M.newGeneralNote = function()
   local subdir = ""
   if not zkfolder then
     zkfolder = vim.env.ZK_NOTEBOOK_DIR
-    subdir = 'Notes'
+    subdir = ''
   else
-    if vim.fn.isdirectory(zkfolder .. "/Notes") == 1 then
-      subdir = 'Notes'
+    if vim.fn.isdirectory(zkfolder) == 1 then
+      subdir = ''
     elseif vim.fn.isdirectory(zkfolder .. "/content") == 1 then
       subdir = "content"
     end
@@ -350,7 +350,7 @@ end
 
 M.newDailyNote = function()
   local zk = require("zk.commands")
-  zk.get("ZkNew")({ dir = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar', title = os.date("%Y%m%d") })
+  zk.get("ZkNew")({ dir = vim.env.ZK_NOTEBOOK_DIR .. '/daily', title = os.date("%Y%m%d") })
 end
 
 M.telescope_get_folder_and_title = function(base, subdir, callback)

@@ -187,12 +187,12 @@ _This is a combination of built-in universal keys and things that are specific t
 
 ## Notes
 * `,ng` spawn grammar checker
-* `,nn` use zk to add new note under $ZK_NOTEBOOK_DIR/Notes (prompt for dir)
+* `,nn` use zk to add new note under $ZK_NOTEBOOK_DIR (prompt for dir)
 * `,no` use zk to open note by heading or filename
 * `,nt` use zk to find notes by tag
 * `,nf` use zk to find notes
-* `,nm` use zk to make new meeting note in $ZK_NOTEBOOK_DIR/Notes/meetings
-* `,nd` use zk to make new diary note in $ZK_NOTEBOOK_DIR/Calendar
+* `,nm` use zk to make new meeting note in $ZK_NOTEBOOK_DIR/meetings
+* `,nd` use zk to make new diary note in $ZK_NOTEBOOK_DIR/daily
 * `,nh` open hotsheet note
 * `gt` turn url under cursor into titled link
 * in open markdown note only
