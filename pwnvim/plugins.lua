@@ -896,7 +896,8 @@ M.llms = function()
       language = "English",
     },
     adapters = {
-      --[[ ollamacode = function()
+      http = {
+        --[[ ollamacode = function()
         return require("codecompanion.adapters").extend("ollama", {
           name = "ollamacode",
           env = {
@@ -934,29 +935,29 @@ M.llms = function()
           },
         })
       end, ]]
-      -- copilot_o3 = function()
-      --   return require("codecompanion.adapters").extend("copilot", {
-      --     schema = {
-      --       model = {
-      --         default = "o3",
-      --       },
-      --     },
-      --   })
-      -- end,
-      openai = function()
-        return require("codecompanion.adapters").extend("openai", {
-          -- schema = {
-          -- model = {
-          -- default = "o4-mini",
-          -- },
-          -- },
-          env = {
-            api_key = "cmd:security find-generic-password -l openaikey -g -w |tr -d '\n'"
-          }
-        })
-      end,
-      -- below definition is for llama-cpp
-      --[[ gptoss = function()
+        -- copilot_o3 = function()
+        --   return require("codecompanion.adapters").extend("copilot", {
+        --     schema = {
+        --       model = {
+        --         default = "o3",
+        --       },
+        --     },
+        --   })
+        -- end,
+        openai = function()
+          return require("codecompanion.adapters").extend("openai", {
+            -- schema = {
+            -- model = {
+            -- default = "o4-mini",
+            -- },
+            -- },
+            env = {
+              api_key = "cmd:security find-generic-password -l openaikey -g -w |tr -d '\n'"
+            }
+          })
+        end,
+        -- below definition is for llama-cpp
+        --[[ gptoss = function()
         return require("codecompanion.adapters").extend("openai_compatible", {
           name = "gptoss",
           env = {
@@ -974,8 +975,8 @@ M.llms = function()
           }
         })
       end, ]]
-      -- below definition is for ollama with gpgoss
-      --[[ gptoss = function()
+        -- below definition is for ollama with gpgoss
+        --[[ gptoss = function()
         return require("codecompanion.adapters").extend("ollama", {
           name = "gptoss",
           opts = {
@@ -998,11 +999,12 @@ M.llms = function()
           },
         })
       end, ]]
-      opts = {
-        allow_insecure = false, -- Allow insecure connections? yes if we're using ollama
-        show_model_choices = true,
-      },
+        opts = {
+          allow_insecure = false, -- Allow insecure connections? yes if we're using ollama
+          show_model_choices = true,
+        },
 
+      }
     },
     --[[ strategies = {
       chat = {
