@@ -163,7 +163,7 @@ M.defaults = function()
   vim.api.nvim_exec2([[
     augroup YankHighlight
         autocmd!
-        autocmd TextYankPost * silent! lua vim.highlight.on_yank()
+        autocmd TextYankPost * silent! lua vim.hl.on_yank()
     augroup end
     ]], { output = false })
 end

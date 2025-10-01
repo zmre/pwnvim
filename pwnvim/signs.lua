@@ -68,10 +68,17 @@ else
   }
 end
 
-for _, sign in ipairs(M.signs) do
-  vim.fn.sign_define(sign.name,
-    { texthl = M.name, text = M.text, numhl = "" })
-end
+vim.diagnostic.config({
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = M.error,
+      [vim.diagnostic.severity.WARN] = M.warn,
+      [vim.diagnostic.severity.HINT] = M.hint,
+      [vim.diagnostic.severity.INFO] = M.info,
+
+    }
+  }
+})
 
 
 return M

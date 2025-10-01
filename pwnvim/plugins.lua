@@ -604,7 +604,7 @@ M.diagnostics = function()
     callback = function() require("lint").try_lint() end
   })
 
-  local lspconfig = require("lspconfig")
+  -- local lspconfig = require("lspconfig")
 
   local capabilities = vim.tbl_extend("force", vim.lsp.protocol
     .make_client_capabilities(),
@@ -714,19 +714,20 @@ M.diagnostics = function()
   end
 
 
-  lspconfig.marksman.setup({
+  vim.lsp.config.marksman = {
     capabilities = capabilities,
     on_attach = attached,
     -- root_dir = lspconfig.util.root_pattern('nope'), -- this is a temp fix for an error in the lspconfig for this LS
     single_file_support = true,
-  })
+  }
+  vim.lsp.enable("marksman")
   -- lspconfig.markdown_oxide.setup({
   --   capabilities = capabilities,
   --   on_attach = attached,
   --   root_dir = lspconfig.util.root_pattern('nope'), -- this is a temp fix for an error in the lspconfig for this LS
   --   single_file_support = true,
   -- })
-  lspconfig.yamlls.setup {
+  vim.lsp.config.yamlls = {
     on_attach = attached,
     capabilities = capabilities,
     settings = {
@@ -744,21 +745,28 @@ M.diagnostics = function()
           ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*",
           ["http://json.schemastore.org/kustomization"] = "kustomization.{yml,yaml}",
           ["http://json.schemastore.org/prettierrc"] = ".prettierrc.{yml,yaml}",
-          ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] = "*gitlab-ci*.{yml,yaml}",
+          ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] =
+          "*gitlab-ci*.{yml,yaml}",
           ["https://json.schemastore.org/dependabot-v2"] = ".github/dependabot.{yml,yaml}",
-          ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json"] = "*api*.{yml,yaml}",
-          ["https://raw.githubusercontent.com/argoproj/argo-workflows/master/api/jsonschema/schema.json"] = "*flow*.{yml,yaml}",
-          ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "*docker-compose*.{yml,yaml}",
-          ["https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/master/service-schema.json"] = "azure-pipelines.yml",
+          ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json"] =
+          "*api*.{yml,yaml}",
+          ["https://raw.githubusercontent.com/argoproj/argo-workflows/master/api/jsonschema/schema.json"] =
+          "*flow*.{yml,yaml}",
+          ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] =
+          "*docker-compose*.{yml,yaml}",
+          ["https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/master/service-schema.json"] =
+          "azure-pipelines.yml",
           ["kubernetes"] = "*.y{a,}ml"
         },
       },
     }
   }
-  lspconfig.ts_ls
-      .setup({ capabilities = capabilities, on_attach = attached, init_options = { preferences = { disableSuggestions = true, } } })
+  vim.lsp.enable("yamlls")
+  vim.lsp.config.ts_ls =
+  { capabilities = capabilities, on_attach = attached, init_options = { preferences = { disableSuggestions = true, } } }
+  vim.lsp.enable("ts_ls")
 
-  lspconfig.lua_ls.setup({
+  vim.lsp.config.lua_ls = {
     on_attach = attached,
     capabilities = capabilities,
     filetypes = { "lua" },
@@ -782,10 +790,12 @@ M.diagnostics = function()
         completion = { enable = true, callSnippet = "Replace" }
       }
     }
-  })
-  lspconfig.svelte.setup({ on_attach = attached, capabilities = capabilities })
+  }
+  vim.lsp.enable("lua_ls")
+  vim.lsp.config.svelte = { on_attach = attached, capabilities = capabilities }
+  vim.lsp.enable("svelte")
   -- lspconfig.jinja_lsp.setup({ filetypes = { 'jinja', 'jinja2', 'twig', 'html' } })
-  lspconfig.tailwindcss.setup({
+  vim.lsp.config.tailwindcss = {
     on_attach = attached,
     capabilities = capabilities,
     root_dir = require("lspconfig/util").root_pattern(
@@ -797,37 +807,45 @@ M.diagnostics = function()
     settings = {
       files = { exclude = { "**/.git/**", "**/node_modules/**", "**/*.md" } }
     }
-  })
+  }
+  vim.lsp.enable("tailwindcss")
   -- nil_ls is a nix lsp
   --[[ lspconfig.nil_ls.setup({
     on_attach = attached,
     capabilities = capabilities,
     settings = { ["nil"] = { nix = { flake = { autoArchive = false } } } }
   }) ]]
-  lspconfig.nixd.setup({
+  vim.lsp.config.nixd = {
     on_attach = attached,
     capabilities = capabilities
-  })
-  lspconfig.cssls.setup({
+  }
+  vim.lsp.enable("nixd")
+  vim.lsp.config.cssls = {
     on_attach = attached,
     capabilities = capabilities,
     settings = { css = { lint = { unknownAtRules = "ignore" } } }
-  })
-  lspconfig.eslint.setup({
+  }
+  vim.lsp.enable("cssls")
+  vim.lsp.config.eslint = {
     on_attach = attached,
     capabilities = capabilities,
     filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx", "vue", "astro" } -- no svelte
-  })
-  lspconfig.html.setup({ on_attach = attached, capabilities = capabilities })
-  lspconfig.bashls.setup({ on_attach = attached, capabilities = capabilities })
+  }
+  vim.lsp.enable("eslint")
+  vim.lsp.config.html = { on_attach = attached, capabilities = capabilities }
+  vim.lsp.enable("html")
+  vim.lsp.config.bashls = { on_attach = attached, capabilities = capabilities }
+  vim.lsp.enable("bashls")
   -- TODO: investigate nvim-metals and remove line below
-  lspconfig.metals.setup({ on_attach = attached, capabilities = capabilities }) -- for scala
-  lspconfig.pyright.setup({
+  vim.lsp.config.metals = { on_attach = attached, capabilities = capabilities } -- for scala
+  vim.lsp.enable("metals")
+  vim.lsp.config.pyright = {
     on_attach = attached,
     capabilities = capabilities,
     filetypes = { "python" }
-  }) -- for python
-  lspconfig.jsonls.setup({
+  } -- for python
+  vim.lsp.enable("pyright")
+  vim.lsp.config.jsonls = {
     on_attach = attached,
     settings = {
       json = {
@@ -846,7 +864,8 @@ M.diagnostics = function()
       }
     },
     capabilities = capabilities
-  })
+  }
+  vim.lsp.enable("jsonls")
   -- require("nvim-lightbulb").setup({
   --   autocmd = { enabled = true },
   --   sign = { enabled = true },
