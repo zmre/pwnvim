@@ -5,11 +5,19 @@ M.warn = SimpleUI and "⚠️" or ""
 M.hint = SimpleUI and "" or ""
 M.info = SimpleUI and "❓" or ""
 M.signs = {
-  { name = "DiagnosticSignError", text = M.error },
-  { name = "DiagnosticSignWarn",  text = M.warn },
-  { name = "DiagnosticSignHint",  text = M.hint },
-  { name = "DiagnosticSignInfo",  text = M.info }
+  -- { name = "DiagnosticSignError", text = M.error },
+  -- { name = "DiagnosticSignWarn",  text = M.warn },
+  -- { name = "DiagnosticSignHint",  text = M.hint },
+  -- { name = "DiagnosticSignInfo",  text = M.info }
+  text = {
+    [vim.diagnostic.severity.ERROR] = M.error,
+    [vim.diagnostic.severity.WARN] = M.warn,
+    [vim.diagnostic.severity.HINT] = M.hint,
+    [vim.diagnostic.severity.INFO] = M.info,
+
+  }
 }
+
 if SimpleUI then
   M.kind_icons = {
     Text = "T",
@@ -68,17 +76,6 @@ else
   }
 end
 
-vim.diagnostic.config({
-  signs = {
-    text = {
-      [vim.diagnostic.severity.ERROR] = M.error,
-      [vim.diagnostic.severity.WARN] = M.warn,
-      [vim.diagnostic.severity.HINT] = M.hint,
-      [vim.diagnostic.severity.INFO] = M.info,
-
-    }
-  }
-})
 
 
 return M

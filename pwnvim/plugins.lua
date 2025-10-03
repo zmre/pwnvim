@@ -325,7 +325,7 @@ M.diagnostics = function()
 
   vim.diagnostic.config({
     virtual_text = false,
-    signs = { active = { signs.signs } },
+    signs = signs.signs,
     update_in_insert = false,
     underline = true,
     severity_sort = true,
