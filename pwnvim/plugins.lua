@@ -756,7 +756,7 @@ M.diagnostics = function()
           "*docker-compose*.{yml,yaml}",
           ["https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/master/service-schema.json"] =
           "azure-pipelines.yml",
-          ["kubernetes"] = "*.y{a,}ml"
+          -- ["kubernetes"] = "*.y{a,}ml"
         },
       },
     }
