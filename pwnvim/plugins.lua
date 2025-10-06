@@ -756,7 +756,10 @@ M.diagnostics = function()
           "*docker-compose*.{yml,yaml}",
           ["https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/master/service-schema.json"] =
           "azure-pipelines.yml",
-          -- ["kubernetes"] = "*.y{a,}ml"
+          ["https://raw.githubusercontent.com/GoogleContainerTools/skaffold/master/docs/content/en/schemas/v2beta26.json"] =
+          "skaffold.yaml",
+          ["https://raw.githubusercontent.com/rancher/k3d/main/pkg/config/v1alpha3/schema.json"] = "k3d.yaml",
+          ["kubernetes"] = { 'k8s**.yaml', 'kube*/*.yaml' }
         },
       },
     }
