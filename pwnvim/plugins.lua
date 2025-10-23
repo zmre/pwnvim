@@ -1330,9 +1330,12 @@ M.notes = function()
     },
     on_open = function(win)
       vim.opt.scrolloff = 999 -- keep cursor in vertical middle of screen
+      vim.g.oldfoldcolumn = vim.wo.foldcolumn
+      vim.wo.foldcolumn = "0" -- get rid of the fold indicator lines
     end,
     on_close = function()
       vim.opt.scrolloff = 8 -- restore cursor behavior
+      vim.wo.foldcolumn = vim.g.oldfoldcolumn
     end,
   })
 
