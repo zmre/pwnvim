@@ -901,7 +901,8 @@ M.llms = function()
   else
     vim.g.codecompanion_adapter = "copilot"
   end ]]
-  vim.g.codecompanion_adapter = "gptoss"
+  -- vim.g.codecompanion_adapter = "gptoss"
+  vim.g.codecompanion_adapter = "openai"
 
   require("codecompanion").setup({
     -- action_palette = {
@@ -918,6 +919,18 @@ M.llms = function()
       language = "English",
     },
     adapters = {
+      acp = {
+        gemini_cli = function()
+          return require("codecompanion.adapters").extend("gemini_cli", {
+            defaults = {
+              auth_method = "gemini-api-key", -- "oauth-personal"|"gemini-api-key"|"vertex-ai"
+            },
+            env = {
+              GEMINI_API_KEY = "cmd:security find-generic-password -l geminikey -g -w |tr -d '\n'",
+            },
+          })
+        end,
+      },
       http = {
         --[[ ollamacode = function()
         return require("codecompanion.adapters").extend("ollama", {
@@ -966,6 +979,13 @@ M.llms = function()
         --     },
         --   })
         -- end,
+        anthropic = function()
+          return require("codecompanion.adapters").extend("anthropic", {
+            env = {
+              api_key = "cmd:security find-generic-password -l anthropickey -g -w |tr -d '\n'",
+            },
+          })
+        end,
         openai = function()
           return require("codecompanion.adapters").extend("openai", {
             -- schema = {
@@ -1028,17 +1048,17 @@ M.llms = function()
 
       }
     },
-    --[[ strategies = {
+    strategies = {
       chat = {
-        adapter = (isOllamaRunning and "ollamacode" or "copilot"),
+        adapter = "openai",
       },
       inline = {
-        adapter = (isOllamaRunning and "ollamacode" or "copilot"),
+        adapter = "anthropic",
       },
       agent = {
-        adapter = (isOllamaRunning and "ollamacode" or "openai"),
+        adapter = "gemini_cli",
       },
-    }, ]]
+    },
     prompt_library = {
       ["Summarize"] = {
         strategy = "chat",
