@@ -204,8 +204,10 @@ M.setupmappings = function(bufnr)
   mapilocal("<D-b>", "****<C-O>h", "Bold")
   mapilocal("<D-i>", [[__<C-O>h]], "Italic")
   mapilocal("<D-1>", [[``<C-O>h]], "Code block")
-  mapilocal("<tab>", require('pwnvim.markdown').indent, "Indent")
-  mapilocal("<s-tab>", require('pwnvim.markdown').outdent, "Outdent")
+
+  -- TODO: make this work with blink.cmp
+  --mapilocal("<tab>", require('pwnvim.markdown').indent, "Indent")
+  --mapilocal("<s-tab>", require('pwnvim.markdown').outdent, "Outdent")
 
   -- mapnviclocal("<F7>", function()
   --   vim.cmd("lvimgrep /^#/ %")
@@ -261,7 +263,7 @@ local check_backspace = function()
   return col == 0 or vim.fn.getline(vim.fn.line(".")):sub(col, col):match "%s"
 end
 
-M.indent = function()
+--[[ M.indent = function()
   local line = vim.api.nvim_get_current_line()
   if line:match("^%s*[*-]") then
     local ctrlt = vim.api.nvim_replace_termcodes("<C-t>", true, false, true)
@@ -281,7 +283,7 @@ M.outdent = function()
     local ctrld = vim.api.nvim_replace_termcodes("<C-d>", true, false, true)
     vim.api.nvim_feedkeys(ctrld, "n", false)
   end
-end
+end ]]
 
 M.getTitleFor = function(url)
   local curl = require "plenary.curl"

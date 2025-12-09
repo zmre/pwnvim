@@ -1053,7 +1053,7 @@ M.llms = function()
         adapter = "openai",
       },
       inline = {
-        adapter = "anthropic",
+        adapter = "openai",
       },
       agent = {
         adapter = "gemini_cli",

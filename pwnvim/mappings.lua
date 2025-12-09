@@ -437,23 +437,6 @@ M.config = function()
   M.mapleaderv("ccf", function() require("codecompanion").prompt("fix") end, "AI Fix Code")
   M.mapleadernv("ccd", function() require("codecompanion").prompt("lsp") end, "AI Explain Diagnostics")
   M.mapleadernv("ccg", function() require("codecompanion").prompt("commit") end, "AI Gen Commit Message From Diff")
-  M.mapleadernv("ccm",
-    function()
-      vim.ui.select({ "ollamacode", "ollamaprose", "copilot", "openai" }, { prompt = 'Pick a service:' },
-        function(choice)
-          -- vim.g.codecompanion_adapter = choice
-          require("codecompanion").setup({
-            strategies = {
-              chat = {
-                adapter = {
-                  name = choice,
-                  -- model = "claude-sonnet-4-20250514",
-                },
-              },
-            },
-          })
-        end)
-    end, "Choose an AI service")
 
   -- M.mapv("ga", "CodeCompanionChat Add", "AI add code block")
 
