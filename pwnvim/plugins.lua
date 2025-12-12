@@ -193,13 +193,15 @@ M.ui = function()
       path = {
         max_depth = 7,
         modified = function(sym)
-          return sym:merge({
-            name = sym.name .. ' [+]',
-            -- icon = ' ',
-            icon = '',
-            name_hl = 'DropBarFileNameDirty',
-            icon_hl = 'DropBarFileNameDirty',
-          })
+          if sym ~= nil then
+            return sym:merge({
+              name = sym.name .. ' [+]',
+              -- icon = ' ',
+              icon = '',
+              name_hl = 'DropBarFileNameDirty',
+              icon_hl = 'DropBarFileNameDirty',
+            })
+          end
         end,
       }
     }
