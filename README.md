@@ -60,7 +60,7 @@ And later in your config you'd specify `pkgs.pwnvim` as something to install.
 
 When you want to run it, just use `nvim` and not `pwnvim` though I may make both work later. I'm not sure what will happen if you also have `pkgs.neovim` setup -- probably works but they'll fight for the alias?
 
-## TODO
+## TODO:
 
 * [ ] Setup some testing so a build fails if there are errors on load or if LSP breaks for some programming language
   * Seriously, if anyone has a good way to test neovim configs especially as part of nix builds, I'd love to hear it
