@@ -1134,7 +1134,7 @@ M.picker = function()
   end
   require("snacks").setup({
     -- Performance features
-    bigfile = { enabled = true }, -- disables LSP, treesitter, etc for big files
+    bigfile = { enabled = true },   -- disables LSP, treesitter, etc for big files
     quickfile = { enabled = true }, -- render file before plugins load
 
     -- Buffer/window management
@@ -1151,14 +1151,13 @@ M.picker = function()
       },
     },
     dashboard = {
-      enabled = true,
+      enabled = false, -- disabling for now as it doesn't play nice with page
       preset = {
         keys = {
           { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.files()" },
           { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
           { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
           { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
-          { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.picker.files({ cwd = vim.fn.stdpath('config') })" },
           { icon = " ", key = "p", desc = "Projects", action = ":lua Snacks.picker.projects()" },
           { icon = "󰒲 ", key = "z", desc = "Notes", action = ":lua require('zk.commands').get('ZkNotes')({ sort = { 'modified' } })" },
           { icon = " ", key = "q", desc = "Quit", action = ":qa" },
@@ -1173,12 +1172,12 @@ M.picker = function()
       },
       sections = {
         { section = "header" },
-        { section = "keys", gap = 1, padding = 1 },
-        { section = "recent_files", cwd = true, limit = 8, padding = 1 },
+        { section = "keys",         gap = 1,    padding = 1 },
+        { section = "recent_files", cwd = true, limit = 8,  padding = 1 },
       },
     },
     scroll = {
-      enabled = true,
+      enabled = false,
       animate = {
         duration = { step = 15, total = 150 },
         easing = "linear",
@@ -1207,6 +1206,7 @@ M.picker = function()
     },
     gitbrowse = { enabled = true },
     gh = { enabled = true },
+    notifier = { enabled = true },
 
     -- Picker (already configured)
     picker = {
@@ -1300,7 +1300,14 @@ end -- completions
 -- zk (zettelkasten lsp), taskwiki, focus mode, grammar
 M.notes = function()
   require("zk").setup({
-    picker = "select", -- uses vim.ui.select which snacks handles
+    picker = "snacks_picker", -- uses vim.ui.select which snacks handles
+    -- picker_options = {
+    --   snacks_picker = {
+    --     layout = {
+    --       preset = "ivy",
+    --     }
+    --   },
+    -- },
     -- automatically attach buffers in a zk notebook that match the given filetypes
     lsp = {
       auto_attach = {

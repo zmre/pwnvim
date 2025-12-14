@@ -78,6 +78,7 @@
           fzy
           zoxide
           bat # previewer for telescope for now
+          gh
           zk # lsp for markdown notes in zk folders
           #markdown-oxide # lsp for any markdown
           marksman # lsp for any markdown
@@ -393,7 +394,7 @@
           # --vim.env.RA_LOG = "info"
           # --vim.env.RA_PROFILE = "*>50"
 
-          extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}" --prefix RA_LOG : "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug" --prefix RUST_SRC_PATH : "${pkgs.rustPlatform.rustLibSrc}"'';
+          extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}" --prefix RA_LOG : "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug" --set CLICOLOR_FORCE 0 --prefix RUST_SRC_PATH : "${pkgs.rustPlatform.rustLibSrc}"'';
           # make sure impatient is loaded before everything else to speed things up
           configure = {
             inherit customRC;

@@ -135,7 +135,7 @@ M.config = function()
   -- Make F1 act like escape for accidental hits
   M.map({ "n", "v", "i", "c" }, "<F1>", "<Esc>", "Escape")
   -- Make F2 bring up a file browser
-  M.mapnvic("<F2>", "Oil .", "Toggle file browser")
+  M.mapnvic("<F2>", function() Snacks.explorer.open() end, "Toggle file explorer")
   -- Use F3 for a quick grep with Trouble to show results
   M.mapnvic("<F3>", function()
     vim.ui.input({ prompt = "Regex: " }, function(needle)
@@ -416,13 +416,12 @@ M.config = function()
   M.mapleadernv("gb", function() Snacks.picker.git_branches() end, "Branches")
   M.mapleadernv("gm", function() Snacks.picker.git_log() end, "Commits")
   M.mapleadernv("gB", function() Snacks.gitbrowse() end, "Browse in browser")
-  M.mapleadernv("gi", function() Snacks.picker.gh_issues() end, "GitHub Issues")
-  M.mapleadernv("gP", function() Snacks.picker.gh_prs() end, "GitHub PRs")
+  M.mapleadernv("gi", function() Snacks.picker.gh_issue() end, "GitHub Issues")
+  M.mapleadernv("gP", function() Snacks.picker.gh_pr() end, "GitHub PRs")
   -- Bunch more will be mapped locally with gitsigns when it loads. See ./gitsigns.lua
 
-  -- Terminal (snacks.terminal)
-  M.mapnvict("<C-\\>", function() Snacks.terminal() end, "Toggle terminal")
-  M.mapnvict("<C-'>", function() Snacks.terminal() end, "Toggle terminal")
+  M.mapnvict("<C-\\>", function() Snacks.terminal(nil, { win = { position = "right" } }) end, "Toggle terminal right")
+  M.mapnvict("<C-'>", function() Snacks.terminal(nil, { win = { position = "bottom" } }) end, "Toggle terminal bottom")
 
   -- Codecompanion bindings
   M.mapleadernv("ccl", "CodeCompanion", "AI Inline")
