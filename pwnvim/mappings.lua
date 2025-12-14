@@ -279,6 +279,7 @@ M.config = function()
       return "<c-b>"
     end
   end, "", { silent = true, expr = true })
+  M.mapnvic("<F6>", "Noice dismiss", "Dismiss visible messages") -- add shortcut to ditch messages
 
   -- gx is a built-in to open URLs under the cursor, but when
   -- not using netrw, it doesn't work right. Or maybe it's just me
