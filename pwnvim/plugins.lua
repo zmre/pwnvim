@@ -903,6 +903,7 @@ M.llms = function()
   vim.g.codecompanion_adapter = "openai"
 
   require("codecompanion").setup({
+    ignore_warnings = true, -- they have some warning about breaking changes soon to suppress 2025-12-14
     -- action_palette = {
     --   provider = "telescope"
     -- },
@@ -1206,7 +1207,7 @@ M.picker = function()
     },
     gitbrowse = { enabled = true },
     gh = { enabled = true },
-    notifier = { enabled = true },
+    notifier = { enabled = false },
 
     -- Picker (already configured)
     picker = {
