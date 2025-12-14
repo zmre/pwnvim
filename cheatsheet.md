@@ -120,7 +120,10 @@ _This is a combination of built-in universal keys and things that are specific t
 ## Git
 * `,gs` browse git status and jump to selected file
 * `,gb` browse git branches and switch to selected
-* `,gc` browse git commits
+* `,gm` browse git commits (log)
+* `,gB` open current file/line in browser (gitbrowse)
+* `,gi` browse GitHub issues
+* `,gP` browse GitHub PRs
 * `,g-` reset (unstage) current hunk
 * `,g+` stage current hunk
 * `,gu` undo stage hunk
@@ -130,10 +133,6 @@ _This is a combination of built-in universal keys and things that are specific t
 * `,gB` blame hunk popup
 * `,gd` diff this to index
 * `,gD` diff this to previous
-
-* Worktrees
-  * `,gws` switch worktree
-  * `,gwn` new worktree
 
 * Toggles
   * `,gtb` toggle current line blame
@@ -202,25 +201,26 @@ _This is a combination of built-in universal keys and things that are specific t
   * `,ni` show info preview
   * `K` over link to preview linked note
 
-## Plugin: Telescope
-Fuzzy finder via Telescope
+## Fuzzy Finder (snacks.picker)
 
 * `,ff` fuzzy search files
 * `,fg` fuzzy grep files (live)
 * `,fb` fuzzy find buffer
-* `,fh` fuzzy search history of open files
+* `,fh` fuzzy search history of open files (local)
+* `,fo` fuzzy search old file history (global)
 * `,fq` fuzzy browse quickfix
 * `,fl` fuzzy browse location list
-* `,fz` fuzzy browse zoxide
+* `,fz` fuzzy browse folders
 * `,fp` fuzzy browse projects
 * `,fk` fuzzy browse keymaps
 * `,fd` fuzzy browse document symbols
-* Inside the popup window:
-	* `ctrl + p` on selection to paste selection at cursor
-	* `ctrl + y` on selection to copy selection
-	* `ctrl + o` on selection call `open` on it
-	* ctrl + q to put results in quick fix list
-	* `ctrl + e` create new file in current dir or creates dir if name contains trailing slash or subdirs like `dir/subdir/file`
+* `,ft` fuzzy find todos in markdown files
+* `ctrl + p` open file picker
+
+## Terminal (snacks.terminal)
+
+* `Ctrl-\` toggle terminal (vertical)
+* `Ctrl-'` toggle terminal (horizontal)
 
 ### Plugin: Unimpaired
 * `[a`, `]a` prev/next file if multiple specified on cli

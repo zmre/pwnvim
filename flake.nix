@@ -196,26 +196,22 @@
           catppuccin-nvim # colorscheme
           ir_black # colorscheme for basic terminals
           #zephyr-nvim # alternate colorscheme
-          telescope-nvim # da best popup fuzzy finder
-          telescope-fzy-native-nvim # with fzy gives better results
-          # telescope-frecency-nvim # and frecency comes in handy too
-          #sqlite-lua # needed by frecency plugin -- beta support to remove dep
-          dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope
+          snacks-nvim # folke's swiss army knife - using for picker (replaces telescope)
+          dressing-nvim # dresses up vim.ui.input (snacks handles vim.ui.select)
           nvim-colorizer-lua # color over CSS like #00ff00
           nvim-web-devicons # makes things pretty; used by many plugins below
           oil-nvim # file navigator
-          git-worktree-nvim # jump between worktrees
           gitsigns-nvim # git status in gutter
           # symbols-outline-nvim # navigate the current file better
           lualine-nvim # nice status bar at bottom ; TODO 2025-06-09 time to find an alternative? tons of undealt with deprecations
-          vim-bbye # fix bdelete buffer stuff needed with bufferline
+          # vim-bbye replaced by snacks.bufdelete
           # bufferline-nvim # tabs at top
           dropbar-nvim # replacing the now archived barbecue (sad!)
           nvim-navbuddy # use same lsp symbols to navigate in popup
           nvim-ufo # allow use of lsp as source for folding
           promise-async # required by nvim-ufo
-          indent-blankline-nvim # visual indent
-          toggleterm-nvim # better terminal management
+          # indent-blankline-nvim replaced by snacks.indent
+          # toggleterm-nvim replaced by snacks.terminal
           playground # treesitter playground
           nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
           nvim-treesitter-textsubjects # adds "smart" text objects
@@ -262,14 +258,12 @@
 
           # writing
           zk-nvim # lsp for a folder of notes for searching/linking/etc.
-          zen-mode-nvim # distraction free, width constrained writing mode by Folke, replacing abandoned true-zen-nvim
+          # zen-mode-nvim replaced by snacks.zen
           # twilight-nvim # dim text outside of current scope
 
           # Misc
           vim-fugitive # git management
           diffview-nvim
-          #project-nvim # TODO: abandoned. replace with maybe https://github.com/nvim-telescope/telescope-project.nvim/
-          telescope-project-nvim
           vim-tmux-navigator # navigate vim and tmux panes together
           impatient-nvim # speeds startup times by caching lua bytecode
           which-key-nvim
@@ -280,9 +274,7 @@
           nvim-treesitter.withAllGrammars
           #(nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
         ]
-        ++ pkgs.lib.optionals (!pkgs.stdenv.isDarwin) [
-          telescope-media-files-nvim # only works on linux, requires ueberzug, but gives image preview
-        ];
+;
       optionalPlugins = with pkgs.vimPlugins; [
         # grammar check
         vim-grammarous

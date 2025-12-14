@@ -10,9 +10,7 @@ require("oil").setup({
     end,
     ["<leader>ff"] = {
       function()
-        require("telescope.builtin").find_files({
-          cwd = require("oil").get_current_dir()
-        })
+        Snacks.picker.files({ cwd = require("oil").get_current_dir() })
       end,
       mode = "n",
       nowait = true,
@@ -20,13 +18,11 @@ require("oil").setup({
     },
     ["<leader>fg"] = {
       function()
-        require("telescope.builtin").live_grep({
-          cwd = require("oil").get_current_dir()
-        })
+        Snacks.picker.grep({ cwd = require("oil").get_current_dir() })
       end,
       mode = "n",
       nowait = true,
-      desc = "Find files in the current directory"
+      desc = "Grep in the current directory"
     },
   },
   -- Id is automatically added at the beginning, and name at the end
