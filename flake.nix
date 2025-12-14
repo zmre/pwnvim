@@ -288,78 +288,6 @@
         render-markdown-nvim # prettier markdown files
         # image-nvim
       ];
-
-      recursiveMerge = attrList: let
-        f = attrPath:
-          builtins.zipAttrsWith (n: values:
-            if pkgs.lib.tail values == []
-            then pkgs.lib.head values
-            else if pkgs.lib.all pkgs.lib.isList values
-            then pkgs.lib.unique (pkgs.lib.concatLists values)
-            else if pkgs.lib.all pkgs.lib.isAttrs values
-            then f (attrPath ++ [n]) values
-            else pkgs.lib.last values);
-      in
-        f [] attrList;
-
-      augmentedNeovim = recursiveMerge [
-        (pkgs.neovim-unwrapped.overrideAttrs (oldAddrs: {
-          # This should help compile dependencies with debug symbols
-          preConfigure =
-            ''
-              export DEBUG=1
-            ''
-            + oldAddrs.preConfigure;
-          # Options for built type are: RelWithDebInfo, Release, and Debug
-          cmakeFlags = ["-DCMAKE_BUILD_TYPE=RelWithDebInfo"];
-        }))
-        {buildInputs = dependencies;}
-      ];
-      extraPythonPkgs = ps:
-        with ps; [
-          debugpy
-          jupyter
-          ipython
-          ipykernel
-          sentence-transformers
-          numpy
-          pip
-          pandas
-          scipy
-          tokenizers
-          sympy
-          pyarrow
-          python-dotenv
-          pynvim
-          jupyter-client
-          cairosvg
-          pnglatex
-          plotly
-          pyperclip
-        ];
-      pythonEnv = pkgs.python310.withPackages extraPythonPkgs;
-
-      augmentedNeovimPython = recursiveMerge [
-        (pkgs.neovim-unwrapped.overrideAttrs (oldAddrs: {
-          # This should help compile dependencies with debug symbols
-          preConfigure =
-            ''
-              export DEBUG=1
-            ''
-            + oldAddrs.preConfigure;
-          # Options for built type are: RelWithDebInfo, Release, and Debug
-          cmakeFlags = oldAddrs.cmakeFlags ++ ["-DCMAKE_BUILD_TYPE=RelWithDebInfo"];
-        }))
-        {
-          buildInputs =
-            dependencies
-            ++ [
-              pythonEnv
-              pkgs.libffi
-              pkgs.imagemagick
-            ];
-        }
-      ];
     in rec {
       # Validation checks for the configuration
       checks.default =
@@ -410,53 +338,6 @@
         __intentionallyOverridingVersion = true;
         version = old.version + "-" + self.lastModifiedDate;
       });
-      packages.pwnvim-python =
-        (pkgs.wrapNeovim augmentedNeovimPython {
-          viAlias = false;
-          vimAlias = false;
-          withNodeJs = false;
-          withPython3 = true;
-          extraLuaPackages = ps: [ps.magick];
-          extraPython3Packages = extraPythonPkgs;
-          # python3Env = pythonEnv;
-          withRuby = false;
-          extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}"'';
-          # make sure impatient is loaded before everything else to speed things up
-          configure = {
-            customRC =
-              customRC
-              + ''
-                lua << EOF
-                vim.g.molten_image_provider = "image.nvim"
-                vim.g.molten_output_win_max_height = 20
-                vim.g.molten_auto_open_output = false
-                vim.g.loaded_python3_provider = nil
-                vim.g.python3_host_prog = "${pythonEnv}/bin/python"
-                require("image").setup({
-                  backend = "kitty",
-                  max_width = 100,
-                  max_height = 12,
-                  max_height_window_percentage = math.huge,
-                  max_width_window_percentage = math.huge,
-                  window_overlap_clear_enabled = true,
-                  window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" }
-                })
-                EOF
-              '';
-            packages.myPlugins = {
-              start =
-                requiredPlugins
-                ++ (with pkgs.vimPlugins; [
-                  molten-nvim # jupyter notebook runner inside vim
-                  image-nvim # display images in kitty inside nvim for markdown and jupyter notebooks -- to experiment with
-                ]);
-              opt = optionalPlugins;
-            };
-          };
-        })
-        .overrideAttrs (old: {
-          name = "pwnvim-python-" + old.version + "-" + self.lastModifiedDate;
-        });
       apps.pwnvim = flake-utils.lib.mkApp {
         drv =
           packages.pwnvim;
@@ -467,10 +348,12 @@
       apps.default = apps.pwnvim;
       devShell = pkgs.mkShell {
         buildInputs = [packages.pwnvim] ++ dependencies;
+        shellHook = ''
+          # Set up git hooks from tracked .githooks directory
+          if [ -d .git ]; then
+            git config core.hooksPath .githooks
+          fi
+        '';
       };
-      # apps.pwnvim-python = flake-utils.lib.mkApp {
-      #   drv =
-      #
-      # };
     });
 }

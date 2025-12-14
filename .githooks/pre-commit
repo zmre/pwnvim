@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Pre-commit hook for pwnvim
+# Runs validation checks before allowing commits
+
+set -euo pipefail
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+echo "Running pre-commit checks..."
+
+# Option 1: Use nix flake check (reproducible, uses flake.nix checks.default)
+if command -v nix &> /dev/null; then
+    echo "Running nix flake check..."
+    if nix flake check 2>&1; then
+        echo -e "${GREEN}✓ All checks passed${NC}"
+        exit 0
+    else
+        echo -e "${RED}✗ Checks failed${NC}"
+        echo "Fix the issues above or commit with --no-verify to skip"
+        exit 1
+    fi
+fi
+
+# Option 2: Fallback to check.sh if nix isn't available
+if [ -x "./check.sh" ]; then
+    echo "Nix not found, falling back to ./check.sh..."
+    if ./check.sh; then
+        echo -e "${GREEN}✓ All checks passed${NC}"
+        exit 0
+    else
+        echo -e "${RED}✗ Checks failed${NC}"
+        echo "Fix the issues above or commit with --no-verify to skip"
+        exit 1
+    fi
+fi
+
+echo -e "${RED}Neither nix nor check.sh available${NC}"
+exit 1
