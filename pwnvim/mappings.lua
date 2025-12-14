@@ -160,8 +160,8 @@ M.config = function()
   -- Make ctrl-p open a file finder
   -- When using ctrl-p, screen out media files that we probably don't want
   -- to open in vim. And if we really want, then we can use ,ff
-  M.mapnv("<c-p>", require("telescope.builtin").find_files, "Find files")
-  M.mapnvic("<F9>", require("zen-mode").toggle, "Focus mode")
+  M.mapnv("<c-p>", function() Snacks.picker.files() end, "Find files")
+  M.mapnvic("<F9>", function() Snacks.zen() end, "Focus mode")
   -- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
   M.mapnvic("<F10>", 'silent !qlmanage -p "%"', "Quicklook (mac)")
   M.mapnvic("<F12>", 'syntax sync fromstart', "Restart highlighting")
@@ -170,9 +170,9 @@ M.config = function()
   M.mapnvic("<c-j>", "TmuxNavigateDown", "Pane down")
   M.mapnvic("<c-k>", "TmuxNavigateUp", "Pane up")
   M.mapnvic("<c-l>", "TmuxNavigateRight", "Pane right")
-  M.mapnvic("<D-w>", "Bdelete", "Close buffer")
-  M.mapnvic("<A-w>", "Bdelete", "Close buffer")
-  M.mapnvic("<M-w>", "Bdelete", "Close buffer")
+  M.mapnvic("<D-w>", function() Snacks.bufdelete() end, "Close buffer")
+  M.mapnvic("<A-w>", function() Snacks.bufdelete() end, "Close buffer")
+  M.mapnvic("<M-w>", function() Snacks.bufdelete() end, "Close buffer")
   M.mapnvic("<D-n>", "enew", "New buffer")
   M.mapnvic("<D-t>", "tabnew", "New tab")
   M.mapnvic("<D-s>", "write", "Save buffer")
@@ -357,7 +357,7 @@ M.config = function()
 
   M.mapleadernv("e", "Oil", "Find current file in file browser")
   M.mapleadernv("/", "nohlsearch", "Clear highlight")
-  M.mapleadernv("x", "Bdelete!", "Close buffer")
+  M.mapleadernv("x", function() Snacks.bufdelete() end, "Close buffer")
 
   -- Trouble windows
   M.mapleadernv("qq", "Trouble qflist toggle", "Quicklist (Trouble)")
@@ -372,34 +372,27 @@ M.config = function()
   M.mapleadernv("qm", "Trouble mydiags toggle focus=false", "Local diags, global errors (Trouble)")
 
   -- Find group
-  M.mapleadernv("fb",
-    function() require('telescope.builtin').buffers(require('telescope.themes').get_dropdown { previewer = false }) end,
-    "Buffers")
-  M.mapleadernv("fc", function() require('telescope.builtin').live_grep({ search_dirs = { vim.fn.expand('%:p:h') } }) end,
+  M.mapleadernv("fb", function() Snacks.picker.buffers() end, "Buffers")
+  M.mapleadernv("fc", function() Snacks.picker.grep({ dirs = { vim.fn.expand('%:p:h') } }) end,
     "Grep from dir of current file")
-  M.mapleadernv("fd", require('telescope.builtin').lsp_document_symbols, "Document symbols search")
-  M.mapleadernv("ff", require('telescope.builtin').find_files, "Files")
+  M.mapleadernv("fd", function() Snacks.picker.lsp_symbols() end, "Document symbols search")
+  M.mapleadernv("ff", function() Snacks.picker.files() end, "Files")
 
-  M.mapleadernv("fg", require('telescope.builtin').live_grep, "Grep")
-  M.mapleadernv("fh", function()
-    require('telescope.builtin').oldfiles { only_cwd = true }
-  end, "History local")
-  M.mapleadernv("fk", require('telescope.builtin').keymaps, "Keymaps")
-  M.mapleadernv("fl", require('telescope.builtin').loclist, "Loclist")
+  M.mapleadernv("fg", function() Snacks.picker.grep() end, "Grep")
+  M.mapleadernv("fh", function() Snacks.picker.recent({ filter = { cwd = true } }) end, "History local")
+  M.mapleadernv("fk", function() Snacks.picker.keymaps() end, "Keymaps")
+  M.mapleadernv("fl", function() Snacks.picker.loclist() end, "Loclist")
   M.mapleadernv("fn", function() require('zk.commands').get("ZkNotes")({ sort = { 'modified' } }) end, "Find notes")
-  M.mapleadernv("fo", require('telescope.builtin').oldfiles, "Old file history global")
-  -- M.mapleadernv("fp", require("telescope").extensions.projects.projects, "Projects")
-  M.mapleadernv("fp",
-    function() require("telescope").extensions.project.project({ display_type = 'full', hide_workspace = true }) end,
-    "Projects")
+  M.mapleadernv("fo", function() Snacks.picker.recent() end, "Old file history global")
+  M.mapleadernv("fp", function() Snacks.picker.projects() end, "Projects")
 
-  M.mapleadernv("fq", require('telescope.builtin').quickfix, "Quickfix")
+  M.mapleadernv("fq", function() Snacks.picker.qflist() end, "Quickfix")
   -- ,fs mapping done inside lsp attach functions
-  M.mapleadernv("ft",
-    'lua require(\'telescope.builtin\').grep_string{search = "^\\\\s*[*-] \\\\[ \\\\]", previewer = false, glob_pattern = "*.md", use_regex = true, disable_coordinates=true}',
-    "Todos")
+  M.mapleadernv("ft", function()
+    Snacks.picker.grep({ search = "^\\s*[*-] \\[ \\]", glob = "*.md" })
+  end, "Todos")
   M.mapleadernv("fz", function()
-    require("pwnvim.plugins").telescope_get_folder_common_folders({
+    require("pwnvim.plugins").pick_folder({
       ".config", "src/sideprojects", "src/icl", "src/icl/website.worktree", "src/personal", "src/gh",
       "Sync/Private", "Sync/Private/Finances", "Sync/IronCore Docs", "Sync/IronCore Docs/Legal",
       "Sync/IronCore Docs/Finances", "Sync/IronCore Docs/Design",
@@ -407,7 +400,7 @@ M.config = function()
     }, 1, function(folder)
       vim.cmd.lcd(folder)
       require("oil").open(folder) -- if we bail on picking a file, we have the file browser as fallback
-      require("telescope.builtin").find_files()
+      Snacks.picker.files()
     end)
   end, "Open folder")
 
@@ -419,13 +412,17 @@ M.config = function()
 
   -- Git bindings
   -- Browse git things
-  M.mapleadernv("gs", require('telescope.builtin').git_status, "Status")
-  M.mapleadernv("gb", require('telescope.builtin').git_branches, "Branches")
-  M.mapleadernv("gm", require('telescope.builtin').git_commits, "Commits")
-  -- Worktree stuff
-  M.mapleadernv("gws", require('telescope').extensions.git_worktree.git_worktree, "Switch worktree")
-  M.mapleadernv("gwn", require('telescope').extensions.git_worktree.create_git_worktree, "New worktree")
+  M.mapleadernv("gs", function() Snacks.picker.git_status() end, "Status")
+  M.mapleadernv("gb", function() Snacks.picker.git_branches() end, "Branches")
+  M.mapleadernv("gm", function() Snacks.picker.git_log() end, "Commits")
+  M.mapleadernv("gB", function() Snacks.gitbrowse() end, "Browse in browser")
+  M.mapleadernv("gi", function() Snacks.picker.gh_issues() end, "GitHub Issues")
+  M.mapleadernv("gP", function() Snacks.picker.gh_prs() end, "GitHub PRs")
   -- Bunch more will be mapped locally with gitsigns when it loads. See ./gitsigns.lua
+
+  -- Terminal (snacks.terminal)
+  M.mapnvict("<C-\\>", function() Snacks.terminal() end, "Toggle terminal")
+  M.mapnvict("<C-'>", function() Snacks.terminal() end, "Toggle terminal")
 
   -- Codecompanion bindings
   M.mapleadernv("ccl", "CodeCompanion", "AI Inline")

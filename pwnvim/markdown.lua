@@ -325,7 +325,7 @@ end
 
 M.newMeetingNote = function()
   local zk = require("zk.commands")
-  M.telescope_get_folder_and_title(vim.env.ZK_NOTEBOOK_DIR, 'meetings', function(folder, title)
+  M.pick_folder_and_title(vim.env.ZK_NOTEBOOK_DIR, 'meetings', function(folder, title)
     zk.get('ZkNew')({ dir = folder, title = title })
   end)
 end
@@ -345,7 +345,7 @@ M.newGeneralNote = function()
     end
   end
 
-  M.telescope_get_folder_and_title(zkfolder, subdir, function(folder, title)
+  M.pick_folder_and_title(zkfolder, subdir, function(folder, title)
     zk.get('ZkNew')({ dir = folder, title = title })
   end)
 end
@@ -355,8 +355,8 @@ M.newDailyNote = function()
   zk.get("ZkNew")({ dir = vim.env.ZK_NOTEBOOK_DIR .. '/daily', title = os.date("%Y%m%d") })
 end
 
-M.telescope_get_folder_and_title = function(base, subdir, callback)
-  M.telescope_get_folder(base, subdir, function(folder)
+M.pick_folder_and_title = function(base, subdir, callback)
+  M.pick_folder(base, subdir, function(folder)
     vim.ui.input({ prompt = 'Title: ', default = '' }, function(input)
       if input ~= nil then
         callback(folder, input)
@@ -365,23 +365,7 @@ M.telescope_get_folder_and_title = function(base, subdir, callback)
   end)
 end
 
-M.telescope_get_folder = function(base, subdir, callback)
-  local pickers = require "telescope.pickers"
-  local finders = require "telescope.finders"
-  local sorters = require "telescope.sorters"
-  local themes = require "telescope.themes"
-  local action_state = require "telescope.actions.state"
-  local actions = require "telescope.actions"
-
-  local entry = function(a)
-    local display = (string.gsub(a, base .. '/' .. subdir, ''))
-    if (display == '') then display = '/' end
-    return {
-      value = a,
-      display = display,
-      ordinal = a
-    }
-  end
+M.pick_folder = function(base, subdir, callback)
   local scan = require 'plenary.scandir'
   local full_path_folders = scan.scan_dir(base .. '/' .. subdir, {
     add_dirs = true,
@@ -391,29 +375,29 @@ M.telescope_get_folder = function(base, subdir, callback)
   })
   table.insert(full_path_folders, 1, base .. '/' .. subdir)
 
-  local finder = finders.new_table({
-    results = full_path_folders,
-    entry_maker = entry
+  -- Create items for snacks picker
+  local items = {}
+  for _, folder in ipairs(full_path_folders) do
+    local display = (string.gsub(folder, base .. '/' .. subdir, ''))
+    if display == '' then display = '/' end
+    table.insert(items, {
+      text = display,
+      file = folder,
+    })
+  end
+
+  Snacks.picker.pick({
+    source = "custom",
+    title = "Pick Folder",
+    items = items,
+    format = "text",
+    confirm = function(picker, item)
+      picker:close()
+      if item and item.file then
+        callback(item.file)
+      end
+    end,
   })
-  pickers.new({}, {
-    cwd = base,
-    prompt_title = "Pick Folder",
-    finder = finder,
-    sorter = sorters.fuzzy_with_index_bias(),
-    theme = themes.get_dropdown(),
-    attach_mappings =
-        function(prompt_bufnr)
-          actions.select_default:replace(function()
-            local folder = action_state.get_selected_entry()
-            -- print(vim.inspect(folder))
-            if folder ~= nil then
-              actions.close(prompt_bufnr)
-              callback(folder["value"])
-            end
-          end)
-          return true
-        end
-  }):find()
 end
 
 return M

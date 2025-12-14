@@ -70,10 +70,8 @@ M.ui = function()
         start_in_insert = true, -- ready for input immediately
       },
       select = {
-        -- Set to false to disable the vim.ui.select implementation
-        enabled = true,
-        backend = { "telescope", "nui", "builtin" },
-        telescope = require('telescope.themes').get_dropdown()
+        -- Set to false to disable - snacks handles vim.ui.select now
+        enabled = false,
       }
 
     })
@@ -122,7 +120,7 @@ M.ui = function()
   require("pwnvim.plugins.lualine")
   require("pwnvim.plugins.treesitter")
   -- require("pwnvim.plugins.bufferline")
-  require("pwnvim.plugins.indent-blankline")
+  -- indent guides now handled by snacks.indent
   require("flash").setup({
     modes = {
       char = {
@@ -411,8 +409,6 @@ M.diagnostics = function()
     local mapnviclocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapnvic)
     local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
 
-    local builtin = require("telescope.builtin")
-
     vim.api.nvim_set_option_value("omnifunc", "v:lua.vim.lsp.omnifunc", { buf = bufnr })
     vim.api.nvim_set_option_value("tagfunc", "v:lua.vim.lsp.tagfunc", { buf = bufnr })
 
@@ -476,7 +472,7 @@ M.diagnostics = function()
     end
 
     if client.server_capabilities.references or client.server_capabilities.referencesProvider then
-      mapleadernlocal("lr", builtin.lsp_references, "References")
+      mapleadernlocal("lr", function() Snacks.picker.lsp_references() end, "References")
     end
 
     if client.server_capabilities.documentSymbolProvider then
@@ -492,11 +488,11 @@ M.diagnostics = function()
     end
 
     if client.server_capabilities.workspaceSymbolProvider then
-      mapleadernlocal("lsw", builtin.lsp_workspace_symbols, "Find symbol in workspace")
+      mapleadernlocal("lsw", function() Snacks.picker.lsp_workspace_symbols() end, "Find symbol in workspace")
     end
 
     if client.server_capabilities.implementationProvider or client.server_capabilities.implementation then
-      mapleadernlocal("lI", require("telescope.builtin").lsp_implementations, "Implementations")
+      mapleadernlocal("lI", function() Snacks.picker.lsp_implementations() end, "Implementations")
     end
 
     if client.server_capabilities.renameProvider or client.server_capabilities.rename then
@@ -1107,137 +1103,172 @@ M.llms = function()
   vim.cmd([[cab cc CodeCompanion]])
 end
 
------------------------ TELESCOPE --------------------------------
-M.telescope = function()
-  local actions = require("telescope.actions")
-  local action_state = require("telescope.actions.state")
+----------------------- SNACKS PICKER --------------------------------
+M.picker = function()
+  local trouble_actions = require("trouble.sources.snacks").actions
 
-  local function quicklook_selected_entry(_prompt_bufnr)
-    local entry = action_state.get_selected_entry()
-    -- actions.close(prompt_bufnr)
-    vim.cmd("silent !qlmanage -p '" .. entry.value .. "'")
+  -- Custom actions for snacks picker
+  local function quicklook_action(picker)
+    local item = picker:current()
+    if item and item.file then
+      vim.cmd("silent !qlmanage -p '" .. item.file .. "'")
+    end
   end
 
-  local function yank_selected_entry(prompt_bufnr)
-    local entry = action_state.get_selected_entry()
-    actions.close(prompt_bufnr)
-    -- Put it in the unnamed buffer and the system clipboard both
-    vim.api.nvim_call_function("setreg", { '"', entry.value })
-    vim.api.nvim_call_function("setreg", { "*", entry.value })
+  local function yank_action(picker)
+    local item = picker:current()
+    if item then
+      local value = item.file or item.text or ""
+      vim.fn.setreg('"', value)
+      vim.fn.setreg('*', value)
+      picker:close()
+    end
   end
 
-  local function system_open_selected_entry(prompt_bufnr)
-    local entry = action_state.get_selected_entry()
-    actions.close(prompt_bufnr)
-    os.execute("open '" .. entry.value .. "'")
+  local function system_open_action(picker)
+    local item = picker:current()
+    if item and item.file then
+      os.execute("open '" .. item.file .. "'")
+      picker:close()
+    end
   end
+  require("snacks").setup({
+    -- Performance features
+    bigfile = { enabled = true }, -- disables LSP, treesitter, etc for big files
+    quickfile = { enabled = true }, -- render file before plugins load
 
-  local trouble = require("trouble.sources.telescope")
-  require("telescope").setup({
-    file_ignore_patterns = {
-      "*.bak", ".git/", "node_modules", ".zk/", "Caches/", "Backups/"
+    -- Buffer/window management
+    bufdelete = { enabled = true }, -- delete buffers without messing layout
+
+    -- UI features
+    indent = {
+      enabled = not SimpleUI,
+      char = "▏",
+      scope = { enabled = false },
+      exclude = {
+        buftypes = { "terminal", "help", "nofile", "quickfix", "prompt" },
+        filetypes = { "help", "markdown", "nofile", "packer", "Trouble", "dashboard", "NvimTree" },
+      },
     },
-    prompt_prefix = SimpleUI and ">" or " ",
-    selection_caret = SimpleUI and "↪" or " ",
-    -- path_display = { "smart" },
-    defaults = {
-      winblend = 30, -- small transparency for telescope popups -- should only matter in neovide
-      path_display = function(_, path)
-        local tail = require("telescope.utils").path_tail(path)
-        return string.format("%s (%s)", tail,
-          require("telescope.utils").path_smart(
-            path:gsub("/Users/[^/]*/", "~/"):gsub(
-              "/[^/]*$", ""):gsub(
-              "/Library/Containers/co.noteplan.NotePlan3/Data/Library/Application Support/co.noteplan.NotePlan3",
-              "/NotePlan")))
+    dashboard = {
+      enabled = true,
+      preset = {
+        keys = {
+          { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.files()" },
+          { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+          { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
+          { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
+          { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.picker.files({ cwd = vim.fn.stdpath('config') })" },
+          { icon = " ", key = "p", desc = "Projects", action = ":lua Snacks.picker.projects()" },
+          { icon = "󰒲 ", key = "z", desc = "Notes", action = ":lua require('zk.commands').get('ZkNotes')({ sort = { 'modified' } })" },
+          { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+        },
+        header = [[
+ ██████╗ ██╗    ██╗███╗   ██╗██╗   ██╗██╗███╗   ███╗
+ ██╔══██╗██║    ██║████╗  ██║██║   ██║██║████╗ ████║
+ ██████╔╝██║ █╗ ██║██╔██╗ ██║██║   ██║██║██╔████╔██║
+ ██╔═══╝ ██║███╗██║██║╚██╗██║╚██╗ ██╔╝██║██║╚██╔╝██║
+ ██║     ╚███╔███╔╝██║ ╚████║ ╚████╔╝ ██║██║ ╚═╝ ██║
+ ╚═╝      ╚══╝╚══╝ ╚═╝  ╚═══╝  ╚═══╝  ╚═╝╚═╝     ╚═╝]],
+      },
+      sections = {
+        { section = "header" },
+        { section = "keys", gap = 1, padding = 1 },
+        { section = "recent_files", cwd = true, limit = 8, padding = 1 },
+      },
+    },
+    scroll = {
+      enabled = true,
+      animate = {
+        duration = { step = 15, total = 150 },
+        easing = "linear",
+      },
+    },
+    terminal = {
+      enabled = true,
+      win = { style = "terminal" },
+    },
+    zen = {
+      enabled = true,
+      toggles = { dim = false, git_signs = true, diagnostics = false },
+      on_open = function()
+        vim.opt.scrolloff = 999 -- keep cursor in vertical middle
+        vim.g.oldfoldcolumn = vim.wo.foldcolumn
+        vim.wo.foldcolumn = "0"
       end,
-      -- path_display = { "truncate" },
-      mappings = {
-        n = {
-          ["<c-t>"] = trouble.open,
-          ["<C-y>"] = yank_selected_entry,
-          ["<C-o>"] = system_open_selected_entry,
-          ["<F10>"] = quicklook_selected_entry,
-          ["dd"] = require("telescope.actions").delete_buffer,
-          ["q"] = require("telescope.actions").close
-        },
-        i = {
-          ["<c-t>"] = trouble.open,
-          ["<c-h>"] = "which_key",
-          ["<C-y>"] = yank_selected_entry,
-          ["<F10>"] = quicklook_selected_entry,
-          ["<C-o>"] = system_open_selected_entry
-        }
+      on_close = function()
+        vim.opt.scrolloff = 8
+        vim.wo.foldcolumn = vim.g.oldfoldcolumn or "auto:5"
+      end,
+      zoom = {
+        toggles = { dim = false, git_signs = true },
+        win = { width = 0.85 },
       },
-      vimgrep_arguments = {
-        "rg", "--color=never", "--no-heading", "--with-filename",
-        "--line-number", "--column", "--smart-case"
-      },
-      -- Telescope smart history
-      history = {
-        path = "~/.local/share/nvim/databases/telescope_history.sqlite3",
-        limit = 100
-      },
-      layout_strategy = "flex",
-      layout_config = {
-        horizontal = { prompt_position = "bottom", preview_width = 0.55 },
-        vertical = { mirror = false },
-        width = 0.87,
-        height = 0.80,
-        preview_cutoff = 1
-      },
-      color_devicons = not SimpleUI,
-      set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
-      file_previewer = require("telescope.previewers").vim_buffer_cat.new,
-      grep_previewer = require("telescope.previewers").vim_buffer_vimgrep
-          .new,
-      qflist_previewer = require("telescope.previewers").vim_buffer_qflist
-          .new
     },
+    gitbrowse = { enabled = true },
+    gh = { enabled = true },
 
-    extensions = {
-      fzy_native = {
-        override_generic_sorter = false,
-        override_file_sorter = true
-      },
-      project = {
-        base_dirs = {
-          { '~/src', max_depth = 3 },
-          '~/.config/nixpkgs',
-          '~/Documents',
-          '~/Notes'
-        },
-        ignore_missing_dirs = true,
-        order_by = "recent",
-        on_project_selected = function(prompt_bufnr)
-          require("telescope._extensions.project.actions").change_working_directory(prompt_bufnr, false)
-          require("telescope._extensions.project.utils").update_last_accessed_project_time(vim.fn.getcwd())
-          require('telescope.builtin').find_files()
+    -- Picker (already configured)
+    picker = {
+      prompt = SimpleUI and "> " or " ",
+      ui_select = true, -- replace vim.ui.select with snacks picker
+      layout = {
+        cycle = true,
+        preset = function()
+          return vim.o.columns >= 120 and "default" or "vertical"
         end,
       },
-      --[[ frecency = {
-        ignore_patterns = { "*.git/*", "*/tmp/*", ".*ignore", "*.DS_Store*", "Caches", "Backups", "/Applications",
-          "/bin", "*/.localized" },
-        -- show the tail for "LSP", "CWD" and "FOO"
-        show_filter_column = { "LSP", "CWD" },
-        show_scores = true,
-        show_unindexed = false,
-        use_sqlite = false
-      }, ]]
-    }
+      formatters = {
+        file = {
+          filename_first = true, -- show filename before path like telescope did
+          truncate = 80,
+        },
+      },
+      sources = {
+        files = {
+          hidden = true,
+          ignored = false,
+          exclude = { "*.bak", ".git/", "node_modules", ".zk/", "Caches/", "Backups/" },
+        },
+        grep = {
+          hidden = true,
+          ignored = false,
+          exclude = { "*.bak", ".git/", "node_modules", ".zk/", "Caches/", "Backups/" },
+        },
+        projects = {
+          dev = { "~/src", "~/.config/nixpkgs", "~/Documents", "~/Notes" },
+          patterns = { ".git", "flake.nix", "Cargo.toml", "package.json", ".project" },
+        },
+      },
+      win = {
+        input = {
+          keys = {
+            ["<c-t>"] = { "trouble_open", mode = { "n", "i" } },
+            ["<C-y>"] = { "yank_path", mode = { "n", "i" } },
+            ["<C-o>"] = { "system_open", mode = { "n", "i" } },
+            ["<F10>"] = { "quicklook", mode = { "n", "i" } },
+            ["<c-h>"] = { "toggle_help", mode = { "i" } },
+          },
+        },
+        list = {
+          keys = {
+            ["<c-t>"] = "trouble_open",
+            ["<C-y>"] = "yank_path",
+            ["<C-o>"] = "system_open",
+            ["<F10>"] = "quicklook",
+            ["dd"] = "bufdelete",
+            ["q"] = "close",
+          },
+        },
+      },
+      actions = vim.tbl_extend("force", trouble_actions, {
+        quicklook = quicklook_action,
+        yank_path = yank_action,
+        system_open = system_open_action,
+      }),
+    },
   })
-  require("telescope").load_extension("fzy_native")
-  require("telescope").load_extension("zk")
-  if not SimpleUI then
-    require("telescope").load_extension("noice")
-  end
-  -- require("telescope").load_extension("frecency")
-  require("telescope").load_extension("git_worktree")
-  if vim.fn.has("mac") ~= 1 then
-    -- doesn't currently work on mac
-    require("telescope").load_extension("media_files")
-  end
-end -- telescope
+end -- picker
 
 
 ----------------------- COMPLETIONS --------------------------------
@@ -1269,7 +1300,7 @@ end -- completions
 -- zk (zettelkasten lsp), taskwiki, focus mode, grammar
 M.notes = function()
   require("zk").setup({
-    picker = "telescope",
+    picker = "select", -- uses vim.ui.select which snacks handles
     -- automatically attach buffers in a zk notebook that match the given filetypes
     lsp = {
       auto_attach = {
@@ -1289,8 +1320,8 @@ M.notes = function()
           mapleadernlocal("np", "ZkNew { dir = vim.fn.expand('%:p:h'), title = vim.fn.input('Title: ') }",
             "New peer note (same dir)")
           mapleadernlocal("nl", "ZkLinks", "Show note links")
-          mapleadernlocal("nr", require("telescope.builtin").lsp_references, "References to this note")
-          mapleadernlocal("lr", require("telescope.builtin").lsp_references, "References to this note") -- for muscle memory
+          mapleadernlocal("nr", function() Snacks.picker.lsp_references() end, "References to this note")
+          mapleadernlocal("lr", function() Snacks.picker.lsp_references() end, "References to this note") -- for muscle memory
           mapleadernlocal("li", vim.lsp.buf.hover, "Info hover")
           mapleadernlocal("lf", vim.lsp.buf.code_action, "Fix code actions")
           mapleadernlocal("le", vim.diagnostic.open_float, "Show line diags")
@@ -1328,39 +1359,6 @@ M.notes = function()
     }
   })
 
-  -- Focus mode / centering
-  require("zen-mode").setup({
-    window = {
-      -- Set to 1 to keep the same as Normal height and width can be:
-      -- an absolute number of cells when > 1
-      -- a percentage of the width / height of the editor when <= 1
-      -- a function that returns the width or the height
-      width = 120,
-      height = 1,
-    },
-    plugins = {
-      options = {
-        enabled = true,
-        ruler = false,
-        showcmd = false,
-        laststatus = 1,
-      },
-      twilight = { enabled = false },
-      gitsigns = { enabled = true },
-      tmux = { enabled = false },
-      neovide = { enabled = true, scale = 1.2 },
-    },
-    on_open = function(win)
-      vim.opt.scrolloff = 999 -- keep cursor in vertical middle of screen
-      vim.g.oldfoldcolumn = vim.wo.foldcolumn
-      vim.wo.foldcolumn = "0" -- get rid of the fold indicator lines
-    end,
-    on_close = function()
-      vim.opt.scrolloff = 8 -- restore cursor behavior
-      vim.wo.foldcolumn = vim.g.oldfoldcolumn
-    end,
-  })
-
   -- Grammar
   vim.g["grammarous#disabled_rules"] = {
     ["*"] = {
@@ -1396,7 +1394,7 @@ M.grammar_check = function()
 end
 
 ----------------------- MISC --------------------------------
--- rooter, kommentary, autopairs, toggleterm, matchup, yazi
+-- rooter, kommentary, autopairs, matchup, yazi
 M.misc = function()
   vim.g.lf_map_keys = 0              -- lf.vim disable default keymapping
   vim.g.matchup_surround_enabled = 0 -- disallows ds type selections
@@ -1405,36 +1403,9 @@ M.misc = function()
   vim.g.matchup_motion_override_Npercent = 100
   vim.g.matchup_text_obj_linewise_operators = { 'd', 'y', 'c', 'v' }
 
-  -- Change project directory using local cd only
-  -- vim.g.rooter_cd_cmd = 'lcd'
-  -- Look for these files/dirs as hints
-  -- vim.g.rooter_patterns = {
-  --     '.git', '_darcs', '.hg', '.bzr', '.svn', 'Makefile', 'package.json',
-  --     '.zk', 'Cargo.toml', 'build.sbt', 'Package.swift', 'Makefile.in'
-  -- }
-
-
   require("nvim-autopairs").setup({})
 
   vim.g.tmux_navigator_no_mappings = 1
-
-  require("toggleterm").setup({
-    open_mapping = [[<c-\>]],
-    shade_terminals = true,
-    insert_mappings = true, -- from normal or insert mode
-    terminal_mappings = false,
-    start_in_insert = true,
-    hide_numbers = true,
-    direction = "vertical",
-    size = function(_) return vim.o.columns * 0.3 end,
-    close_on_exit = true
-  })
-  -- vim.api.nvim_set_keymap("t", [[<C-\>]], "<Cmd>ToggleTermToggleAll<cr>", { noremap = true })
-  -- This is just needed so that I can switch terms when in a term, which isn't default behavior
-  require("pwnvim.mappings").mapt([[<C-\>]],
-    "<Cmd>exe v:count1 . 'ToggleTerm'<cr>", "Toggle on or off specific terms from inside term")
-  require("pwnvim.mappings").mapnvict("<C-'>", "ToggleTerm direction=horizontal size=30 name=bottom",
-    "Bottom of screen terminal window")
 
 
   -- require("project_nvim").setup({
@@ -1454,33 +1425,21 @@ M.misc = function()
   --   ignore_lsp = {}
   -- })
 
-  -- require("telescope").load_extension("projects")
-  require("telescope").load_extension("project")
   require("yazi").setup({
     open_for_directories = false
   })
 end -- misc
 
-M.telescope_get_folder_common_folders = function(search_folders, depth, callback)
-  local pickers = require "telescope.pickers"
-  local finders = require "telescope.finders"
-  local sorters = require "telescope.sorters"
-  local themes = require "telescope.themes"
-  local action_state = require "telescope.actions.state"
-  local actions = require "telescope.actions"
+-- Custom folder picker using snacks.picker
+M.pick_folder = function(search_folders, depth, callback)
   local Job = require 'plenary.job'
 
-  local entry = function(a)
-    local value = vim.env.HOME .. "/" .. a
-    local display = "~/" .. a -- (string.gsub(a, vim.env.HOME, '~'))
-    return {
-      value = value,
-      display = display,
-      ordinal = a
-    }
+  local full_path_folders = {}
+  -- Add base search folders first
+  for _, f in ipairs(search_folders) do
+    table.insert(full_path_folders, f)
   end
 
-  local full_path_folders = search_folders
   local args = { '--base-directory', vim.env.HOME, "--min-depth", 1, "--max-depth", depth, "-t", "d", "-L" }
   for _, f in ipairs(search_folders) do
     table.insert(args, "--search-path")
@@ -1502,34 +1461,31 @@ M.telescope_get_folder_common_folders = function(search_folders, depth, callback
         table.insert(full_path_folders, data)
       end
     end,
-    -- on_exit = function(job,code)
-    --
-    -- end
-  }):sync() -- or start()
+  }):sync()
 
-  local finder = finders.new_table({
-    results = full_path_folders,
-    entry_maker = entry
+  -- Create items for snacks picker
+  local items = {}
+  for _, folder in ipairs(full_path_folders) do
+    local full_path = vim.env.HOME .. "/" .. folder
+    local display = "~/" .. folder
+    table.insert(items, {
+      text = display,
+      file = full_path,
+    })
+  end
+
+  Snacks.picker.pick({
+    source = "custom",
+    title = "Pick Folder",
+    items = items,
+    format = "text",
+    confirm = function(picker, item)
+      picker:close()
+      if item and item.file then
+        callback(item.file)
+      end
+    end,
   })
-  pickers.new({}, {
-    cwd = vim.env.HOME,
-    prompt_title = "Pick Folder",
-    finder = finder,
-    sorter = sorters.fuzzy_with_index_bias(),
-    theme = themes.get_dropdown(),
-    attach_mappings =
-        function(prompt_bufnr)
-          actions.select_default:replace(function()
-            local folder = action_state.get_selected_entry()
-            -- print(vim.inspect(folder))
-            if folder ~= nil then
-              actions.close(prompt_bufnr)
-              callback(folder["value"])
-            end
-          end)
-          return true
-        end
-  }):find()
 end
 
 

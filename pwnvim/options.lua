@@ -34,7 +34,7 @@ M.defaults = function()
 
   -- my shada is so large it takes up half of startup time to process; constraining what it keeps here
   -- previous value: !,'100,<50,s10,h'
-  vim.opt.shada = { "'50", "<0", ":5", "/0", '"0', "@5", "f10", "h", "s10" }
+  vim.opt.shada = { "'50", "<0", ":5", "/0", '"0', "@15", "f10", "h", "s10" }
   -- The "'#" option remembers some number of marks, but actually controls how many files in the oldfiles list
   -- this would allow spaces in filenames for commands like `gf` but results are really mixed.
   -- commenting for now 2022-12-22
@@ -209,9 +209,12 @@ M.colors_cat = function()
       noice = true,
       ufo = true,
       semantic_tokens = true,
+      snacks = {
+        enabled = true,
+      },
       treesitter_context = true,
       lsp_trouble = true,
-      telescope = { enabled = true },
+      telescope = { enabled = false },
       which_key = true,
       -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
     },
@@ -408,29 +411,6 @@ M.colors_onedark = function()
 
         ["@markup.list.checked"] = { fg = "${green}", bold = true },
 
-        -- TelescopeBorder = {
-        --   fg = "${telescope_results}",
-        --   bg = "${telescope_results}"
-        -- },
-        -- TelescopePromptBorder = {
-        --   fg = "${telescope_prompt}",
-        --   bg = "${telescope_prompt}"
-        -- },
-        -- TelescopePromptCounter = { fg = "${fg}" },
-        -- TelescopePromptNormal = { fg = "${fg}", bg = "${telescope_prompt}" },
-        -- TelescopePromptPrefix = { fg = "${purple}", bg = "${telescope_prompt}" },
-        -- TelescopePromptTitle = { fg = "${telescope_prompt}", bg = "${purple}" },
-        --
-        -- TelescopePreviewTitle = { fg = "${telescope_results}", bg = "${green}" },
-        -- TelescopeResultsTitle = {
-        --   fg = "${telescope_results}",
-        --   bg = "${telescope_results}"
-        -- },
-
-        -- TelescopeMatching = { fg = "${blue}" },
-        -- TelescopeNormal = { bg = "#000000" },
-        -- TelescopeSelection = { bg = "${telescope_prompt}" },
-        -- PmenuSel = { blend = 0 },
 
         -- Trouble windows
         TroubleNormalNC = { bg = "#221133" },
@@ -455,10 +435,7 @@ M.colors_onedark = function()
           -- Make neovide have a more distinctive blue bg color
           bg = (vim.g.neovide and "#16233B" or "#282c34"),
           cursorline = (vim.g.neovide and "#131F34" or "#2d313b"),
-          -- telescope_prompt = "#2e323a",
-          -- telescope_results = "#21252d"
         },
-        -- onelight = { telescope_prompt = "#f5f5f5", telescope_results = "#eeeeee" }
       }
     })
   end

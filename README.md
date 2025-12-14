@@ -20,7 +20,7 @@ Think of this repo as an extremely opinionated and not readily customizable [Lun
 
 As of the writing of this README, it will give nice syntax highlighting to almost anything, but full nice environments for rust, typescript, svelte, nix, lua, and markdown. I will probably add to these as I dust off old projects or pick up new things. But this is sort of a warning that it might not work ideally for you if you're programming in perl, php, java, or something else outside of my present-day wheelhouse. 
 
-It includes git symbols, fugitive, nice status lines and tab bars for buffers, file choosers via telescope, autocomplete, and much more. Take a look at the [flake.nix](./flake.nix) file to get a full picture.
+It includes git symbols, fugitive, nice status lines and tab bars for buffers, file choosers via snacks.picker, autocomplete, and much more. Take a look at the [flake.nix](./flake.nix) file to get a full picture.
 
 ## Using It
 

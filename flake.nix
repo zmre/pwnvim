@@ -88,6 +88,7 @@
           vale # linter for prose
           proselint # ditto
           luaformatter # ditto for lua
+          luajitPackages.luacheck # linter for lua
           #prisma-engines # ditto for schema.prisma files # TODO: bring back when rust compile issues are fixed 2024-08-26
           # Nix language servers summary 2023-11-23
           # rnix-lsp -- seems abandoned
@@ -164,125 +165,115 @@
           EOF
         '';
 
-      requiredPlugins = with pkgs.vimPlugins;
-        [
-          # Common dependencies of other plugins
-          popup-nvim # dependency of some other plugins
-          plenary-nvim # Library for lua plugins; used by many plugins here
+      requiredPlugins = with pkgs.vimPlugins; [
+        # Common dependencies of other plugins
+        popup-nvim # dependency of some other plugins
+        plenary-nvim # Library for lua plugins; used by many plugins here
 
-          # Syntax / Language Support ##########################
-          # Removing 2022-11-30 as it is slow and treesitter generally does the same thing
-          # Reinstating 2024-09-10 so I get fallbacks again
-          # Removing again 2024-12-12 because it isn't respecting the ftdetect disable and is overriding my detections
-          #vim-polyglot # lazy load all the syntax plugins for all the languages
-          rustaceanvim # lsp stuff and more for rust; replaces rust-tools-nvim which is now archived
-          nvim-lspconfig # setup LSP for intelligent coding
-          nvim-lint # replace null-ls for linting bits
-          conform-nvim # replace null-ls and lsp-format-nvim for formatting
-          trouble-nvim # navigate all warnings and errors in quickfix-like window
-          nvim-dap # debugging functionality used by rust-tools-nvim
-          nvim-dap-ui # ui for debugging
-          nvim-dap-python
-          nvim-nio # needed by dap-ui
-          neotest
-          neotest-rust
-          neodev-nvim # help for neovim lua api
-          SchemaStore-nvim # json schemas
-          vim-matchup # replaces built-in matchit and matchparen with better matching and faster
-          #nvim-lightbulb # show code actions available ; 2025-06-09 removing due to huge number of deprecations that have been ignored for a long time
+        # Syntax / Language Support ##########################
+        # Removing 2022-11-30 as it is slow and treesitter generally does the same thing
+        # Reinstating 2024-09-10 so I get fallbacks again
+        # Removing again 2024-12-12 because it isn't respecting the ftdetect disable and is overriding my detections
+        #vim-polyglot # lazy load all the syntax plugins for all the languages
+        rustaceanvim # lsp stuff and more for rust; replaces rust-tools-nvim which is now archived
+        nvim-lspconfig # setup LSP for intelligent coding
+        nvim-lint # replace null-ls for linting bits
+        conform-nvim # replace null-ls and lsp-format-nvim for formatting
+        trouble-nvim # navigate all warnings and errors in quickfix-like window
+        nvim-dap # debugging functionality used by rust-tools-nvim
+        nvim-dap-ui # ui for debugging
+        nvim-dap-python
+        nvim-nio # needed by dap-ui
+        neotest
+        neotest-rust
+        neodev-nvim # help for neovim lua api
+        SchemaStore-nvim # json schemas
+        vim-matchup # replaces built-in matchit and matchparen with better matching and faster
+        #nvim-lightbulb # show code actions available ; 2025-06-09 removing due to huge number of deprecations that have been ignored for a long time
 
-          # UI #################################################
-          onedarkpro-nvim # colorscheme
-          catppuccin-nvim # colorscheme
-          ir_black # colorscheme for basic terminals
-          #zephyr-nvim # alternate colorscheme
-          telescope-nvim # da best popup fuzzy finder
-          telescope-fzy-native-nvim # with fzy gives better results
-          # telescope-frecency-nvim # and frecency comes in handy too
-          #sqlite-lua # needed by frecency plugin -- beta support to remove dep
-          dressing-nvim # dresses up vim.ui.input and vim.ui.select and uses telescope
-          nvim-colorizer-lua # color over CSS like #00ff00
-          nvim-web-devicons # makes things pretty; used by many plugins below
-          oil-nvim # file navigator
-          git-worktree-nvim # jump between worktrees
-          gitsigns-nvim # git status in gutter
-          # symbols-outline-nvim # navigate the current file better
-          lualine-nvim # nice status bar at bottom ; TODO 2025-06-09 time to find an alternative? tons of undealt with deprecations
-          vim-bbye # fix bdelete buffer stuff needed with bufferline
-          # bufferline-nvim # tabs at top
-          dropbar-nvim # replacing the now archived barbecue (sad!)
-          nvim-navbuddy # use same lsp symbols to navigate in popup
-          nvim-ufo # allow use of lsp as source for folding
-          promise-async # required by nvim-ufo
-          indent-blankline-nvim # visual indent
-          toggleterm-nvim # better terminal management
-          playground # treesitter playground
-          nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
-          nvim-treesitter-textsubjects # adds "smart" text objects
-          lf-vim
-          nui-nvim # needed by noice
-          nvim-notify # needed by noice
-          noice-nvim # show progress and add other UI improvements
-          marks-nvim # show marks in the gutter
-          yazi-nvim # another file manager which i've started using; not replacing oil yet so side by side for now
+        # UI #################################################
+        onedarkpro-nvim # colorscheme
+        catppuccin-nvim # colorscheme
+        ir_black # colorscheme for basic terminals
+        #zephyr-nvim # alternate colorscheme
+        snacks-nvim # folke's swiss army knife - using for picker (replaces telescope)
+        dressing-nvim # dresses up vim.ui.input (snacks handles vim.ui.select)
+        nvim-colorizer-lua # color over CSS like #00ff00
+        nvim-web-devicons # makes things pretty; used by many plugins below
+        oil-nvim # file navigator
+        gitsigns-nvim # git status in gutter
+        # symbols-outline-nvim # navigate the current file better
+        lualine-nvim # nice status bar at bottom ; TODO 2025-06-09 time to find an alternative? tons of undealt with deprecations
+        # vim-bbye replaced by snacks.bufdelete
+        # bufferline-nvim # tabs at top
+        dropbar-nvim # replacing the now archived barbecue (sad!)
+        nvim-navbuddy # use same lsp symbols to navigate in popup
+        nvim-ufo # allow use of lsp as source for folding
+        promise-async # required by nvim-ufo
+        # indent-blankline-nvim replaced by snacks.indent
+        # toggleterm-nvim replaced by snacks.terminal
+        playground # treesitter playground
+        nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
+        nvim-treesitter-textsubjects # adds "smart" text objects
+        lf-vim
+        nui-nvim # needed by noice
+        nvim-notify # needed by noice
+        noice-nvim # show progress and add other UI improvements
+        marks-nvim # show marks in the gutter
+        yazi-nvim # another file manager which i've started using; not replacing oil yet so side by side for now
 
-          # Editor Features ####################################
-          vim-abolish # better abbreviations / spelling fixer
-          nvim-surround # .... updated lua-based alternative to tpope's surround
-          vim-unimpaired # bunch of convenient navigation key mappings
-          vim-repeat # supports all of the above so you can use .
-          #nvim-ts-context-commentstring # makes kommentary contextual for embedded languages
-          vim-eunuch # brings cp/mv type commands. :Rename and :Move are particularly handy
-          vim-speeddating # allows ctrl-x and ctrl-a to increment/decrement dates
-          flash-nvim
+        # Editor Features ####################################
+        vim-abolish # better abbreviations / spelling fixer
+        nvim-surround # .... updated lua-based alternative to tpope's surround
+        vim-unimpaired # bunch of convenient navigation key mappings
+        vim-repeat # supports all of the above so you can use .
+        #nvim-ts-context-commentstring # makes kommentary contextual for embedded languages
+        vim-eunuch # brings cp/mv type commands. :Rename and :Move are particularly handy
+        vim-speeddating # allows ctrl-x and ctrl-a to increment/decrement dates
+        flash-nvim
 
-          # Database interactions
-          # vim-dadbod
-          # vim-dadbod-ui
-          # vim-dadbod-completion
+        # Database interactions
+        # vim-dadbod
+        # vim-dadbod-ui
+        # vim-dadbod-completion
 
-          # Autocompletion
-          #nvim-cmp # generic autocompleter
-          #cmp-nvim-lsp # use lsp as source for completions
-          #cmp-nvim-lua # makes vim config editing better with completions
-          #cmp-buffer # any text in open buffers
-          #cmp-path # complete paths
-          #cmp-cmdline # completing in :commands
-          #cmp-emoji # complete :emojis:
-          #cmp-nvim-lsp-signature-help # help complete function call by showing args
-          #cmp-npm # complete node packages in package.json
-          blink-cmp
-          codecompanion-nvim # llm access in context; TODO 2025-06-09 find an alternative? riddled with deprecated function calls
-          nvim-autopairs # balances parens as you type
-          nvim-ts-autotag # balance or rename html
-          vim-emoji # TODO: redundant now?
-          #luasnip # snippets driver
-          #cmp_luasnip # snippets completion
-          #friendly-snippets # actual library of snippets used by luasnip
+        # Autocompletion
+        #nvim-cmp # generic autocompleter
+        #cmp-nvim-lsp # use lsp as source for completions
+        #cmp-nvim-lua # makes vim config editing better with completions
+        #cmp-buffer # any text in open buffers
+        #cmp-path # complete paths
+        #cmp-cmdline # completing in :commands
+        #cmp-emoji # complete :emojis:
+        #cmp-nvim-lsp-signature-help # help complete function call by showing args
+        #cmp-npm # complete node packages in package.json
+        blink-cmp
+        codecompanion-nvim # llm access in context; TODO 2025-06-09 find an alternative? riddled with deprecated function calls
+        nvim-autopairs # balances parens as you type
+        nvim-ts-autotag # balance or rename html
+        vim-emoji # TODO: redundant now?
+        #luasnip # snippets driver
+        #cmp_luasnip # snippets completion
+        #friendly-snippets # actual library of snippets used by luasnip
 
-          # writing
-          zk-nvim # lsp for a folder of notes for searching/linking/etc.
-          zen-mode-nvim # distraction free, width constrained writing mode by Folke, replacing abandoned true-zen-nvim
-          # twilight-nvim # dim text outside of current scope
+        # writing
+        zk-nvim # lsp for a folder of notes for searching/linking/etc.
+        # zen-mode-nvim replaced by snacks.zen
+        # twilight-nvim # dim text outside of current scope
 
-          # Misc
-          vim-fugitive # git management
-          diffview-nvim
-          #project-nvim # TODO: abandoned. replace with maybe https://github.com/nvim-telescope/telescope-project.nvim/
-          telescope-project-nvim
-          vim-tmux-navigator # navigate vim and tmux panes together
-          impatient-nvim # speeds startup times by caching lua bytecode
-          which-key-nvim
-          vim-startuptime
+        # Misc
+        vim-fugitive # git management
+        diffview-nvim
+        vim-tmux-navigator # navigate vim and tmux panes together
+        impatient-nvim # speeds startup times by caching lua bytecode
+        which-key-nvim
+        vim-startuptime
 
-          # Something was obliterating rtp and making grammars disappear. Putting this on the bottom of the list
-          # fixes the issue for me 2024-09-10.
-          nvim-treesitter.withAllGrammars
-          #(nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
-        ]
-        ++ pkgs.lib.optionals (!pkgs.stdenv.isDarwin) [
-          telescope-media-files-nvim # only works on linux, requires ueberzug, but gives image preview
-        ];
+        # Something was obliterating rtp and making grammars disappear. Putting this on the bottom of the list
+        # fixes the issue for me 2024-09-10.
+        nvim-treesitter.withAllGrammars
+        #(nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
+      ];
       optionalPlugins = with pkgs.vimPlugins; [
         # grammar check
         vim-grammarous
@@ -369,6 +360,26 @@
         }
       ];
     in rec {
+      # Validation checks for the configuration
+      checks.default =
+        pkgs.runCommand "pwnvim-check" {
+          nativeBuildInputs = [
+            packages.pwnvim
+            pkgs.luajitPackages.luacheck
+          ];
+          src = self;
+        } ''
+          cd $src
+          echo "Running luacheck..."
+          luacheck . --no-color || echo "Luacheck found issues (non-blocking for now)"
+
+          echo "Testing neovim startup..."
+          nvim --headless -c "lua vim.defer_fn(function() print('STARTUP_OK') vim.cmd('qa!') end, 100)" 2>&1 | grep -q "STARTUP_OK" || (echo "Startup test failed"; exit 1)
+
+          echo "All checks passed"
+          touch $out
+        '';
+
       packages.pwnvim = (pkgs.wrapNeovim pkgs.neovim-unwrapped {
           viAlias = true;
           vimAlias = true;
