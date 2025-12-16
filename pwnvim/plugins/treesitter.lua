@@ -12,7 +12,7 @@ require("nvim-treesitter.configs").setup({
 
     additional_vim_regex_highlighting = false
   },
-  indent = { enable = true, disable = { "yaml", "markdown", "dbout" } },
+  indent = { enable = true, disable = { "yaml", "markdown", "dbout", "checkhealth" } },
   incremental_selection = {
     enable = true,
     disable = {},

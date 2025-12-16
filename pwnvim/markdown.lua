@@ -205,9 +205,8 @@ M.setupmappings = function(bufnr)
   mapilocal("<D-i>", [[__<C-O>h]], "Italic")
   mapilocal("<D-1>", [[``<C-O>h]], "Code block")
 
-  -- TODO: make this work with blink.cmp
-  --mapilocal("<tab>", require('pwnvim.markdown').indent, "Indent")
-  --mapilocal("<s-tab>", require('pwnvim.markdown').outdent, "Outdent")
+  mapilocal("<Tab>", require('pwnvim.markdown').indent, "Indent")
+  mapilocal("<S-Tab>", require('pwnvim.markdown').outdent, "Outdent")
 
   -- mapnviclocal("<F7>", function()
   --   vim.cmd("lvimgrep /^#/ %")
@@ -258,32 +257,47 @@ M.markdownsyntax = function()
   ]], { output = false })
 end
 
-local check_backspace = function()
-  local col = vim.fn.col "." - 1
-  return col == 0 or vim.fn.getline(vim.fn.line(".")):sub(col, col):match "%s"
-end
-
---[[ M.indent = function()
+M.indent = function()
   local line = vim.api.nvim_get_current_line()
-  if line:match("^%s*[*-]") then
+  local blink_ok, blink = pcall(require, 'blink.cmp')
+  local menu_visible = blink_ok and blink.is_menu_visible()
+
+  -- On bullet line and no completion menu visible - indent the line
+  if line:match("^%s*[*-] ") and not menu_visible then
     local ctrlt = vim.api.nvim_replace_termcodes("<C-t>", true, false, true)
     vim.api.nvim_feedkeys(ctrlt, "n", false)
-  elseif check_backspace() then
-    -- we are at first col or there is whitespace immediately before cursor
-    -- send through regular tab character at current position
-    vim.api.nvim_feedkeys("\t", "n", false)
+    return
+  end
+
+  -- Otherwise, let blink handle it (snippet navigation) or fallback to regular tab
+  if blink_ok then
+    if blink.snippet_active() then
+      blink.snippet_forward()
+    else
+      vim.api.nvim_feedkeys("\t", "n", false)
+    end
   else
-    require 'cmp'.mapping.complete({})
+    vim.api.nvim_feedkeys("\t", "n", false)
   end
 end
 
 M.outdent = function()
   local line = vim.api.nvim_get_current_line()
-  if line:match("^%s*[*-]") then
+  local blink_ok, blink = pcall(require, 'blink.cmp')
+  local menu_visible = blink_ok and blink.is_menu_visible()
+
+  -- On bullet line and no completion menu visible - outdent the line
+  if line:match("^%s*[*-] ") and not menu_visible then
     local ctrld = vim.api.nvim_replace_termcodes("<C-d>", true, false, true)
     vim.api.nvim_feedkeys(ctrld, "n", false)
+    return
   end
-end ]]
+
+  -- Otherwise, let blink handle snippet navigation or do nothing
+  if blink_ok and blink.snippet_active() then
+    blink.snippet_backward()
+  end
+end
 
 M.getTitleFor = function(url)
   local curl = require "plenary.curl"
