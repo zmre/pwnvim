@@ -30,6 +30,9 @@
     clipboard-image.flake = false;
     # conform-nvim.url = "github:stevearc/conform.nvim";
     # conform-nvim.flake = false;
+    # TODO: Remove after https://github.com/folke/todo-comments.nvim/pull/381 is merged
+    todo-comments-nvim.url = "github:belltoy/todo-comments.nvim/main";
+    todo-comments-nvim.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -66,6 +69,17 @@
                 #   pname = "conform-nvim";
                 #   src = inputs.conform-nvim;
                 # };
+                # TODO: Remove after https://github.com/folke/todo-comments.nvim/pull/381 is merged
+                todo-comments-nvim = super.vimUtils.buildVimPlugin {
+                  name = "todo-comments.nvim";
+                  pname = "todo-comments.nvim";
+                  src = inputs.todo-comments-nvim;
+                  nvimSkipModule = [
+                    "todo-comments.fzf"
+                    "trouble.providers.todo"
+                    "trouble.sources.todo"
+                  ];
+                };
               };
           })
         ];

@@ -1,4 +1,8 @@
 local signs = require("pwnvim.signs")
+-- Unfortunately, todo-comments is currently plaguing me with a nasty bug that has an unmerged fix for ages.
+-- https://github.com/folke/todo-comments.nvim/pull/381
+-- https://github.com/folke/todo-comments.nvim/issues/380
+-- I might need to disable this plugin :(
 require("todo-comments").setup {
   -- your configuration comes here
   -- or leave it empty to use the default settings
