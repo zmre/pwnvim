@@ -1151,8 +1151,22 @@ M.picker = function()
         filetypes = { "help", "markdown", "nofile", "packer", "Trouble", "dashboard", "NvimTree" },
       },
     },
+    image = {
+      enabled = true,
+      doc = {
+        enabled = true,
+        inline = false, -- disable inline rendering
+        float = true,   -- show images in floating window instead
+        max_width = 80,
+        max_height = 40,
+      },
+      math = {
+        enabled = true,
+      },
+    },
     dashboard = {
-      enabled = false, -- disabling for now as it doesn't play nice with page
+      -- disable in SimpleUI, nested neovim ($NVIM set), or piped stdin (page)
+      enabled = not SimpleUI and not vim.env.NVIM and vim.fn.has('ttyin') == 1,
       preset = {
         keys = {
           { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.files()" },
@@ -1267,6 +1281,16 @@ M.picker = function()
         yank_path = yank_action,
         system_open = system_open_action,
       }),
+    },
+
+    -- Style overrides
+    styles = {
+      snacks_image = {
+        relative = "editor", -- position relative to editor, not cursor
+        row = 3,             -- near top of screen
+        -- col not set = horizontally centered
+        border = "rounded",
+      },
     },
   })
 end -- picker

@@ -66,3 +66,18 @@ When you want to run it, just use `nvim` and not `pwnvim` though I may make both
   * Seriously, if anyone has a good way to test neovim configs especially as part of nix builds, I'd love to hear it
 * [ ] Make some alternate flake targets that produce other outputs such as a lightweight one (no programming stuff), 
   * [x] and one that works in terminals without fancy fonts and with only 16 colors (this is now done though it's a bit ugly, but I have used it a lot)
+
+![test image](84cf598a224b9583.jpeg)
+
+
+
+
+
+
+
+
+
+
+
+
+
