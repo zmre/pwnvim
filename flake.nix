@@ -227,7 +227,6 @@
         promise-async # required by nvim-ufo
         # indent-blankline-nvim replaced by snacks.indent
         # toggleterm-nvim replaced by snacks.terminal
-        playground # treesitter playground
         nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
         nvim-treesitter-textsubjects # adds "smart" text objects
         lf-vim
