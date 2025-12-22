@@ -10,12 +10,7 @@ local signs = require("pwnvim.signs")
 -- Detect if neovim was launched by page pager (I60R/page)
 -- Checks if any argv contains /tmp/neovim-page/ pattern
 local is_page_pager = (function()
-  for _, arg in ipairs(vim.v.argv) do
-    if arg:find("/tmp/neovim%-page/", 1, false) then
-      return true
-    end
-  end
-  return false
+  return vim.b.page_alternate_bufnr ~= nil
 end)()
 
 ----------------------- UI --------------------------------
