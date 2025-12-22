@@ -1172,7 +1172,8 @@ M.picker = function()
     },
     dashboard = {
       -- disable in SimpleUI, nested neovim ($NVIM set), page pager, or no tty input
-      enabled = not SimpleUI and not vim.env.NVIM and not is_page_pager and vim.fn.has('ttyin') == 1,
+      --enabled = not SimpleUI and not vim.env.NVIM and not is_page_pager and vim.fn.has('ttyin') == 1,
+      enabled = false, -- i like it, but no matter what i do it messes up "page"
       preset = {
         keys = {
           { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.files()" },
