@@ -7,6 +7,17 @@ local M = {}
 
 local signs = require("pwnvim.signs")
 
+-- Detect if neovim was launched by page pager (I60R/page)
+-- Checks if any argv contains /tmp/neovim-page/ pattern
+local is_page_pager = (function()
+  for _, arg in ipairs(vim.v.argv) do
+    if arg:find("/tmp/neovim%-page/", 1, false) then
+      return true
+    end
+  end
+  return false
+end)()
+
 ----------------------- UI --------------------------------
 -- Tree, GitSigns, Indent markers, Colorizer, bufferline, lualine, treesitter
 M.ui = function()
@@ -1165,8 +1176,8 @@ M.picker = function()
       },
     },
     dashboard = {
-      -- disable in SimpleUI, nested neovim ($NVIM set), or piped stdin (page)
-      enabled = not SimpleUI and not vim.env.NVIM and vim.fn.has('ttyin') == 1,
+      -- disable in SimpleUI, nested neovim ($NVIM set), page pager, or no tty input
+      enabled = not SimpleUI and not vim.env.NVIM and not is_page_pager and vim.fn.has('ttyin') == 1,
       preset = {
         keys = {
           { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.files()" },
