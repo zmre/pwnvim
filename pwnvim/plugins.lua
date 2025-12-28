@@ -1442,7 +1442,9 @@ M.misc = function()
   vim.g.matchup_motion_override_Npercent = 100
   vim.g.matchup_text_obj_linewise_operators = { 'd', 'y', 'c', 'v' }
 
-  require("nvim-autopairs").setup({})
+  require("nvim-autopairs").setup({
+    check_ts = true
+  })
 
   vim.g.tmux_navigator_no_mappings = 1
 
