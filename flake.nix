@@ -364,14 +364,18 @@
         version = old.version + "-" + self.lastModifiedDate;
       });
       apps.pwnvim = flake-utils.lib.mkApp {
-        drv =
-          packages.pwnvim;
+        drv = packages.pwnvim;
         name = "pwnvim";
         exePath = "/bin/nvim";
+      } // {
+        meta = {
+          description = "PW's Neovim configuration";
+          mainProgram = "nvim";
+        };
       };
       packages.default = packages.pwnvim;
       apps.default = apps.pwnvim;
-      devShell = pkgs.mkShell {
+      devShells.default = pkgs.mkShell {
         buildInputs = [packages.pwnvim] ++ dependencies;
         shellHook = ''
           # Set up git hooks from tracked .githooks directory
