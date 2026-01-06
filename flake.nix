@@ -33,6 +33,8 @@
     # TODO: Remove after https://github.com/folke/todo-comments.nvim/pull/381 is merged
     todo-comments-nvim.url = "github:belltoy/todo-comments.nvim/main";
     todo-comments-nvim.flake = false;
+    mbr.url = "github:zmre/mbr-markdown-browser";
+    mbr.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs = inputs @ {
     self,
@@ -155,6 +157,8 @@
           metals # lsp for scala
           yazi # my alt file manager triggered with ,-
           # imagemagick # for image-nvim plugin
+
+          inputs.mbr.packages.${system}.mbr
         ]
         ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
           ueberzug
