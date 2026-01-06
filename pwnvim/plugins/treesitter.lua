@@ -1,88 +1,52 @@
-require("nvim-treesitter.configs").setup({
-  sync_install = false,
-  modules = {},
-  disable = {},
-  ensure_installed = {},
-  ignore_install = { "all" },
-  auto_install = false,
-  autotag = { enable = true },
-  highlight = {
-    enable = true,
-    disable = {},
+-- nvim-treesitter 1.0 configuration
+-- The module framework has been removed - plugins now handle their own setup
 
-    additional_vim_regex_highlighting = false
+local M = require("pwnvim.mappings")
+
+-- nvim-treesitter core setup (optional - defaults work fine)
+-- Parsers are bundled via withAllGrammars in flake.nix
+require("nvim-treesitter").setup({})
+
+-- nvim-treesitter-textobjects (standalone setup)
+require("nvim-treesitter-textobjects").setup({
+  select = {
+    lookahead = true,
   },
-  indent = { enable = true, disable = { "yaml", "markdown", "dbout", "checkhealth" } },
-  incremental_selection = {
-    enable = true,
-    disable = {},
-    is_supported = function()
-      -- disable in command window
-      local mode = vim.api.nvim_get_mode().mode
-      return mode ~= "c"
-    end
-  },
-  context_commentstring = {
-    enable = true,
-    disable = { "dbout" },
-  },
-  matchup = {
-    enable = true,
-    disable = { "dbout" },
-    include_match_words = true
-  },
-  textsubjects = {
-    enable = true,
-  },
-  textobjects = {
-    disable = {},
-    select = {
-      enable = true,
-      lookahead = true,
-      keymaps = {
-        -- You can use the capture groups defined in textobjects.scm
-        ["af"] = { query = "@function.outer", desc = "Select outer function" },
-        ["if"] = { query = "@function.inner", desc = "Select inner function" },
-        ["ac"] = { query = "@class.outer", desc = "Select outer class" },
-        ["ic"] = { query = "@class.inner", desc = "Select inner class" },
-        ["im"] = { query = "@block.inner", desc = "Select inner block" },
-        ["am"] = { query = "@block.outer", desc = "Select outer block" }
-        -- ["il"] = { query = "@list.inner", desc = "Select inner list" },
-        -- ["al"] = { query = "@list.outer", desc = "Select outer list" },
-        -- ["ih"] = { query = "@section.inner", desc = "Select inner section" },
-        -- ["ah"] = { query = "@section.outer", desc = "Select outer section" },
-      }
-    },
-    move = {
-      enable = true,
-      set_jumps = true, -- khether to set jumps in the jumplist
-      goto_next_start = {
-        ["]m"] = "@function.outer",
-        ["]]"] = { query = "@class.outer", desc = "Next class start" }
-      },
-      goto_next_end = { ["]M"] = "@function.outer", ["]["] = "@class.outer" },
-      goto_previous_start = {
-        ["[m"] = "@function.outer",
-        ["[["] = "@class.outer"
-      },
-      goto_previous_end = { ["[M"] = "@function.outer", ["[]"] = "@class.outer" }
-    },
-    lsp_interop = {
-      enable = false,
-      border = "none",
-      floating_preview_opts = {},
-      peek_definition_code = {
-        -- ["<leader>df"] = "@function.outer",
-        -- ["<leader>dF"] = "@class.outer"
-      }
-    }
-  }
-})
-require('nvim-treesitter-textsubjects').configure({
-  prev_selection = '\'',
-  keymaps = {
-    ['.'] = 'textsubjects-smart',
-    [';'] = 'textsubjects-container-outer',
-    ['i;'] = 'textsubjects-container-inner',
+  move = {
+    set_jumps = true,
   },
 })
+
+-- Textobjects keymaps - select (visual + operator-pending)
+local select = require("nvim-treesitter-textobjects.select").select_textobject
+M.mapox("af", function() select("@function.outer", "textobjects") end, "Select outer function")
+M.mapox("if", function() select("@function.inner", "textobjects") end, "Select inner function")
+M.mapox("ac", function() select("@class.outer", "textobjects") end, "Select outer class")
+M.mapox("ic", function() select("@class.inner", "textobjects") end, "Select inner class")
+M.mapox("am", function() select("@block.outer", "textobjects") end, "Select outer block")
+M.mapox("im", function() select("@block.inner", "textobjects") end, "Select inner block")
+
+-- Textobjects keymaps - move (normal + visual + operator-pending)
+local move = require("nvim-treesitter-textobjects.move")
+M.map({ "n", "x", "o" }, "]m", function() move.goto_next_start("@function.outer", "textobjects") end, "Next function start")
+M.map({ "n", "x", "o" }, "]M", function() move.goto_next_end("@function.outer", "textobjects") end, "Next function end")
+M.map({ "n", "x", "o" }, "]]", function() move.goto_next_start("@class.outer", "textobjects") end, "Next class start")
+M.map({ "n", "x", "o" }, "][", function() move.goto_next_end("@class.outer", "textobjects") end, "Next class end")
+M.map({ "n", "x", "o" }, "[m", function() move.goto_previous_start("@function.outer", "textobjects") end, "Prev function start")
+M.map({ "n", "x", "o" }, "[M", function() move.goto_previous_end("@function.outer", "textobjects") end, "Prev function end")
+M.map({ "n", "x", "o" }, "[[", function() move.goto_previous_start("@class.outer", "textobjects") end, "Prev class start")
+M.map({ "n", "x", "o" }, "[]", function() move.goto_previous_end("@class.outer", "textobjects") end, "Prev class end")
+
+-- nvim-ts-autotag (standalone setup)
+require("nvim-ts-autotag").setup({
+  opts = {
+    enable_close = true,
+    enable_rename = true,
+    enable_close_on_slash = false,
+  },
+})
+
+-- vim-matchup treesitter integration
+-- Note: vim-matchup vars are set in plugins.lua M.misc()
+-- Treesitter integration is enabled automatically when the plugin detects
+-- nvim-treesitter is available. No additional config needed in 1.0.

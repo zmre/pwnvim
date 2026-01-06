@@ -35,6 +35,9 @@
     todo-comments-nvim.flake = false;
     mbr.url = "github:zmre/mbr-markdown-browser";
     mbr.inputs.nixpkgs.follows = "nixpkgs";
+    # nvim-treesitter-textobjects main branch for treesitter 1.0 compatibility
+    nvim-treesitter-textobjects.url = "github:nvim-treesitter/nvim-treesitter-textobjects/main";
+    nvim-treesitter-textobjects.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -81,6 +84,12 @@
                     "trouble.providers.todo"
                     "trouble.sources.todo"
                   ];
+                };
+                # Use main branch for nvim-treesitter 1.0 compatibility
+                nvim-treesitter-textobjects = super.vimUtils.buildVimPlugin {
+                  name = "nvim-treesitter-textobjects";
+                  pname = "nvim-treesitter-textobjects";
+                  src = inputs.nvim-treesitter-textobjects;
                 };
               };
           })
@@ -232,7 +241,6 @@
         # indent-blankline-nvim replaced by snacks.indent
         # toggleterm-nvim replaced by snacks.terminal
         nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
-        nvim-treesitter-textsubjects # adds "smart" text objects
         lf-vim
         nui-nvim # needed by noice
         nvim-notify # needed by noice
