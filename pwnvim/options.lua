@@ -155,7 +155,7 @@ M.defaults = function()
 
   vim.api.nvim_exec2([[
     filetype plugin indent on
-    syntax off
+    syn on
     syntax sync minlines=2000
   ]], { output = false })
 

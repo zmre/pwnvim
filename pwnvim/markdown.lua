@@ -35,7 +35,7 @@ M.setup = function(ev)
   vim.bo.comments = 'b:>,b:*,b:+,b:-'
   vim.bo.suffixesadd = '.md'
 
-  vim.bo.syntax = "off" -- we use treesitter exclusively on markdown now
+  --vim.bo.syntax = "off" -- we use treesitter exclusively on markdown now
   -- except temp off until https://github.com/MDeiml/tree-sitter-markdown/issues/114
 
   require('pwnvim.markdown').markdownsyntax()
@@ -182,7 +182,7 @@ M.setupmappings = function(bufnr)
   local mapnvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapnv)
 
   mapnlocal("<leader>M", ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview")
-  mapnlocal("<leader>m", ':silent !mbr "%:p"<cr>', "Open MBR preview")
+  mapnlocal("<leader>m", ':silent !mbr "%:p"&<cr>', "Open MBR preview")
 
   mapnlocal("gl*", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],
     "Add bullets")
