@@ -182,7 +182,9 @@ M.setupmappings = function(bufnr)
   local mapnvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapnv)
 
   mapnlocal("<leader>M", ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview")
-  mapnlocal("<leader>m", ':silent !mbr "%:p"&<cr>', "Open MBR preview")
+  mapnlocal("<leader>m", function()
+    vim.fn.jobstart({'mbr', vim.fn.expand('%:p')}, {detach = true})
+  end, "Open MBR preview")
 
   mapnlocal("gl*", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],
     "Add bullets")

@@ -1,4 +1,4 @@
-# pwnvim - my portable nvim setup
+# pwnvim - my portable nix nvim setup
 
 This repo is for [nix](https://nixos.org/) users. If that doesn't mean anything to you, you're probably in the wrong place. Although I rather enjoy the name of this being "pwn vim", it is really my initials, "pw" and "nvim" that drove the name choice. If you're worried that running this will pwn your machine, then you should just use it as inspiration for building your own. I doubt my config will work exactly how you'd like it to anyway.
 
