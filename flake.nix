@@ -167,7 +167,7 @@
           yazi # my alt file manager triggered with ,-
           # imagemagick # for image-nvim plugin
 
-          inputs.mbr.packages.${system}.mbr
+          inputs.mbr.packages.${system}.mbr-cli
         ]
         ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
           ueberzug
@@ -363,16 +363,18 @@
         __intentionallyOverridingVersion = true;
         version = old.version + "-" + self.lastModifiedDate;
       });
-      apps.pwnvim = flake-utils.lib.mkApp {
-        drv = packages.pwnvim;
-        name = "pwnvim";
-        exePath = "/bin/nvim";
-      } // {
-        meta = {
-          description = "PW's Neovim configuration";
-          mainProgram = "nvim";
+      apps.pwnvim =
+        flake-utils.lib.mkApp {
+          drv = packages.pwnvim;
+          name = "pwnvim";
+          exePath = "/bin/nvim";
+        }
+        // {
+          meta = {
+            description = "PW's Neovim configuration";
+            mainProgram = "nvim";
+          };
         };
-      };
       packages.default = packages.pwnvim;
       apps.default = apps.pwnvim;
       devShells.default = pkgs.mkShell {
