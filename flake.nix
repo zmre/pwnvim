@@ -165,7 +165,8 @@
 
           metals # lsp for scala
           yazi # my alt file manager triggered with ,-
-          # imagemagick # for image-nvim plugin
+          imagemagick # for image previews
+          ghostscript # also for image previews
 
           inputs.mbr.packages.${system}.mbr-cli
         ]
