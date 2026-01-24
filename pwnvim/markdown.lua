@@ -343,7 +343,7 @@ end
 
 M.newMeetingNote = function()
   local zk = require("zk.commands")
-  M.pick_folder_and_title(vim.env.ZK_NOTEBOOK_DIR, 'meetings', function(folder, title)
+  M.pick_folder_and_title(vim.env.ZK_NOTEBOOK_DIR, 'Calendar/Meetings', function(folder, title)
     zk.get('ZkNew')({ dir = folder, title = title })
   end)
 end
@@ -370,7 +370,7 @@ end
 
 M.newDailyNote = function()
   local zk = require("zk.commands")
-  zk.get("ZkNew")({ dir = vim.env.ZK_NOTEBOOK_DIR .. '/daily', title = os.date("%Y%m%d") })
+  zk.get("ZkNew")({ dir = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar/Daily', title = os.date("%Y%m%d") })
 end
 
 M.pick_folder_and_title = function(base, subdir, callback)
