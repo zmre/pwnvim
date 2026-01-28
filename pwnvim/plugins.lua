@@ -718,13 +718,13 @@ M.diagnostics = function()
   end
 
 
-  vim.lsp.config.marksman = {
-    capabilities = capabilities,
-    on_attach = attached,
-    -- root_dir = lspconfig.util.root_pattern('nope'), -- this is a temp fix for an error in the lspconfig for this LS
-    single_file_support = true,
-  }
-  vim.lsp.enable("marksman")
+  -- vim.lsp.config.marksman = {
+  --   capabilities = capabilities,
+  --   on_attach = attached,
+  --   -- root_dir = lspconfig.util.root_pattern('nope'), -- this is a temp fix for an error in the lspconfig for this LS
+  --   single_file_support = true,
+  -- }
+  -- vim.lsp.enable("marksman")
   -- lspconfig.markdown_oxide.setup({
   --   capabilities = capabilities,
   --   on_attach = attached,

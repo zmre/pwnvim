@@ -106,7 +106,8 @@
           gh
           zk # lsp for markdown notes in zk folders
           #markdown-oxide # lsp for any markdown
-          marksman # lsp for any markdown
+          # marksman requires .NET and Swift to be built, which sucks
+          #marksman # lsp for any markdown
           zsh # terminal requires it
           git
           curl # needed to fetch titles from urls
