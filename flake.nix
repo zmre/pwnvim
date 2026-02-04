@@ -38,6 +38,8 @@
     # nvim-treesitter-textobjects main branch for treesitter 1.0 compatibility
     nvim-treesitter-textobjects.url = "github:nvim-treesitter/nvim-treesitter-textobjects/main";
     nvim-treesitter-textobjects.flake = false;
+    mermaid-rust-cli.url = "github:1jehuang/mermaid-rs-renderer";
+    mermaid-rust-cli.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -58,6 +60,15 @@
                 sha256 = "sha256-x4xGgYeMi7KbD2WGHOd/ixmZ+5EY5g6CLd7/CBYldNQ=";
               };
             });
+            mermaid-cli = super.rustPlatform.buildRustPackage {
+              pname = "mermaid-cli";
+              name = "mermaid-cli";
+              src = inputs.mermaid-rust-cli;
+              cargoLock = {lockFile = "${inputs.mermaid-rust-cli}/Cargo.lock";};
+              postInstall = ''
+                ln -s $out/bin/mmdr $out/bin/mmdc
+              '';
+            };
           })
           (self: super: {
             vimPlugins =
@@ -133,6 +144,8 @@
           lua-language-server
           pyright # python lsp (written in node? so weird)
           vscode-langservers-extracted # lsp servers for json, html, css, eslint
+          mermaid-cli # when mmdc is in the path, snacks previews mermaid diagrams. WARN: we aren't using standard mmdc (which needs chrome) but a rust alternative, mermaid-rs-renderer
+          tectonic # when tectonic is installed, snacks will inline preview math
           nodePackages.eslint_d # js/ts code formatter and linter
           nodePackages.prettier # ditto
           #nodePackages.prisma # dependency prisma-engines not compiling right now 2024-08-26

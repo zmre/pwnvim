@@ -127,6 +127,22 @@
         "type": "github"
       }
     },
+    "mermaid-rust-cli": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770145018,
+        "narHash": "sha256-zXGAhPvFabimL2D/OOHpOELWQ7TWCf6SfaCUPSt7hoU=",
+        "owner": "1jehuang",
+        "repo": "mermaid-rs-renderer",
+        "rev": "9d6790bcaa22451fb36882eb69e49dc969e9637c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "1jehuang",
+        "repo": "mermaid-rs-renderer",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1744536153,
@@ -183,6 +199,7 @@
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
         "mbr": "mbr",
+        "mermaid-rust-cli": "mermaid-rust-cli",
         "nixpkgs": "nixpkgs_2",
         "nvim-treesitter-textobjects": "nvim-treesitter-textobjects",
         "todo-comments-nvim": "todo-comments-nvim"

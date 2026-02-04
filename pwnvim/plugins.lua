@@ -1158,13 +1158,22 @@ M.picker = function()
       },
     },
     image = {
-      enabled = true,
+      enabled = not SimpleUI,
       doc = {
         enabled = true,
         inline = false, -- disable inline rendering
         float = true,   -- show images in floating window instead
         max_width = 80,
         max_height = 40,
+      },
+      convert = {
+        notify = false,
+        mermaid = function()
+          -- local theme = vim.o.background == "light" and "neutral" or "dark"
+          -- we're using https://github.com/1jehuang/mermaid-rs-renderer
+          -- which doesn't yet support options like theme and scale
+          return { "-i", "{src}", "-o", "{file}", "-e", "png" } -- , "-t", theme, "-s", "{scale}" }
+        end,
       },
       math = {
         enabled = true,
@@ -1258,8 +1267,8 @@ M.picker = function()
           exclude = { "*.bak", ".git/", "node_modules", ".zk/", "Caches/", "Backups/" },
         },
         projects = {
-          dev = { "~/src", "~/.config/nixpkgs", "~/Documents", "~/Notes" },
-          patterns = { ".git", "flake.nix", "Cargo.toml", "package.json", ".project" },
+          dev = { "~/src", "~/Documents", "~/Notes" },
+          patterns = { ".git", ".mbr", "flake.nix", "Cargo.toml", "package.json", ".project" },
         },
       },
       win = {
