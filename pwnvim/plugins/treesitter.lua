@@ -28,12 +28,15 @@ M.mapox("im", function() select("@block.inner", "textobjects") end, "Select inne
 
 -- Textobjects keymaps - move (normal + visual + operator-pending)
 local move = require("nvim-treesitter-textobjects.move")
-M.map({ "n", "x", "o" }, "]m", function() move.goto_next_start("@function.outer", "textobjects") end, "Next function start")
+M.map({ "n", "x", "o" }, "]m", function() move.goto_next_start("@function.outer", "textobjects") end,
+  "Next function start")
 M.map({ "n", "x", "o" }, "]M", function() move.goto_next_end("@function.outer", "textobjects") end, "Next function end")
 M.map({ "n", "x", "o" }, "]]", function() move.goto_next_start("@class.outer", "textobjects") end, "Next class start")
 M.map({ "n", "x", "o" }, "][", function() move.goto_next_end("@class.outer", "textobjects") end, "Next class end")
-M.map({ "n", "x", "o" }, "[m", function() move.goto_previous_start("@function.outer", "textobjects") end, "Prev function start")
-M.map({ "n", "x", "o" }, "[M", function() move.goto_previous_end("@function.outer", "textobjects") end, "Prev function end")
+M.map({ "n", "x", "o" }, "[m", function() move.goto_previous_start("@function.outer", "textobjects") end,
+  "Prev function start")
+M.map({ "n", "x", "o" }, "[M", function() move.goto_previous_end("@function.outer", "textobjects") end,
+  "Prev function end")
 M.map({ "n", "x", "o" }, "[[", function() move.goto_previous_start("@class.outer", "textobjects") end, "Prev class start")
 M.map({ "n", "x", "o" }, "[]", function() move.goto_previous_end("@class.outer", "textobjects") end, "Prev class end")
 

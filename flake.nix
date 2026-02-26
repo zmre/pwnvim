@@ -177,6 +177,7 @@
           vscode-extensions.vadimcn.vscode-lldb.adapter # for debugging rust
           (python3.withPackages (ps: with ps; [debugpy])) # required for debugging python, but better if that's per project installed since we don't have python
 
+          tree-sitter
           metals # lsp for scala
           yazi # my alt file manager triggered with ,-
           imagemagick # for image previews
