@@ -160,7 +160,7 @@ M.config = function()
   -- Make ctrl-p open a file finder
   -- When using ctrl-p, screen out media files that we probably don't want
   -- to open in vim. And if we really want, then we can use ,ff
-  M.mapnv("<c-p>", function() Snacks.picker.files() end, "Find files")
+  M.mapnv("<c-p>", function() Snacks.picker.smart() end, "Find files (smart)")
   M.mapnvic("<F9>", function() Snacks.zen() end, "Focus mode")
   -- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
   M.mapnvic("<F10>", 'silent !qlmanage -p "%"', "Quicklook (mac)")
@@ -361,9 +361,11 @@ M.config = function()
 
   -- Trouble windows
   M.mapleadernv("qq", "Trouble qflist toggle", "Quicklist (Trouble)")
+  M.mapleadernv("qQ", function() Snacks.picker.qflist() end, "Quicklist (Snacks)")
   M.mapleadernv("qt", "Trouble todo toggle", "Trouble todo quicklist")
   M.mapleadernv("ql", "Trouble loclist toggle", "Location list (Trouble)")
   M.mapleadernv("qd", "Trouble diagnostics toggle", "Diagnostics (Trouble)")
+  M.mapleadernv("qD", function() Snacks.picker.diagnostics() end, "Diagnostics (Snacks)")
   M.mapleadernv("qe", "Trouble diagnostics toggle filter.buf=0", "Buffer Diagnostics (Trouble)")
   M.mapleadernv("qs", "Trouble symbols toggle focus=false win.position=right", "Symbols (Trouble)")
   M.mapleadernv("qr", "Trouble lsp toggle focus=false win.position=right warn_no_results=false open_no_results=true",
@@ -372,6 +374,7 @@ M.config = function()
   M.mapleadernv("qm", "Trouble mydiags toggle focus=false", "Local diags, global errors (Trouble)")
 
   -- Find group
+  M.mapleadernv("fa", function() Snacks.picker.notifications() end, "Notifications (alarms)")
   M.mapleadernv("fb", function() Snacks.picker.buffers() end, "Buffers")
   M.mapleadernv("fc", function() Snacks.picker.grep({ dirs = { vim.fn.expand('%:p:h') } }) end,
     "Grep from dir of current file")
@@ -415,9 +418,12 @@ M.config = function()
   M.mapleadernv("gs", function() Snacks.picker.git_status() end, "Status")
   M.mapleadernv("gb", function() Snacks.picker.git_branches() end, "Branches")
   M.mapleadernv("gm", function() Snacks.picker.git_log() end, "Commits")
+  M.mapleadernv("gM", function() Snacks.picker.git_log_line() end, "Commits for current line")
+  M.mapleadernv("gf", function() Snacks.lazygit.log_file() end, "Commits for current file") -- or Snacks.picker.git_log_file()
   M.mapleadernv("gB", function() Snacks.gitbrowse() end, "Browse in browser")
   M.mapleadernv("gi", function() Snacks.picker.gh_issue() end, "GitHub Issues")
   M.mapleadernv("gP", function() Snacks.picker.gh_pr() end, "GitHub PRs")
+  M.mapleadernv("gl", function() Snacks.lazygit() end, "GitHub PRs")
   -- Bunch more will be mapped locally with gitsigns when it loads. See ./gitsigns.lua
 
   M.mapnvict("<C-\\>", function() Snacks.terminal(nil, { win = { position = "right" } }) end, "Toggle terminal right")

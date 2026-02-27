@@ -442,9 +442,9 @@ M.diagnostics = function()
 
     -- Set some keybinds conditional on server capabilities
     if client.server_capabilities.definitionProvider or client.server_capabilities.typeDefinitionProvider then
-      mapleadernlocal("ld", vim.lsp.buf.definition, "Go to definition")
+      mapleadernlocal("ld", function() Snacks.picker.lsp_definitions() end, "Go to definition")
       -- override standard tag jump c-] for go to definition
-      mapnlocal("<c-]>", vim.lsp.buf.definition, "Go to definition")
+      mapnlocal("<c-]>", function() Snacks.picker.lsp_definitions() end, "Go to definition")
     end
 
     if client.server_capabilities.codeActionProvider then
@@ -454,7 +454,7 @@ M.diagnostics = function()
     end
 
     if client.server_capabilities.implementationProvider then
-      mapleadernlocal("lD", vim.lsp.buf.implementation, "Implementation")
+      mapleadernlocal("lD", function() Snacks.picker.lsp_implementations() end, "Implementation")
     end
 
     if client.server_capabilities.signatureHelpProvider then
@@ -1185,7 +1185,7 @@ M.picker = function()
       enabled = false, -- i like it, but no matter what i do it messes up "page"
       preset = {
         keys = {
-          { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.files()" },
+          { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.smart()" },
           { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
           { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
           { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
@@ -1239,7 +1239,7 @@ M.picker = function()
     gh = { enabled = true },
     notifier = { enabled = false },
 
-    -- Picker (already configured)
+    -- Picker
     picker = {
       prompt = SimpleUI and "> " or " ",
       ui_select = true, -- replace vim.ui.select with snacks picker
@@ -1248,6 +1248,17 @@ M.picker = function()
         preset = function()
           return vim.o.columns >= 120 and "default" or "vertical"
         end,
+      },
+      matcher = {
+        fuzzy = true,
+        smartcase = true,
+        sort_empty = true, -- sort even before searching
+        filename_bonus = true,
+        history_bonus = true,
+        cwd_bonus = false,
+      },
+      sort = {
+        fields = { "score:desc", "text", "#text", "idx" },
       },
       formatters = {
         file = {

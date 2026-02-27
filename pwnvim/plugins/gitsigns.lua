@@ -42,7 +42,9 @@ require("gitsigns").setup {
 
     -- Navigation
     mapnlocal(']c', function()
+      -- if we're in a diff view, use built-in behavior
       if vim.wo.diff then return ']c' end
+      -- otherwise use git signs to go to the next hunk
       vim.schedule(function() gs.next_hunk() end)
       return '<Ignore>'
     end, "Next hunk", { expr = true })

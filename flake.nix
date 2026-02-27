@@ -144,6 +144,7 @@
           lua-language-server
           pyright # python lsp (written in node? so weird)
           vscode-langservers-extracted # lsp servers for json, html, css, eslint
+          lazygit
           mermaid-cli # when mmdc is in the path, snacks previews mermaid diagrams. WARN: we aren't using standard mmdc (which needs chrome) but a rust alternative, mermaid-rs-renderer
           tectonic # when tectonic is installed, snacks will inline preview math
           nodePackages.eslint_d # js/ts code formatter and linter
