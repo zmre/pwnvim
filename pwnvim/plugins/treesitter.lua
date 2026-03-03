@@ -3,9 +3,19 @@
 
 local M = require("pwnvim.mappings")
 
--- nvim-treesitter core setup (optional - defaults work fine)
+-- nvim-treesitter core setup
 -- Parsers are bundled via withAllGrammars in flake.nix
-require("nvim-treesitter").setup({})
+require("nvim-treesitter").setup({
+  auto_install = false,                   -- Parsers are managed by Nix
+  install_dir = treesitter_grammars_path, -- Fixes issues with preinstalled grammars
+  indent = {
+    enable = true,
+  },
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = true,
+  },
+})
 
 -- nvim-treesitter-textobjects (standalone setup)
 require("nvim-treesitter-textobjects").setup({
@@ -16,6 +26,29 @@ require("nvim-treesitter-textobjects").setup({
     set_jumps = true,
   },
 })
+
+-- treesitter isn't getting started automatically anymore (2026-03-02) and I'm not sure why
+-- but making an autocommand for all filetypes and then checking to see if it is a supported
+-- one does the trick fine
+vim.api.nvim_create_autocmd({ "FileType" }, {
+  callback = function(ev)
+    -- local ft = vim.bo[ev.buf].filetype -- this works, but below is more direct
+    local ft = ev.match
+    if vim.list_contains(require("nvim-treesitter").get_installed(), ft) then
+      print("starting treesitter")
+      if ft ~= "markdown" then
+        vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+      end
+      vim.treesitter.start(ev.buf)
+      -- vim.wo.foldmethod = "expr" -- zi toggles this
+    else
+      print("no treesitter for current filetype: " .. ft)
+      -- vim.cmd('syn on')
+      -- vim.wo.foldmethod = "syntax"
+    end
+  end,
+})
+
 
 -- Textobjects keymaps - select (visual + operator-pending)
 local select = require("nvim-treesitter-textobjects.select").select_textobject

@@ -548,11 +548,10 @@ M.programming = function(ev)
   vim.wo.number = true
   vim.wo.spell = false
   vim.wo.relativenumber = false
-  vim.wo.cursorline = true -- add indicator for current line
+  vim.wo.cursorline = true     -- add indicator for current line
   vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-  vim.wo.foldmethod =
-  "manual"                  -- seeing weird treesitter cpu spikes when folds are off
-  vim.wo.foldenable = false -- zi will turn it on
+  vim.wo.foldmethod = "manual" -- getting cpu spikes when folds are off unless I set this to manual
+  vim.wo.foldenable = false    -- zi will turn it on
   vim.wo.foldcolumn = "0"
 
   M.twospaceindent()

@@ -194,6 +194,12 @@
         ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
         [pngpaste]; # needed by vim clipboard-image plugin
 
+      # 2026-03-02 need to add path to vim to see ts grammars
+      grammarsPath = pkgs.symlinkJoin {
+        name = "nvim-treesitter-grammars";
+        paths = pkgs.vimPlugins.nvim-treesitter.withAllGrammars.dependencies;
+      };
+
       # I don't think the vim.env.whatever = value stuff below actually works
       customRC =
         ''
@@ -202,6 +208,7 @@
             rustsrc_path = "${pkgs.rustPlatform.rustLibSrc}/core/Cargo.toml"
             prettier_path = "${pkgs.nodePackages.prettier}/bin/prettier"
             lldb_path_base = "${pkgs.vscode-extensions.vadimcn.vscode-lldb}"
+            treesitter_grammars_path = "${grammarsPath}"
             rustanalyzer_path = "${pkgs.rust-analyzer}/bin/rust-analyzer"
             vim.g.loaded_python3_provider = 0
         ''
