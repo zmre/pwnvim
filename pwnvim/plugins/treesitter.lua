@@ -42,7 +42,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
       vim.treesitter.start(ev.buf)
       -- vim.wo.foldmethod = "expr" -- zi toggles this
     else
-      print("no treesitter for current filetype: " .. ft)
+      -- print("no treesitter for current filetype: " .. ft)
       -- vim.cmd('syn on')
       -- vim.wo.foldmethod = "syntax"
     end
