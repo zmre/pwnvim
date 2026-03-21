@@ -33,7 +33,7 @@ M.ui = function()
       ["q"] = { '"', "'", "`" },
       ["s"] = { "}", "]", ")", ">", '"', "'", "`" },
     },
-    keymaps = {
+    --[[ keymaps = {
       insert = "<C-g>s",
       insert_line = "<C-g>S",
       normal = "ys",
@@ -45,7 +45,7 @@ M.ui = function()
       delete = "ds",
       change = "cs",
       change_line = "cS",
-    },
+    }, ]]
     surrounds = surround_defaults.surrounds,
     highlight = { duration = 1 },
     move_cursor = "begin",
