@@ -147,14 +147,14 @@
           lazygit
           mermaid-cli # when mmdc is in the path, snacks previews mermaid diagrams. WARN: we aren't using standard mmdc (which needs chrome) but a rust alternative, mermaid-rs-renderer
           tectonic # when tectonic is installed, snacks will inline preview math
-          nodePackages.eslint_d # js/ts code formatter and linter
-          nodePackages.prettier # ditto
-          #nodePackages.prisma # dependency prisma-engines not compiling right now 2024-08-26
-          nodePackages.svelte-language-server
-          nodePackages.diagnostic-languageserver
-          nodePackages.typescript-language-server
-          nodePackages.bash-language-server
-          nodePackages."@tailwindcss/language-server"
+          eslint_d # js/ts code formatter and linter
+          prettier # ditto
+          #prisma # dependency prisma-engines not compiling right now 2024-08-26
+          svelte-language-server
+          diagnostic-languageserver
+          typescript-language-server
+          bash-language-server
+          tailwindcss-language-server
           #nodePackages_latest.grammarly-languageserver # besides being a privacy issue if triggered, we have these issues:
           # https://github.com/znck/grammarly/issues/411 grammarly sdk deprecated
           # https://github.com/NixOS/nixpkgs/issues/293172 requires node16, which is EOL
@@ -206,7 +206,7 @@
           lua << EOF
             package.path = "${self}/?.lua;" .. package.path
             rustsrc_path = "${pkgs.rustPlatform.rustLibSrc}/core/Cargo.toml"
-            prettier_path = "${pkgs.nodePackages.prettier}/bin/prettier"
+            prettier_path = "${pkgs.prettier}/bin/prettier"
             lldb_path_base = "${pkgs.vscode-extensions.vadimcn.vscode-lldb}"
             treesitter_grammars_path = "${grammarsPath}"
             rustanalyzer_path = "${pkgs.rust-analyzer}/bin/rust-analyzer"
