@@ -176,7 +176,7 @@ M.setupmappings = function(bufnr)
 
   mapnlocal("<leader>M", ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview")
   mapnlocal("<leader>m", function()
-    vim.fn.jobstart({'mbr', vim.fn.expand('%:p')}, {detach = true})
+    vim.fn.jobstart({ 'mbr', vim.fn.expand('%:p') }, { detach = true })
   end, "Open MBR preview")
 
   mapnlocal("gl*", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],
@@ -213,6 +213,8 @@ M.setupmappings = function(bufnr)
   -- visual mode mappings
   mapvlocal("gl*", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
     "Add bullets")
+  mapvlocal("gl1", [[<cmd>let p=getcurpos('.')<cr>:s/^/0. /<cr>gv<C-v>0g<C-a>:call setpos('.', p)<cr>gv]],
+    "Add ordered list")
   mapvlocal("gl>", [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], "Add quotes")
   mapvlocal("gl[", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*)/\1* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
     "Add task")
