@@ -419,11 +419,11 @@ M.config = function()
   M.mapleadernv("gb", function() Snacks.picker.git_branches() end, "Branches")
   M.mapleadernv("gm", function() Snacks.picker.git_log() end, "Commits")
   M.mapleadernv("gM", function() Snacks.picker.git_log_line() end, "Commits for current line")
-  M.mapleadernv("gf", function() Snacks.lazygit.log_file() end, "Commits for current file") -- or Snacks.picker.git_log_file()
+  M.mapleadernv("gf", function() Snacks.lazygit.log_file() end, "Lazygit commits for current file") -- or Snacks.picker.git_log_file()
   M.mapleadernv("gB", function() Snacks.gitbrowse() end, "Browse in browser")
   M.mapleadernv("gi", function() Snacks.picker.gh_issue() end, "GitHub Issues")
   M.mapleadernv("gP", function() Snacks.picker.gh_pr() end, "GitHub PRs")
-  M.mapleadernv("gl", function() Snacks.lazygit() end, "GitHub PRs")
+  M.mapleadernv("gl", function() Snacks.lazygit() end, "Lazygit")
   -- Bunch more will be mapped locally with gitsigns when it loads. See ./gitsigns.lua
 
   M.mapnvict("<C-\\>", function() Snacks.terminal(nil, { win = { position = "right" } }) end, "Toggle terminal right")
