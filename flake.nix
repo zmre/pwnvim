@@ -38,7 +38,7 @@
     # nvim-treesitter-textobjects main branch for treesitter 1.0 compatibility
     nvim-treesitter-textobjects.url = "github:nvim-treesitter/nvim-treesitter-textobjects/main";
     nvim-treesitter-textobjects.flake = false;
-    mermaid-rust-cli.url = "github:1jehuang/mermaid-rs-renderer";
+    mermaid-rust-cli.url = "github:1jehuang/mermaid-rs-renderer/v0.2.1";
     mermaid-rust-cli.flake = false;
   };
   outputs = inputs @ {
