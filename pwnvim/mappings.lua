@@ -424,6 +424,7 @@ M.config = function()
   M.mapleadernv("gi", function() Snacks.picker.gh_issue() end, "GitHub Issues")
   M.mapleadernv("gP", function() Snacks.picker.gh_pr() end, "GitHub PRs")
   M.mapleadernv("gl", function() Snacks.lazygit() end, "Lazygit")
+  M.mapleadernv("gr", "Review", "Review (open code review)")
   -- Bunch more will be mapped locally with gitsigns when it loads. See ./gitsigns.lua
 
   M.mapnvict("<C-\\>", function() Snacks.terminal(nil, { win = { position = "right" } }) end, "Toggle terminal right")

@@ -193,6 +193,22 @@
         "type": "github"
       }
     },
+    "review-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1773689759,
+        "narHash": "sha256-/iP4ALu1oGamZe34FvP32qrzmg6wCsa5mmDaVUhIt0c=",
+        "owner": "georgeguimaraes",
+        "repo": "review.nvim",
+        "rev": "8e4bc16c8f430208bb0361a3957d487bc458576d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "georgeguimaraes",
+        "repo": "review.nvim",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "clipboard-image": "clipboard-image",
@@ -203,6 +219,7 @@
         "mermaid-rust-cli": "mermaid-rust-cli",
         "nixpkgs": "nixpkgs_2",
         "nvim-treesitter-textobjects": "nvim-treesitter-textobjects",
+        "review-nvim": "review-nvim",
         "todo-comments-nvim": "todo-comments-nvim"
       }
     },

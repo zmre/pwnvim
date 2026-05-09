@@ -40,6 +40,8 @@
     nvim-treesitter-textobjects.flake = false;
     mermaid-rust-cli.url = "github:1jehuang/mermaid-rs-renderer/v0.2.1";
     mermaid-rust-cli.flake = false;
+    review-nvim.url = "github:georgeguimaraes/review.nvim";
+    review-nvim.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -101,6 +103,15 @@
                   name = "nvim-treesitter-textobjects";
                   pname = "nvim-treesitter-textobjects";
                   src = inputs.nvim-treesitter-textobjects;
+                };
+                review-nvim = super.vimUtils.buildVimPlugin {
+                  name = "review.nvim";
+                  pname = "review.nvim";
+                  src = inputs.review-nvim;
+                  dependencies = [
+                    super.vimPlugins.codediff-nvim
+                    super.vimPlugins.nui-nvim
+                  ];
                 };
               };
           })
@@ -313,7 +324,9 @@
 
         # Misc
         vim-fugitive # git management
-        diffview-nvim
+        # diffview-nvim # replaced by review.nvim 2026-05-08
+        codediff-nvim # diff renderer used by review.nvim
+        review-nvim # PR-style code review with inline comments
         vim-tmux-navigator # navigate vim and tmux panes together
         impatient-nvim # speeds startup times by caching lua bytecode
         which-key-nvim

@@ -257,13 +257,54 @@ _This is a combination of built-in universal keys and things that are specific t
 * `,gf` to auto fix an issue
 * `,gx` to ignore an issue
 
-### Plugin: DiffView
-* `:DiffviewOpen`
-* `[x` and `]x` to navigate conflicts
-* `,co` choose ours
-* `,ct` choose theirs
-* `,cb` choose base
-* `,ca` choose all
-* `dx` delete entire conflict region
-* `,b` toggle list of files
-* `<tab>` and `<shift>-<tab>` next/prev file with conflicts
+### Plugin: Review (code review with inline comments)
+
+Replaces diffview. Opens a side-by-side codediff view of your changes, lets
+you attach typed comments per line/range, and exports them as Markdown to
+the clipboard for pasting into an AI chat (e.g. CodeCompanion).
+
+#### Opening a review
+* `,gr` or `:Review` — review staged + unstaged changes
+* `:Review commits` — pick commits via modal picker
+* `:Review commits SHA` — review a single commit
+* `:Review commits REV1 REV2` — review a revision range
+* `:Review close` — close and export comments to clipboard
+* `:Review export` — export comments without closing
+* `:Review preview` — preview the exported markdown
+* `:Review list` — list all comments
+* `:Review clear` — clear all comments
+* `:Review toggle` — toggle readonly / edit mode
+
+#### Inside the review buffer (readonly mode — default)
+* `i` add comment on current line (visual mode for ranges)
+* `d` delete comment under cursor
+* `e` edit comment under cursor
+* `c` list all comments (jump-to)
+* `f` toggle file panel
+* `R` toggle readonly ↔ edit mode
+* `<Tab>` / `<S-Tab>` next / previous file
+* `]n` / `[n` next / previous comment
+* `t` toggle side-by-side ↔ inline diff layout
+* `C` export and preview
+* `<C-r>` clear all comments
+* `q` close review (auto-copies markdown to clipboard)
+
+#### Edit mode (after pressing `R`) — typed shortcuts
+Buffer-local; do not affect global `,c*` bindings outside review buffers.
+* `,cc` add comment (no type)
+* `,cn` add Note 📝
+* `,cs` add Suggestion 💡
+* `,ci` add Issue ⚠️
+* `,cp` add Praise ✨
+* `,cf` add file-level comment
+* `,cd` delete comment
+* `,ce` edit comment
+
+#### Comment popup
+* `Enter` newline inside comment text
+* `<C-s>` submit
+* `Tab` cycle comment type
+* `Esc` / `q` cancel
+
+Comments persist per-branch in `~/.local/share/nvim/review/` and
+auto-expire after 7 days.
