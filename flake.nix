@@ -42,6 +42,8 @@
     mermaid-rust-cli.flake = false;
     review-nvim.url = "github:georgeguimaraes/review.nvim";
     review-nvim.flake = false;
+    sidekick-nvim.url = "github:folke/sidekick.nvim";
+    sidekick-nvim.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -111,6 +113,14 @@
                   dependencies = [
                     super.vimPlugins.codediff-nvim
                     super.vimPlugins.nui-nvim
+                  ];
+                };
+                sidekick-nvim = super.vimUtils.buildVimPlugin {
+                  name = "sidekick.nvim";
+                  pname = "sidekick.nvim";
+                  src = inputs.sidekick-nvim;
+                  nvimSkipModule = [
+                    "sidekick.docs"
                   ];
                 };
               };
@@ -310,6 +320,7 @@
         #cmp-npm # complete node packages in package.json
         blink-cmp
         codecompanion-nvim # llm access in context; TODO 2025-06-09 find an alternative? riddled with deprecated function calls
+        sidekick-nvim # AI CLI launcher (claude, iris, codex, gemini, etc.) - NES disabled
         nvim-autopairs # balances parens as you type
         nvim-ts-autotag # balance or rename html
         vim-emoji # TODO: redundant now?

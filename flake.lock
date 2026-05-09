@@ -220,6 +220,7 @@
         "nixpkgs": "nixpkgs_2",
         "nvim-treesitter-textobjects": "nvim-treesitter-textobjects",
         "review-nvim": "review-nvim",
+        "sidekick-nvim": "sidekick-nvim",
         "todo-comments-nvim": "todo-comments-nvim"
       }
     },
@@ -255,6 +256,22 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "sidekick-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1776888531,
+        "narHash": "sha256-I1YuIXJHP7JfETwOer6B7QDLMZGG/X59zXopb4nPel4=",
+        "owner": "folke",
+        "repo": "sidekick.nvim",
+        "rev": "208e1c5b8170c01fd1d07df0139322a76479b235",
+        "type": "github"
+      },
+      "original": {
+        "owner": "folke",
+        "repo": "sidekick.nvim",
         "type": "github"
       }
     },

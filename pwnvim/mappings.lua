@@ -127,6 +127,7 @@ M.config = function()
     { "<leader>n",  group = "notes" },
     { "<leader>t",  group = "tasks" },
     { "<leader>cc", group = "codecompanion ai" },
+    { "<leader>cs", group = "sidekick (ai cli)" },
   })
 
   -- This file is for mappings that will work regardless of filetype. Always available.
@@ -443,6 +444,22 @@ M.config = function()
   M.mapleadernv("ccg", function() require("codecompanion").prompt("commit") end, "AI Gen Commit Message From Diff")
 
   -- M.mapv("ga", "CodeCompanionChat Add", "AI add code block")
+
+  -- Sidekick (AI CLI launchers — iris/claude/codex/gemini)
+  local sk = function() return require("sidekick.cli") end
+  M.mapleadern("csi", function() sk().toggle({ name = "iris" }) end, "Sidekick: Iris (AI CLI)")
+  M.mapleadern("css", function() sk().select() end, "Sidekick: pick tool")
+  M.mapleadern("csl", function() sk().toggle({ name = "claude" }) end, "Sidekick: Claude")
+  M.mapleadern("csg", function() sk().toggle({ name = "gemini" }) end, "Sidekick: Gemini")
+  M.mapleadern("csx", function() sk().toggle({ name = "codex" }) end, "Sidekick: Codex")
+  M.mapleadern("csa", function() sk().toggle() end, "Sidekick: toggle last")
+  M.mapleadern("csq", function() sk().close() end, "Sidekick: detach")
+  M.mapleadernv("csf", function() sk().focus() end, "Sidekick: focus CLI")
+  M.mapleadernv("cst", function() sk().send({ msg = "this" }) end, "Sidekick: send this")
+  M.mapleadern("csb", function() sk().send({ msg = "file" }) end, "Sidekick: send buffer")
+  M.mapleaderv("csv", function() sk().send({ msg = "selection" }) end, "Sidekick: send selection")
+  M.mapleadernv("csp", function() sk().prompt() end, "Sidekick: prompt picker")
+  M.mapleadern("csd", function() sk().send({ msg = "diagnostics" }) end, "Sidekick: send diagnostics")
 
   -- Set cwd to current file's dir
   M.mapleadernv("lcd", "lcd %:h", "Change local dir to path of current file")
