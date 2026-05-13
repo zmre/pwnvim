@@ -450,7 +450,7 @@ M.config = function()
   M.mapleadern("csg", function() sk().toggle({ name = "gemini" }) end, "Sidekick: Gemini")
   M.mapleadern("csx", function() sk().toggle({ name = "codex" }) end, "Sidekick: Codex")
   M.mapleadern("csa", function() sk().toggle() end, "Sidekick: toggle last")
-  M.mapleadern("<C-S-\\>", function() sk().toggle() end, "Sidekick: toggle last") -- ctrl-shift-backslash won't work in all terminals and could overwrite ctrl-backslash
+  M.mapnvict("<C-M-\\>", function() sk().toggle() end, "Sidekick: toggle last") -- ctrl-shift-backslash won't work in all terminals and could overwrite ctrl-backslash
   M.mapleadern("csq", function() sk().close() end, "Sidekick: detach")
   M.mapleadernv("csf", function() sk().focus() end, "Sidekick: focus CLI")
   M.mapleadernv("cst", function() sk().send({ msg = "this" }) end, "Sidekick: send this")
@@ -459,7 +459,7 @@ M.config = function()
   M.mapleadernv("csp", function() sk().prompt() end, "Sidekick: prompt picker")
   M.mapleadern("csd", function() sk().send({ msg = "diagnostics" }) end, "Sidekick: send diagnostics")
 
-  -- Moved here in case of conflict between ctrl-\ and ctrl-shift-\
+  -- Moved here in case of conflict with sidekick stuff
   M.mapnvict("<C-\\>", function() Snacks.terminal(nil, { win = { position = "right" } }) end, "Toggle terminal right")
   M.mapnvict("<C-'>", function() Snacks.terminal(nil, { win = { position = "bottom" } }) end, "Toggle terminal bottom")
 

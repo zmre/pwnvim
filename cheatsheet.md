@@ -309,7 +309,7 @@ Buffer-local; do not affect global `,c*` bindings outside review buffers.
 Comments persist per-branch in `~/.local/share/nvim/review/` and
 auto-expire after 7 days.
 
-### Plugin: Sidekick (AI CLI launcher)
+### Plugin: Sidekick (AI agent CLI launcher)
 
 Launches AI command-line tools (iris, claude, codex, gemini) in a right-split
 terminal and pipes buffer/selection/diagnostics into them. NES (Next Edit
@@ -322,6 +322,7 @@ Suggestion) is disabled — Copilot is not required. Iris is the primary tool
 * `,csg` toggle Gemini
 * `,csx` toggle Codex
 * `,csa` toggle whichever CLI was last used
+  * `ctrl-alt-\` will also toggle the last used
 * `,csq` close/detach current CLI session
 * `,csf` focus the CLI window
 * `,cst` send current line (normal) or selection (visual) to CLI
