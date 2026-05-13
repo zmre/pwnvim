@@ -428,9 +428,6 @@ M.config = function()
   M.mapleadernv("gr", "Review", "Review (open code review)")
   -- Bunch more will be mapped locally with gitsigns when it loads. See ./gitsigns.lua
 
-  M.mapnvict("<C-\\>", function() Snacks.terminal(nil, { win = { position = "right" } }) end, "Toggle terminal right")
-  M.mapnvict("<C-'>", function() Snacks.terminal(nil, { win = { position = "bottom" } }) end, "Toggle terminal bottom")
-
   -- Codecompanion bindings
   M.mapleadernv("ccl", "CodeCompanion", "AI Inline")
   M.mapi("<C-a>", "CodeCompanion", "AI Inline")
@@ -453,6 +450,7 @@ M.config = function()
   M.mapleadern("csg", function() sk().toggle({ name = "gemini" }) end, "Sidekick: Gemini")
   M.mapleadern("csx", function() sk().toggle({ name = "codex" }) end, "Sidekick: Codex")
   M.mapleadern("csa", function() sk().toggle() end, "Sidekick: toggle last")
+  M.mapleadern("<C-S-\\>", function() sk().toggle() end, "Sidekick: toggle last") -- ctrl-shift-backslash won't work in all terminals and could overwrite ctrl-backslash
   M.mapleadern("csq", function() sk().close() end, "Sidekick: detach")
   M.mapleadernv("csf", function() sk().focus() end, "Sidekick: focus CLI")
   M.mapleadernv("cst", function() sk().send({ msg = "this" }) end, "Sidekick: send this")
@@ -460,6 +458,10 @@ M.config = function()
   M.mapleaderv("csv", function() sk().send({ msg = "selection" }) end, "Sidekick: send selection")
   M.mapleadernv("csp", function() sk().prompt() end, "Sidekick: prompt picker")
   M.mapleadern("csd", function() sk().send({ msg = "diagnostics" }) end, "Sidekick: send diagnostics")
+
+  -- Moved here in case of conflict between ctrl-\ and ctrl-shift-\
+  M.mapnvict("<C-\\>", function() Snacks.terminal(nil, { win = { position = "right" } }) end, "Toggle terminal right")
+  M.mapnvict("<C-'>", function() Snacks.terminal(nil, { win = { position = "bottom" } }) end, "Toggle terminal bottom")
 
   -- Set cwd to current file's dir
   M.mapleadernv("lcd", "lcd %:h", "Change local dir to path of current file")
