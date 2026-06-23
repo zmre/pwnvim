@@ -44,6 +44,9 @@
     review-nvim.flake = false;
     sidekick-nvim.url = "github:folke/sidekick.nvim";
     sidekick-nvim.flake = false;
+    # LSP for hledger/ledger journals (account/payee completion, diagnostics, formatting)
+    hledger-lsp.url = "github:juev/hledger-lsp";
+    hledger-lsp.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -72,6 +75,16 @@
               postInstall = ''
                 ln -s $out/bin/mmdr $out/bin/mmdc
               '';
+            };
+            # hledger-lsp isn't in nixpkgs (as of this writing); build from source.
+            # NOTE: if `nix eval nixpkgs#hledger-lsp` resolves, delete this and just add
+            # `hledger-lsp` to the dependencies list below instead.
+            hledger-lsp = super.buildGoModule {
+              pname = "hledger-lsp";
+              version = "unstable";
+              src = inputs.hledger-lsp;
+              vendorHash = "sha256-Oo/8LCX6svcH/0vCowzOiAhlif9LJfNrU3OgNiZDupo=";
+              subPackages = ["cmd/hledger-lsp"];
             };
           })
           (self: super: {
@@ -200,6 +213,7 @@
           (python3.withPackages (ps: with ps; [debugpy])) # required for debugging python, but better if that's per project installed since we don't have python
 
           tree-sitter
+          hledger-lsp # lsp for hledger/ledger journals
           metals # lsp for scala
           yazi # my alt file manager triggered with ,-
           imagemagick # for image previews

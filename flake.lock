@@ -104,6 +104,22 @@
         "type": "github"
       }
     },
+    "hledger-lsp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781765834,
+        "narHash": "sha256-j+AC21EEZEz3kElX+P3GMvm13AYxNd87add8IZFS+7Q=",
+        "owner": "juev",
+        "repo": "hledger-lsp",
+        "rev": "9851d3ac0fcd60ce77b9d6bfc3cd86bdebf18970",
+        "type": "github"
+      },
+      "original": {
+        "owner": "juev",
+        "repo": "hledger-lsp",
+        "type": "github"
+      }
+    },
     "mbr": {
       "inputs": {
         "crane": "crane",
@@ -232,6 +248,7 @@
         "fenix": "fenix",
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
+        "hledger-lsp": "hledger-lsp",
         "mbr": "mbr",
         "mermaid-rust-cli": "mermaid-rust-cli",
         "nixpkgs": "nixpkgs_2",

@@ -888,6 +888,19 @@ M.diagnostics = function()
     capabilities = capabilities
   }
   vim.lsp.enable("jsonls")
+  -- hledger journals (filetype "ledger" set in filetypes.lua). Provides account/payee/
+  -- commodity/tag/date completion (via blink.cmp), balance+syntax diagnostics, hover
+  -- account balances, goto-def/find-refs/rename across includes, and amount-alignment
+  -- formatting (used by ,l= and format-on-save via conform's lsp_fallback).
+  vim.lsp.config.hledger_lsp = {
+    cmd = { "hledger-lsp" },
+    filetypes = { "ledger" },
+    root_markers = { ".git", "*.journal" },
+    single_file_support = true,
+    on_attach = attached,
+    capabilities = capabilities
+  }
+  vim.lsp.enable("hledger_lsp")
   -- require("nvim-lightbulb").setup({
   --   autocmd = { enabled = true },
   --   sign = { enabled = true },

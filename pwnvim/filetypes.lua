@@ -1,6 +1,16 @@
 local M = {}
 
 M.config = function()
+  -- hledger/ledger journals -> filetype "ledger" so the bundled treesitter
+  -- ledger parser/queries and the hledger-lsp both attach (see plugins.lua)
+  vim.filetype.add({
+    extension = {
+      journal = "ledger",
+      hledger = "ledger",
+      ledger = "ledger",
+      prices = "ledger",
+    },
+  })
   -- Make detection of zola templates with jinja2-like syntax automatic
   -- See :h vim.filetype.add
   vim.filetype.add({
