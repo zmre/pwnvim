@@ -1407,6 +1407,8 @@ M.notes = function()
     completions = { lsp = { enabled = false } },
     render_modes = { 'n', 'c', 't' },
     anti_conceal = { enabled = true },
+    -- Don't hide HTML comments (<!-- ... -->); leave them visible and syntax-colored
+    html = { comment = { conceal = false } },
   })
 
   require("zk").setup({
