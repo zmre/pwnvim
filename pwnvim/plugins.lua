@@ -616,7 +616,11 @@ M.diagnostics = function()
       jsonc = { "prettier", "eslint_d" },
       yaml = { "prettier", "eslint_d" },
       -- svelte = { { "prettier", "eslint_d" } }, -- handled by lsp
-      nix = { "alejandra" }
+      nix = { "alejandra" },
+      -- hledger/ledger journals: use the fast rust hledger-fmt instead of the
+      -- hledger-lsp formatter, which is synchronous and very slow on large files.
+      -- "hledger-fmt" is a conform built-in (args: --no-diff --exit-zero-on-changes -).
+      ledger = { "hledger-fmt" }
     }
   })
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {
@@ -890,14 +894,26 @@ M.diagnostics = function()
   vim.lsp.enable("jsonls")
   -- hledger journals (filetype "ledger" set in filetypes.lua). Provides account/payee/
   -- commodity/tag/date completion (via blink.cmp), balance+syntax diagnostics, hover
-  -- account balances, goto-def/find-refs/rename across includes, and amount-alignment
-  -- formatting (used by ,l= and format-on-save via conform's lsp_fallback).
+  -- account balances, goto-def/find-refs/rename across includes.
+  -- NOTE: formatting is intentionally handled by conform + hledger-fmt (see
+  -- formatters_by_ft above), not the LSP. The LSP's whole-file formatting is
+  -- synchronous and painfully slow on large journals, so we strip its
+  -- formatting capabilities on attach to keep ,l=, formatexpr (gq), and
+  -- format-on-save all routed through the fast rust formatter.
   vim.lsp.config.hledger_lsp = {
     cmd = { "hledger-lsp" },
     filetypes = { "ledger" },
     root_markers = { ".git", "*.journal" },
     single_file_support = true,
-    on_attach = attached,
+    on_attach = function(client, bufnr)
+      client.server_capabilities.documentFormattingProvider = false
+      client.server_capabilities.documentRangeFormattingProvider = false
+      attached(client, bufnr)
+      -- attached() only maps ,l= when the LSP advertises formatting (now off),
+      -- so wire the manual format key straight to conform/hledger-fmt instead.
+      require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadern)("l=",
+        function() require("conform").format({ async = true, lsp_format = "never" }) end, "Format file")
+    end,
     capabilities = capabilities
   }
   vim.lsp.enable("hledger_lsp")

@@ -9,6 +9,7 @@ M.config = function()
       hledger = "ledger",
       ledger = "ledger",
       prices = "ledger",
+      rules = "ledger",
     },
   })
   -- Make detection of zola templates with jinja2-like syntax automatic

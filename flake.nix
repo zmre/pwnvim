@@ -214,6 +214,7 @@
 
           tree-sitter
           hledger-lsp # lsp for hledger/ledger journals
+          hledger-fmt # fast (rust) formatter for hledger/ledger journals (used by conform)
           metals # lsp for scala
           yazi # my alt file manager triggered with ,-
           imagemagick # for image previews
