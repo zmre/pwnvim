@@ -597,6 +597,14 @@ M.diagnostics = function()
       alejandra = {
         command = "alejandra",
         args = { "-q", "-q" }
+      },
+      ["hledger-fmt"] = {
+        -- hledger CSV import rules (*.rules) share the "ledger" filetype but
+        -- use a different DSL; hledger-fmt is a journal formatter and mangles
+        -- them, so never run it on rules files (auto- or manual format).
+        condition = function(_, ctx)
+          return not ctx.filename:match("%.rules$")
+        end
       }
 
     },
