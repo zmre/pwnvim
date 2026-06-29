@@ -213,6 +213,7 @@
           (python3.withPackages (ps: with ps; [debugpy])) # required for debugging python, but better if that's per project installed since we don't have python
 
           tree-sitter
+          hledger # plain-text accounting CLI; `hledger check` runs on save as a linter (nvim-lint)
           hledger-lsp # lsp for hledger/ledger journals
           hledger-fmt # fast (rust) formatter for hledger/ledger journals (used by conform)
           metals # lsp for scala

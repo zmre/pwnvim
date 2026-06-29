@@ -131,6 +131,11 @@ M.config = function()
     group = filetypes
   })
   autocmd("FileType", {
+    pattern = { "ledger" },
+    callback = require('pwnvim.filetypes').ledger,
+    group = filetypes
+  })
+  autocmd("FileType", {
     pattern = { "Outline" },
     command = "setlocal nospell",
     group = filetypes
@@ -175,6 +180,23 @@ M.rust = function(ev)
       autocmd BufReadPost quickfix setlocal foldlevel=0
     augroup END
   ]], { output = false })
+end
+
+M.ledger = function(ev)
+  local bufnr = ev.buf
+  -- :HledgerSort sorts transaction blocks by date. With a range (e.g. a visual
+  -- selection -> :'<,'>HledgerSort) it sorts just that range; with no range it
+  -- defaults to the whole file (the "%" below).
+  vim.api.nvim_buf_create_user_command(bufnr, "HledgerSort", function(opts)
+    require("pwnvim.hledger").sort_blocks(opts.line1, opts.line2)
+  end, { range = "%", desc = "Sort hledger transaction blocks by date" })
+  -- ,s -> sort. Set directly (not via the <cmd>-wrapping helpers) because the
+  -- visual map relies on ":" auto-inserting the "'<,'>" range for the command.
+  local opts = { buffer = bufnr, silent = true, noremap = true }
+  vim.keymap.set("n", "<leader>s", "<cmd>HledgerSort<cr>",
+    vim.tbl_extend("force", opts, { desc = "Sort journal by date (whole file)" }))
+  vim.keymap.set("x", "<leader>s", ":HledgerSort<cr>",
+    vim.tbl_extend("force", opts, { desc = "Sort selection by date" }))
 end
 
 M.c = function(ev)

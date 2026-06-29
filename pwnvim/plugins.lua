@@ -563,6 +563,65 @@ M.diagnostics = function()
     end
   })
 
+  -- Custom linter: run `hledger check` on save for *.journal files. hledger
+  -- writes errors to stderr (exit 1) in one of three location formats:
+  --   /path:LINE:        (bare line)
+  --   /path:LINE:COL:    (parse error with column)
+  --   /path:LINE-LINE:   (a transaction spanning a line range)
+  -- followed by an excerpt + message. We parse all three into diagnostics so
+  -- the offending lines get underlined/signed just like LSP errors.
+  require('lint').linters.hledger = {
+    name = "hledger",
+    cmd = "hledger",
+    -- append_fname (default true) tacks the buffer path on the end, yielding
+    -- `hledger check accounts commodities ordereddates balanced -f <file>`.
+    args = { "check", "accounts", "commodities", "ordereddates", "balanced", "-f" },
+    stdin = false,
+    stream = "stderr",
+    ignore_exitcode = true, -- non-zero exit just means it found problems
+    parser = function(output, _)
+      local diagnostics = {}
+      if not output or output == "" then return diagnostics end
+      -- Split on the "Error:" markers. A trailing sentinel lets the final
+      -- (and usually only) block be captured by the non-greedy match.
+      for block in (output .. "\nError:"):gmatch("Error:(.-)\nError:") do
+        local header, body = block:match("^([^\n]*)\n(.*)$")
+        header = header or block
+        body = body or ""
+        local file, loc = header:match("^%s*(.-):(%d[%d:%-]*):?%s*$")
+        if file and loc then
+          loc = loc:gsub(":$", "") -- the class above greedily eats the trailing ":"
+          local lnum, col, end_lnum
+          local l1, l2 = loc:match("^(%d+)%-(%d+)$") -- "1-3" line range
+          if l1 then
+            lnum, end_lnum = tonumber(l1), tonumber(l2)
+          else
+            local ln, cl = loc:match("^(%d+):(%d+)$") -- "3:1" line:col
+            if ln then
+              lnum, col = tonumber(ln), tonumber(cl)
+            else
+              lnum = tonumber(loc:match("^(%d+)")) -- "2" bare line
+            end
+          end
+          if lnum then
+            local msg = body:gsub("^%s+", ""):gsub("%s+$", "")
+            if msg == "" then msg = "hledger check failed" end
+            table.insert(diagnostics, {
+              lnum = lnum - 1,
+              col = (col or 1) - 1,
+              end_lnum = (end_lnum or lnum) - 1,
+              end_col = 0,
+              severity = vim.diagnostic.severity.ERROR,
+              source = "hledger",
+              message = msg
+            })
+          end
+        end
+      end
+      return diagnostics
+    end
+  }
+
   require('lint').linters_by_ft = {
     markdown = { 'vale' },
     -- NOTE: prettier is no longer a stock option
@@ -633,6 +692,13 @@ M.diagnostics = function()
   })
   vim.api.nvim_create_autocmd({ "BufWritePost" }, {
     callback = function() require("lint").try_lint() end
+  })
+  -- hledger check on save, scoped to *.journal by pattern (not filetype) so it
+  -- never runs on *.rules files, which share the "ledger" filetype but aren't
+  -- valid journals. Runs async like all nvim-lint linters.
+  vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+    pattern = "*.journal",
+    callback = function() require("lint").try_lint("hledger") end
   })
 
   -- local lspconfig = require("lspconfig")
