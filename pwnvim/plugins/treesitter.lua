@@ -35,16 +35,11 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     -- local ft = vim.bo[ev.buf].filetype -- this works, but below is more direct
     local ft = ev.match
     if vim.list_contains(require("nvim-treesitter").get_installed(), ft) then
-      print("starting treesitter")
       if ft ~= "markdown" then
         vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
       end
       vim.treesitter.start(ev.buf)
       -- vim.wo.foldmethod = "expr" -- zi toggles this
-    else
-      -- print("no treesitter for current filetype: " .. ft)
-      -- vim.cmd('syn on')
-      -- vim.wo.foldmethod = "syntax"
     end
   end,
 })

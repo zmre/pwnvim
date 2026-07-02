@@ -138,7 +138,7 @@ M.defaults = function()
   -- noinsert: don't insert until selection made, noselect: don't select automatically
   vim.opt.completeopt = "menu,menuone,noinsert,noselect" -- needed for autocompletion stuff
   vim.opt.conceallevel = 2
-  if vim.api.nvim_buf_get_option(0, 'modifiable') then
+  if vim.api.nvim_get_option_value('modifiable', { buf = 0 }) then
     vim.opt.fileencoding = "utf-8"
   end
 

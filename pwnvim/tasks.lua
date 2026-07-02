@@ -186,10 +186,8 @@ M.eachSelectedLine = function(myfunc)
   local rowend = vim.api.nvim_buf_get_mark(0, ">")[1] - 1
   local buf = vim.api.nvim_get_current_buf()
   local win = vim.api.nvim_get_current_win()
-  print("row start:" .. rowstart .. " row end:" .. rowend)
 
   for i = rowstart, rowend do
-    print("i:" .. i)
     vim.api.nvim_set_current_buf(buf)
     vim.api.nvim_set_current_win(win)
     vim.api.nvim_win_set_cursor(win, { i + 1, 0 })

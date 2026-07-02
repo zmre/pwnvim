@@ -151,11 +151,11 @@ M.config = function()
     if vim.opt_local.list:get() then
       vim.opt_local.list = false
       vim.opt_local.conceallevel = 2
-      vim.cmd("IBLEnable")
+      Snacks.indent.enable()
     else
       vim.opt_local.list = true
       vim.opt_local.conceallevel = 0
-      vim.cmd("IBLDisable") -- indent lines hide some chars like tab
+      Snacks.indent.disable() -- indent lines hide some chars like tab
     end
   end, "Toggle show invisible chars")
   -- Make ctrl-p open a file finder
@@ -178,8 +178,6 @@ M.config = function()
   M.mapnvic("<D-t>", "tabnew", "New tab")
   M.mapnvic("<D-s>", "write", "Save buffer")
   M.mapnvic("<D-q>", "quit", "Quit")
-  -- Magic buffer-picking mode
-  -- M.mapnvic("<M-b>", "BufferLinePick", "Pick buffer by letter")
 
   -- Copy and paste ops mainly for neovide / gui apps
   if require("pwnvim.options").isGuiRunning() then
@@ -191,7 +189,7 @@ M.config = function()
 
     -- Adjust font sizes
     local function get_font()
-      local guifont = vim.api.nvim_get_option("guifont")
+      local guifont = vim.api.nvim_get_option_value("guifont", {})
       local curr_font = {}
       curr_font.name = guifont:match("^(.*)%:")
       curr_font.size = tonumber(guifont:match("%:h(%d+)"))
@@ -324,8 +322,6 @@ M.config = function()
 
 
   M.mapn("<leader>p", 'normal "*p', "Paste")
-  -- M.mapn("[0", "BufferLinePick", "Pick buffer by letter")
-  -- M.mapn("]0", "BufferLinePick", "Pick buffer by letter")
 
   -- M.map("v", "gx", '"0y:silent !open "<c-r>0" || xdg-open "<c-r>0"<cr>gv', "Launch selected URL or path")
   -- When pasting over selected text, keep original register value
@@ -537,8 +533,6 @@ M.config = function()
     { "]B",    desc = "Last buffer" },
     { "[b",    "<Cmd>bprev<CR>",                     desc = "Prev buffer" },
     { "]b",    "<Cmd>bnext<CR>",                     desc = "Next buffer" },
-    -- ["[b"] = { "<Cmd>BufferLineCyclePrev<CR>", "Prev buffer" },
-    -- ["]b"] = { "<Cmd>BufferLineCycleNext<CR>", "Next buffer" },
     { "[c",    desc = "Prev git hunk" },
     { "]c",    desc = "Next git hunk" },
     { "[f",    desc = "Prev file in dir of cur file" },
@@ -569,30 +563,10 @@ M.config = function()
     { "]u",    desc = "URL decode" },
     { "[y",    desc = "C escape" },
     { "]y",    desc = "C unescape" },
-    { "[d",    vim.diagnostic.goto_prev,             desc = "Prev diagnostic" },
-    { "]d",    vim.diagnostic.goto_next,             desc = "Next diagnostic" },
-    -- ["[1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "Go to buffer 1" },
-    -- ["]1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "Go to buffer 1" },
-    -- ["[2"] = { "<cmd>BufferLineGoToBuffer 2<CR>", "Go to buffer 2" },
-    -- ["]2"] = { "<cmd>BufferLineGoToBuffer 2<CR>", "Go to buffer 2" },
-    -- ["[3"] = { "<cmd>BufferLineGoToBuffer 3<CR>", "Go to buffer 3" },
-    -- ["]3"] = { "<cmd>BufferLineGoToBuffer 3<CR>", "Go to buffer 3" },
-    -- ["[4"] = { "<cmd>BufferLineGoToBuffer 4<CR>", "Go to buffer 4" },
-    -- ["]4"] = { "<cmd>BufferLineGoToBuffer 4<CR>", "Go to buffer 4" },
-    -- ["[5"] = { "<cmd>BufferLineGoToBuffer 5<CR>", "Go to buffer 5" },
-    -- ["]5"] = { "<cmd>BufferLineGoToBuffer 5<CR>", "Go to buffer 5" },
-    -- ["[6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "Go to buffer 6" },
-    -- ["]6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "Go to buffer 6" },
-    -- ["[7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "Go to buffer 7" },
-    -- ["]7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "Go to buffer 7" },
-    -- ["[8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "Go to buffer 8" },
-    -- ["]8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "Go to buffer 8" },
-    -- ["[9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "Go to buffer 9" },
-    -- ["]9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "Go to buffer 9" },
+    { "[d",    function() vim.diagnostic.jump({ count = -1, float = true }) end, desc = "Prev diagnostic" },
+    { "]d",    function() vim.diagnostic.jump({ count = 1, float = true }) end,  desc = "Next diagnostic" },
     { "<S-h>", "<cmd>bn<CR>",                        desc = "Go to next buffer" },
     { "<S-l>", "<cmd>bp<CR>",                        desc = "Go to prev buffer" },
-    -- ["<S-h>"] = { "<cmd>BufferLineCyclePrev<CR>", "Go to next buffer" },
-    -- ["<S-l>"] = { "<cmd>BufferLineCycleNext<CR>", "Go to prev buffer" },
   }, { mode = "n", silent = true })
 
 
