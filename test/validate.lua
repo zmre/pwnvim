@@ -18,6 +18,7 @@ M.required_plugins = {
   { name = "flash", test = function() return pcall(require, "flash") end },
   { name = "noice", test = function() return pcall(require, "noice") end },
   { name = "nvim-surround", test = function() return pcall(require, "nvim-surround") end },
+  { name = "nvim-surround-wk", test = function() return pcall(require, "nvim-surround-wk") end },
 }
 
 -- Validate all required plugins are loaded

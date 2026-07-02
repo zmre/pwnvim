@@ -44,6 +44,9 @@
     review-nvim.flake = false;
     sidekick-nvim.url = "github:folke/sidekick.nvim";
     sidekick-nvim.flake = false;
+    # which-key hints for nvim-surround targets (not in nixpkgs)
+    nvim-surround-wk.url = "github:gregorias/nvim-surround-wk";
+    nvim-surround-wk.flake = false;
     # LSP for hledger/ledger journals (account/payee completion, diagnostics, formatting)
     hledger-lsp.url = "github:juev/hledger-lsp";
     hledger-lsp.flake = false;
@@ -134,6 +137,15 @@
                   src = inputs.sidekick-nvim;
                   nvimSkipModule = [
                     "sidekick.docs"
+                  ];
+                };
+                nvim-surround-wk = super.vimUtils.buildVimPlugin {
+                  name = "nvim-surround-wk";
+                  pname = "nvim-surround-wk";
+                  src = inputs.nvim-surround-wk;
+                  dependencies = [
+                    super.vimPlugins.nvim-surround
+                    super.vimPlugins.which-key-nvim
                   ];
                 };
               };
@@ -312,6 +324,7 @@
         # Editor Features ####################################
         vim-abolish # better abbreviations / spelling fixer
         nvim-surround # .... updated lua-based alternative to tpope's surround
+        nvim-surround-wk # which-key hints for surround targets when you forget the keys
         vim-unimpaired # bunch of convenient navigation key mappings
         vim-repeat # supports all of the above so you can use .
         #nvim-ts-context-commentstring # makes kommentary contextual for embedded languages

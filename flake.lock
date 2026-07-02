@@ -209,6 +209,22 @@
         "type": "github"
       }
     },
+    "nvim-surround-wk": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781162462,
+        "narHash": "sha256-41RttsqCI9y3ID7h8tmlcRmNtA9WNjyKp9R7ISLghjQ=",
+        "owner": "gregorias",
+        "repo": "nvim-surround-wk",
+        "rev": "d8f4058cab1f0a4805e0e9f7e1415607681265f6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gregorias",
+        "repo": "nvim-surround-wk",
+        "type": "github"
+      }
+    },
     "nvim-treesitter-textobjects": {
       "flake": false,
       "locked": {
@@ -252,6 +268,7 @@
         "mbr": "mbr",
         "mermaid-rust-cli": "mermaid-rust-cli",
         "nixpkgs": "nixpkgs_2",
+        "nvim-surround-wk": "nvim-surround-wk",
         "nvim-treesitter-textobjects": "nvim-treesitter-textobjects",
         "review-nvim": "review-nvim",
         "sidekick-nvim": "sidekick-nvim",

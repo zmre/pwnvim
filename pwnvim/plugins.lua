@@ -51,6 +51,9 @@ M.ui = function()
     move_cursor = "begin",
     indent_lines = surround_defaults.indent_lines
   })
+  -- Show which-key hints for surround targets (ys/ds/cs) using the labels and
+  -- aliases above -- must run after nvim-surround setup
+  require("nvim-surround-wk").setup()
 
   require("pwnvim.plugins.gitsigns")
   -- require("diffview").setup({}) -- replaced by review.nvim 2026-05-08
