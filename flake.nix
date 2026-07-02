@@ -24,17 +24,15 @@
     fenix.url = "github:nix-community/fenix";
     fenix.inputs.nixpkgs.follows = "nixpkgs";
     # ekickx doesn't seem to be maintaing. postfen's fork worth using for now. TODO: revisit
-    # Note: dfendr's fork could also be one to use.
-    # clipboard-image.url = "github:ekickx/clipboard-image.nvim";
     clipboard-image.url = "github:postfen/clipboard-image.nvim";
     clipboard-image.flake = false;
-    # conform-nvim.url = "github:stevearc/conform.nvim";
-    # conform-nvim.flake = false;
     # TODO: Remove after https://github.com/folke/todo-comments.nvim/pull/381 is merged
     todo-comments-nvim.url = "github:belltoy/todo-comments.nvim/main";
     todo-comments-nvim.flake = false;
     mbr.url = "github:zmre/mbr-markdown-browser";
     mbr.inputs.nixpkgs.follows = "nixpkgs";
+    # keep mbr's rust-overlay from dragging a second, stale nixpkgs into the closure
+    mbr.inputs.rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
     # nvim-treesitter-textobjects main branch for treesitter 1.0 compatibility
     nvim-treesitter-textobjects.url = "github:nvim-treesitter/nvim-treesitter-textobjects/main";
     nvim-treesitter-textobjects.flake = false;
@@ -98,13 +96,7 @@
                   name = "clipboard-image.nvim";
                   pname = "clipboard-image.nvim";
                   src = inputs.clipboard-image;
-                  # buildInputs = [ super.curl ];
                 };
-                # conform-nvim = super.vimUtils.buildVimPlugin {
-                #   name = "conform-nvim";
-                #   pname = "conform-nvim";
-                #   src = inputs.conform-nvim;
-                # };
                 # TODO: Remove after https://github.com/folke/todo-comments.nvim/pull/381 is merged
                 todo-comments-nvim = super.vimUtils.buildVimPlugin {
                   name = "todo-comments.nvim";
@@ -249,12 +241,10 @@
         paths = pkgs.vimPlugins.nvim-treesitter.withAllGrammars.dependencies;
       };
 
-      # I don't think the vim.env.whatever = value stuff below actually works
       customRC =
         ''
           lua << EOF
             package.path = "${self}/?.lua;" .. package.path
-            rustsrc_path = "${pkgs.rustPlatform.rustLibSrc}/core/Cargo.toml"
             prettier_path = "${pkgs.prettier}/bin/prettier"
             lldb_path_base = "${pkgs.vscode-extensions.vadimcn.vscode-lldb}"
             treesitter_grammars_path = "${grammarsPath}"
@@ -272,10 +262,6 @@
         plenary-nvim # Library for lua plugins; used by many plugins here
 
         # Syntax / Language Support ##########################
-        # Removing 2022-11-30 as it is slow and treesitter generally does the same thing
-        # Reinstating 2024-09-10 so I get fallbacks again
-        # Removing again 2024-12-12 because it isn't respecting the ftdetect disable and is overriding my detections
-        #vim-polyglot # lazy load all the syntax plugins for all the languages
         rustaceanvim # lsp stuff and more for rust; replaces rust-tools-nvim which is now archived
         nvim-lspconfig # setup LSP for intelligent coding
         nvim-lint # replace null-ls for linting bits
@@ -290,29 +276,22 @@
         neodev-nvim # help for neovim lua api
         SchemaStore-nvim # json schemas
         vim-matchup # replaces built-in matchit and matchparen with better matching and faster
-        #nvim-lightbulb # show code actions available ; 2025-06-09 removing due to huge number of deprecations that have been ignored for a long time
 
         # UI #################################################
         onedarkpro-nvim # colorscheme
         catppuccin-nvim # colorscheme
         ir_black # colorscheme for basic terminals
-        #zephyr-nvim # alternate colorscheme
         snacks-nvim # folke's swiss army knife - using for picker (replaces telescope)
         dressing-nvim # dresses up vim.ui.input (snacks handles vim.ui.select)
         nvim-colorizer-lua # color over CSS like #00ff00
         nvim-web-devicons # makes things pretty; used by many plugins below
         oil-nvim # file navigator
         gitsigns-nvim # git status in gutter
-        # symbols-outline-nvim # navigate the current file better
         lualine-nvim # nice status bar at bottom ; TODO 2025-06-09 time to find an alternative? tons of undealt with deprecations
-        # vim-bbye replaced by snacks.bufdelete
-        # bufferline-nvim # tabs at top
         dropbar-nvim # replacing the now archived barbecue (sad!)
         nvim-navbuddy # use same lsp symbols to navigate in popup
         nvim-ufo # allow use of lsp as source for folding
         promise-async # required by nvim-ufo
-        # indent-blankline-nvim replaced by snacks.indent
-        # toggleterm-nvim replaced by snacks.terminal
         nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
         lf-vim
         nui-nvim # needed by noice
@@ -327,44 +306,23 @@
         nvim-surround-wk # which-key hints for surround targets when you forget the keys
         vim-unimpaired # bunch of convenient navigation key mappings
         vim-repeat # supports all of the above so you can use .
-        #nvim-ts-context-commentstring # makes kommentary contextual for embedded languages
         vim-eunuch # brings cp/mv type commands. :Rename and :Move are particularly handy
         vim-speeddating # allows ctrl-x and ctrl-a to increment/decrement dates
         flash-nvim
 
-        # Database interactions
-        # vim-dadbod
-        # vim-dadbod-ui
-        # vim-dadbod-completion
-
         # Autocompletion
-        #nvim-cmp # generic autocompleter
-        #cmp-nvim-lsp # use lsp as source for completions
-        #cmp-nvim-lua # makes vim config editing better with completions
-        #cmp-buffer # any text in open buffers
-        #cmp-path # complete paths
-        #cmp-cmdline # completing in :commands
-        #cmp-emoji # complete :emojis:
-        #cmp-nvim-lsp-signature-help # help complete function call by showing args
-        #cmp-npm # complete node packages in package.json
         blink-cmp
         codecompanion-nvim # llm access in context; TODO 2025-06-09 find an alternative? riddled with deprecated function calls
         sidekick-nvim # AI CLI launcher (claude, iris, codex, gemini, etc.) - NES disabled
         nvim-autopairs # balances parens as you type
         nvim-ts-autotag # balance or rename html
         vim-emoji # TODO: redundant now?
-        #luasnip # snippets driver
-        #cmp_luasnip # snippets completion
-        #friendly-snippets # actual library of snippets used by luasnip
 
         # writing
         zk-nvim # lsp for a folder of notes for searching/linking/etc.
-        # zen-mode-nvim replaced by snacks.zen
-        # twilight-nvim # dim text outside of current scope
 
         # Misc
         vim-fugitive # git management
-        # diffview-nvim # replaced by review.nvim 2026-05-08
         codediff-nvim # diff renderer used by review.nvim
         review-nvim # PR-style code review with inline comments
         vim-tmux-navigator # navigate vim and tmux panes together
@@ -375,20 +333,16 @@
         # Something was obliterating rtp and making grammars disappear. Putting this on the bottom of the list
         # fixes the issue for me 2024-09-10.
         nvim-treesitter.withAllGrammars
-        #(nvim-treesitter.withPlugins (_: pkgs.tree-sitter.allGrammars)) # better code coloring
       ];
       optionalPlugins = with pkgs.vimPlugins; [
         # grammar check
         vim-grammarous
-        # see note about hologram in markdown.lua file. commented out 2023-01-19
-        #hologram-nvim # images inline for markdown (only in terminal)
         direnv-vim # auto-execute nix direnv setups -- currently my slowest plugin; enabled by programming filetype
         clipboard-image # only loaded in markdown files
         comment-nvim # code commenter
         crates-nvim # inline intelligence for Cargo.toml
         todo-comments-nvim # highlight comments like NOTE
         render-markdown-nvim # prettier markdown files
-        # image-nvim
       ];
     in rec {
       # Validation checks for the configuration
@@ -402,10 +356,12 @@
         } ''
           cd $src
           echo "Running luacheck..."
-          luacheck . --no-color || echo "Luacheck found issues (non-blocking for now)"
+          # --no-cache: the sandbox has no writable HOME for luacheck's cache
+          luacheck . --no-color --no-cache
 
           echo "Testing neovim startup..."
-          nvim --headless -c "lua vim.defer_fn(function() print('STARTUP_OK') vim.cmd('qa!') end, 100)" 2>&1 | grep -q "STARTUP_OK" || (echo "Startup test failed"; exit 1)
+          # io.stdout:write, not print: noice.nvim swallows print output when loaded
+          nvim --headless -c "lua vim.defer_fn(function() io.stdout:write('STARTUP_OK\n') vim.cmd('qa!') end, 100)" 2>&1 | grep -q "STARTUP_OK" || (echo "Startup test failed"; exit 1)
 
           echo "All checks passed"
           touch $out
@@ -418,11 +374,6 @@
           withPython3 = false;
           withRuby = false;
           extraLuaPackages = ps: [ps.lua-curl];
-
-          # vim.env.RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}"
-          # vim.env.RA_LOG = "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug"
-          # --vim.env.RA_LOG = "info"
-          # --vim.env.RA_PROFILE = "*>50"
 
           extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}" --prefix RA_LOG : "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug" --set CLICOLOR_FORCE 0 --prefix RUST_SRC_PATH : "${pkgs.rustPlatform.rustLibSrc}"'';
           # make sure impatient is loaded before everything else to speed things up
