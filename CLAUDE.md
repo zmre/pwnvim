@@ -20,18 +20,19 @@ nix develop
 
 # Update dependencies, build, push to cachix, and show diff
 ./update.sh
-```
 
-### Package Variants
-- **pwnvim** (default): Standard config without Python
-- **pwnvim-python**: Includes Python3, Jupyter/molten-nvim, and image rendering
+# Local validation suite (lint, startup, plugin load, checkhealth, keymaps)
+./check.sh
+```
 
 ## CI/Testing
 
 GitHub Actions runs on push/PR to main:
 - Builds on both `ubuntu-latest` and `macos-latest`
 - Uses cachix for binary caching (zmre cache)
-- No automated Neovim-specific tests currently exist (see README TODO)
+- Runs `nix build .#checks.<system>.default` (luacheck + startup test) and `./check.sh`
+- `check.sh` drives shared validation helpers in `test/validate.lua` (plugin load, keymap conflicts)
+- A pre-commit hook (`.githooks/pre-commit`, wired up by the devShell) runs `nix flake check` or `check.sh`
 
 ## Architecture
 
@@ -60,10 +61,10 @@ GitHub Actions runs on push/PR to main:
 **SimpleUI Mode**: Detects limited terminals (`SIMPLEUI=1`, Apple Terminal, linux console) and falls back to 16-color ir_black theme without nerd fonts.
 
 **Paths injected from Nix**: `flake.nix` injects paths as Lua globals in `customRC`:
-- `rustsrc_path` - Rust library source for rust-analyzer
 - `prettier_path` - Prettier binary
 - `lldb_path_base` - LLDB debugger for Rust DAP
 - `rustanalyzer_path` - rust-analyzer binary
+- `treesitter_grammars_path` - Nix-managed treesitter parser directory
 
 ### Language Support
 
@@ -79,6 +80,10 @@ Key LSP configs in `plugins.lua` under `M.diagnostics()`:
 
 - `pwnvim/markdown.lua` - Custom markdown features: fold expressions, URL title fetching, daily/meeting notes, zk integration
 - `pwnvim/signs.lua` - Diagnostic sign configuration
+- `pwnvim/tasks.lua` - Markdown task/checkbox helpers (toggle done, schedule, etc.)
+- `pwnvim/hledger.lua` - hledger journal editing support
+- `pwnvim/plugins/` - Per-plugin config modules (lualine, treesitter, gitsigns, oil, todo-comments)
+- `test/validate.lua` - Shared validation helpers used by `check.sh`
 - `cheatsheet.md` - Comprehensive keybinding reference
 
 ## Key Bindings

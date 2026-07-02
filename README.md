@@ -10,7 +10,7 @@ But one of the reasons I started using Nix in the first place was one of [Burke 
 
 But Burke's approach to nix is quite different from mine. Perhaps his has evolved since he made his videos. Regardless, my preferred approach is to drive everything installed on my machine off of [declarative config files](https://github.com/zmre/nix-config). I'm also a huge fan of [flakes](https://nixos.wiki/wiki/Flakes). If I want to install something permanently (as opposed to in a temporary shell), I edit my config files and run a command to make my system match the files.  It's great.
 
-Recently I was helping someone else with their config and I really missed having my neovim setup -- not just my preferred basic settings, but also my nix code formatter and LSP helpers and such. So I was motivated to make a version of my config that didn't read the configs out of the usual `~/.config/neovim` folder, but instead was sandboxed so it could be ephemeral and used from any nix machine independent of home-manager or global config files.
+Recently I was helping someone else with their config and I really missed having my neovim setup -- not just my preferred basic settings, but also my nix code formatter and LSP helpers and such. So I was motivated to make a version of my config that didn't read the configs out of the usual `~/.config/nvim` folder, but instead was sandboxed so it could be ephemeral and used from any nix machine independent of home-manager or global config files.
 
 The only example I could find of doing this in a flake was in [Jordan Isaacs](https://github.com/jordanisaacs/neovim-flake) setup, which showed me this would be possible.  But it worked a bit differently than I wanted and I wasn't able to easily adapt it. His is nicely modular with various switches, which mine is not at this point, so you might be interested in checking out what he's done there.
 
@@ -60,24 +60,14 @@ And later in your config you'd specify `pkgs.pwnvim` as something to install.
 
 When you want to run it, just use `nvim` and not `pwnvim` though I may make both work later. I'm not sure what will happen if you also have `pkgs.neovim` setup -- probably works but they'll fight for the alias?
 
+## Testing
+
+The flake check (`nix flake check`) runs luacheck and a headless startup test, so the build fails if the config errors on load. A fuller local suite lives in `./check.sh` (startup in normal and SimpleUI modes, plugin loading, checkhealth analysis, LSP binary availability, keymap conflicts) and also runs in CI on Linux and macOS. A pre-commit hook (set up automatically by the dev shell) runs the checks before each commit.
+
 ## TODO:
 
-* [ ] Setup some testing so a build fails if there are errors on load or if LSP breaks for some programming language
-  * Seriously, if anyone has a good way to test neovim configs especially as part of nix builds, I'd love to hear it
-* [ ] Make some alternate flake targets that produce other outputs such as a lightweight one (no programming stuff), 
+* [ ] Make some alternate flake targets that produce other outputs such as a lightweight one (no programming stuff),
   * [x] and one that works in terminals without fancy fonts and with only 16 colors (this is now done though it's a bit ugly, but I have used it a lot)
 
 ![test image](84cf598a224b9583.jpeg)
-
-
-
-
-
-
-
-
-
-
-
-
 
