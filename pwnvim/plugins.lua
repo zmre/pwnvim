@@ -14,13 +14,9 @@ local is_page_pager = (function()
 end)()
 
 ----------------------- UI --------------------------------
--- Tree, GitSigns, Indent markers, Colorizer, bufferline, lualine, treesitter
+-- Oil file browser, GitSigns, Colorizer, lualine, treesitter
 M.ui = function()
-  require("pwnvim.plugins.nvim-tree")
-
-  -- dadbod-ui
-  -- vim.g.db_ui_use_nerd_fonts = not SimpleUI
-  -- vim.g.db_ui_use_nvim_notify = true
+  require("pwnvim.plugins.oil")
 
   local surround_defaults = require("nvim-surround.config").default_opts
   require("nvim-surround").setup({
@@ -143,8 +139,6 @@ M.ui = function()
 
   require("pwnvim.plugins.lualine")
   require("pwnvim.plugins.treesitter")
-  -- require("pwnvim.plugins.bufferline")
-  -- indent guides now handled by snacks.indent
   require("flash").setup({
     modes = {
       char = {
@@ -487,7 +481,6 @@ M.diagnostics = function()
     if client.server_capabilities.documentFormattingProvider then
       mapleadernlocal("l=", vim.lsp.buf.format, "Format file")
       vim.bo.formatexpr = 'v:lua.vim.lsp.formatexpr(#{timeout_ms:500})'
-      -- vim.api.nvim_buf_set_option(bufnr, 'formatexpr', 'v:lua.vim.lsp.formatexpr(#{timeout_ms:500})')
     end
 
     if client.server_capabilities.documentRangeFormattingProvider then
@@ -500,7 +493,6 @@ M.diagnostics = function()
     end
 
     if client.server_capabilities.documentSymbolProvider then
-      -- print("GOT documentSymbolProvider")
       require("nvim-navic").attach(client, bufnr)    -- setup context showing header line
       require("nvim-navbuddy").attach(client, bufnr) -- setup popup for browsing symbols
       -- mapleadernlocal("lsd", builtin.lsp_document_symbols, "Find symbol in document")
@@ -814,19 +806,6 @@ M.diagnostics = function()
   end
 
 
-  -- vim.lsp.config.marksman = {
-  --   capabilities = capabilities,
-  --   on_attach = attached,
-  --   -- root_dir = lspconfig.util.root_pattern('nope'), -- this is a temp fix for an error in the lspconfig for this LS
-  --   single_file_support = true,
-  -- }
-  -- vim.lsp.enable("marksman")
-  -- lspconfig.markdown_oxide.setup({
-  --   capabilities = capabilities,
-  --   on_attach = attached,
-  --   root_dir = lspconfig.util.root_pattern('nope'), -- this is a temp fix for an error in the lspconfig for this LS
-  --   single_file_support = true,
-  -- })
   vim.lsp.config.yamlls = {
     on_attach = attached,
     capabilities = capabilities,
@@ -1012,21 +991,6 @@ M.llms = function()
   }
   local fmt = string.format
 
-  -- status is true if the function ran without errors; isOllamaRunning is true if we had a successful connection
-  -- the on_error function should avoid any errors propagating, but it seems that doesn't always work, hence the pcall
-  -- local status, isOllamaRunning = pcall(function()
-  --   return require("plenary.curl").get("http://localhost:11434", {
-  --     timeout = 50,
-  --     on_error = function(e) return { status = e.exit } end,
-  --   }).status == 200
-  -- end)
-
-  --[[ if status and isOllamaRunning then
-    vim.g.codecompanion_adapter = "ollamacode"
-  else
-    vim.g.codecompanion_adapter = "copilot"
-  end ]]
-  -- vim.g.codecompanion_adapter = "gptoss"
   vim.g.codecompanion_adapter = "openai"
 
   require("codecompanion").setup({
@@ -1058,53 +1022,6 @@ M.llms = function()
         end,
       },
       http = {
-        --[[ ollamacode = function()
-        return require("codecompanion.adapters").extend("ollama", {
-          name = "ollamacode",
-          env = {
-            url = "http://127.0.0.1:11434",
-          },
-          schema = {
-            model = {
-              default = "qwen2.5-coder:32b",
-            },
-          },
-          headers = {
-            ["Content-Type"] = "application/json",
-          },
-          parameters = {
-            sync = true,
-          },
-        })
-      end,
-      ollamaprose = function()
-        return require("codecompanion.adapters").extend("ollama", {
-          name = "ollamaprose",
-          env = {
-            url = "http://127.0.0.1:11434",
-          },
-          schema = {
-            model = {
-              default = "llama3.2:3b",
-            },
-          },
-          headers = {
-            ["Content-Type"] = "application/json",
-          },
-          parameters = {
-            sync = true,
-          },
-        })
-      end, ]]
-        -- copilot_o3 = function()
-        --   return require("codecompanion.adapters").extend("copilot", {
-        --     schema = {
-        --       model = {
-        --         default = "o3",
-        --       },
-        --     },
-        --   })
-        -- end,
         anthropic = function()
           return require("codecompanion.adapters").extend("anthropic", {
             env = {
@@ -1114,59 +1031,11 @@ M.llms = function()
         end,
         openai = function()
           return require("codecompanion.adapters").extend("openai", {
-            -- schema = {
-            -- model = {
-            -- default = "o4-mini",
-            -- },
-            -- },
             env = {
               api_key = "cmd:security find-generic-password -l openaikey -g -w |tr -d '\n'"
             }
           })
         end,
-        -- below definition is for llama-cpp
-        --[[ gptoss = function()
-        return require("codecompanion.adapters").extend("openai_compatible", {
-          name = "gptoss",
-          env = {
-            url = "http://aironcore.savannah-basilisk.ts.net:8080", -- optional: default value is ollama url http://127.0.0.1:11434
-            chat_url = "/v1/chat/completions",
-            models_endpoint = "/v1/models",
-
-          },
-          schema = {
-            model = {
-              default = "/home/pwalsh/.cache/llama.cpp/ggml-org_gpt-oss-20b-GGUF_gpt-oss-20b-mxfp4.gguf",
-              -- default = "gpt-oss-20b-GGUF", -- define llm model to be used
-              -- default = "ggml-org_gpt-oss-20b-GGUF_gpt-oss-20b-mxfp4.gguf", -- define llm model to be used
-            },
-          }
-        })
-      end, ]]
-        -- below definition is for ollama with gpgoss
-        --[[ gptoss = function()
-        return require("codecompanion.adapters").extend("ollama", {
-          name = "gptoss",
-          opts = {
-            vision = false,
-            stream = true,
-          },
-          env = {
-            url = "http://aironcore.savannah-basilisk.ts.net:11434",
-          },
-          schema = {
-            model = {
-              default = "gpt-oss:20b",
-            },
-          },
-          -- headers = {
-          --   ["Content-Type"] = "application/json",
-          -- },
-          parameters = {
-            sync = true,
-          },
-        })
-      end, ]]
         opts = {
           allow_insecure = false, -- Allow insecure connections? yes if we're using ollama
           show_model_choices = true,
@@ -1621,23 +1490,6 @@ M.misc = function()
 
   vim.g.tmux_navigator_no_mappings = 1
 
-
-  -- require("project_nvim").setup({
-  --   active = true,
-  --   on_config_done = nil,
-  --   manual_mode = false,
-  --   detection_methods = { "lsp", "pattern" },
-  --   exclude_dirs = { "/nix/store/*" },
-  --   scope_chdir = "tab",
-  --   patterns = {
-  --     ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json",
-  --     ".zk", "build.sbt", "Package.swift", "Makefile.in", "README.md",
-  --     "flake.nix"
-  --   },
-  --   show_hidden = false,
-  --   silent_chdir = true,
-  --   ignore_lsp = {}
-  -- })
 
   require("yazi").setup({
     open_for_directories = false
