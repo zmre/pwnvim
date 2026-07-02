@@ -42,15 +42,15 @@ GitHub Actions runs on push/PR to main:
 2. `pwnvim/options.lua` - Vim settings, colorschemes (catppuccin/onedark), Neovide GUI config
 3. `pwnvim/mappings.lua` - All keybindings (leader is `,`)
 4. `pwnvim/abbreviations.lua` - Text abbreviations
-5. `pwnvim/plugins.lua` - Plugin configurations organized as:
-   - `M.ui()` - File tree (oil.nvim), git signs, status line, breadcrumbs
-   - `M.diagnostics()` - LSP, formatters (conform.nvim), linters (nvim-lint)
-   - `M.picker()` - Fuzzy finder via snacks.picker
-   - `M.completions()` - blink.cmp completion engine
-   - `M.llms()` - CodeCompanion AI integration
-   - `M.notes()` - Zettelkasten/zk, grammar checking
-   - `M.misc()` - Autopairs, yazi file manager
-   - snacks.nvim features: dashboard, bigfile, quickfile, bufdelete, indent, scroll, terminal, zen, gitbrowse, gh
+5. `pwnvim/plugins.lua` - Thin facade re-exporting per-concern modules from `pwnvim/plugins/`:
+   - `ui.lua` - File tree (oil.nvim), git signs, status line, breadcrumbs
+   - `diagnostics.lua` - LSP, formatters (conform.nvim), linters (nvim-lint)
+   - `picker.lua` - snacks.nvim: picker plus dashboard, bigfile, quickfile, bufdelete, indent, scroll, terminal, zen, gitbrowse, gh
+   - `completions.lua` - blink.cmp completion engine
+   - `llms.lua` - CodeCompanion AI integration; `llmcli.lua` - sidekick.nvim AI CLI launcher
+   - `notes.lua` - Zettelkasten/zk, render-markdown, grammar settings; `grammar.lua` - grammarous runner
+   - `misc.lua` - Autopairs, matchup, yazi file manager; `pick_folder.lua` - custom folder picker
+   - Per-plugin helpers: `lualine.lua`, `treesitter.lua`, `gitsigns.lua`, `oil.lua`, `todo-comments.lua`
 
 ### Key Patterns
 
@@ -82,7 +82,7 @@ Key LSP configs in `plugins.lua` under `M.diagnostics()`:
 - `pwnvim/signs.lua` - Diagnostic sign configuration
 - `pwnvim/tasks.lua` - Markdown task/checkbox helpers (toggle done, schedule, etc.)
 - `pwnvim/hledger.lua` - hledger journal editing support
-- `pwnvim/plugins/` - Per-plugin config modules (lualine, treesitter, gitsigns, oil, todo-comments)
+- `pwnvim/plugins/` - Per-concern and per-plugin config modules (see Entry Point Flow)
 - `test/validate.lua` - Shared validation helpers used by `check.sh`
 - `cheatsheet.md` - Comprehensive keybinding reference
 
