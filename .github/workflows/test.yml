@@ -43,7 +43,8 @@ jobs:
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
           extraPullNames: nix-community
       - name: Run checks
-        # Build specific check only (avoids evaluating pwnvim-python which has Python version issues)
         run: nix build .#checks.${{ matrix.target == 'aarch64-apple-darwin' && 'aarch64-darwin' || 'x86_64-linux' }}.default
       - name: Build package
         run: nix build .#pwnvim
+      - name: Run validation suite
+        run: NVIM_CMD=./result/bin/nvim ./check.sh

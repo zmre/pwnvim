@@ -11,7 +11,6 @@ globals = {
 read_globals = {
   -- Injected by flake.nix
   "vim",
-  "rustsrc_path",
   "treesitter_grammars_path",
   "prettier_path",
   "lldb_path_base",

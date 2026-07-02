@@ -68,10 +68,11 @@ if ! command -v "$NVIM_CMD" &> /dev/null; then
   error "nvim not found in PATH"
 else
   # Test normal startup
+  # Note: use io.stdout:write, not print -- noice.nvim swallows print output
   info "Testing normal startup..."
   STARTUP_OUTPUT=$(mktemp)
   if $NVIM_CMD --headless \
-    -c "lua vim.defer_fn(function() print('STARTUP_OK') vim.cmd('qa!') end, 100)" \
+    -c "lua vim.defer_fn(function() io.stdout:write('STARTUP_OK\n') vim.cmd('qa!') end, 100)" \
     2>&1 | tee "$STARTUP_OUTPUT" | grep -q "STARTUP_OK"; then
 
     # Check for errors in output
@@ -91,7 +92,7 @@ else
   info "Testing SimpleUI startup..."
   STARTUP_OUTPUT=$(mktemp)
   if SIMPLEUI=1 $NVIM_CMD --headless \
-    -c "lua vim.defer_fn(function() print('STARTUP_OK') vim.cmd('qa!') end, 100)" \
+    -c "lua vim.defer_fn(function() io.stdout:write('STARTUP_OK\n') vim.cmd('qa!') end, 100)" \
     2>&1 | tee "$STARTUP_OUTPUT" | grep -q "STARTUP_OK"; then
 
     if grep -iE "^E[0-9]+:|error|exception" "$STARTUP_OUTPUT" | grep -v "STARTUP_OK" > /dev/null 2>&1; then
@@ -113,47 +114,19 @@ fi
 section "Plugin Loading Verification"
 
 PLUGIN_CHECK=$(mktemp)
-cat > "$PLUGIN_CHECK" << 'EOF'
+cat > "$PLUGIN_CHECK" << EOF
 -- Defer the check to run after full initialization
+-- Plugin list lives in test/validate.lua (single source of truth)
+-- Note: use io.stdout:write, not print -- noice.nvim swallows print output
 vim.defer_fn(function()
-  local failed = {}
-  local passed = {}
-
-  local function check_require(name, mod)
-    local ok = pcall(require, mod)
-    if ok then
-      table.insert(passed, name)
-    else
-      table.insert(failed, name)
-    end
-  end
-
-  local function check_global(name, global_name)
-    if _G[global_name] ~= nil then
-      table.insert(passed, name)
-    else
-      table.insert(failed, name)
-    end
-  end
-
-  -- Check core plugins
-  -- Note: snacks.nvim is validated by startup test (creates Snacks global on init)
-  check_require("which-key", "which-key")
-  check_require("treesitter", "nvim-treesitter")
-  check_require("gitsigns", "gitsigns")
-  check_require("lualine", "lualine")
-  check_require("blink.cmp", "blink.cmp")
-  check_require("oil", "oil")
-  check_require("conform", "conform")
-  check_require("nvim-lint", "lint")
-  check_require("trouble", "trouble")
-  check_require("flash", "flash")
+  local validate = dofile("$SCRIPT_DIR/test/validate.lua")
+  local passed, failed = validate.validate_plugins()
 
   -- Output results
-  print("PLUGIN_RESULTS_START")
-  print("PASSED:" .. table.concat(passed, ","))
-  print("FAILED:" .. table.concat(failed, ","))
-  print("PLUGIN_RESULTS_END")
+  io.stdout:write("PLUGIN_RESULTS_START\n")
+  io.stdout:write("PASSED:" .. table.concat(passed, ",") .. "\n")
+  io.stdout:write("FAILED:" .. table.concat(failed, ",") .. "\n")
+  io.stdout:write("PLUGIN_RESULTS_END\n")
 
   vim.cmd("qa!")
 end, 100)
@@ -262,23 +235,20 @@ check_lsp "TypeScript" "typescript-language-server"
 section "Keymap Conflict Check"
 
 KEYMAP_CHECK=$(mktemp)
-cat > "$KEYMAP_CHECK" << 'EOF'
-local maps = vim.api.nvim_get_keymap("n")
-local seen = {}
-local conflicts = {}
-
-for _, map in ipairs(maps) do
-  local key = map.lhs
-  if seen[key] then
-    table.insert(conflicts, key)
-  end
-  seen[key] = true
-end
+cat > "$KEYMAP_CHECK" << EOF
+-- Conflict detection lives in test/validate.lua (single source of truth)
+-- Note: use io.stdout:write, not print -- noice.nvim swallows print output
+local validate = dofile("$SCRIPT_DIR/test/validate.lua")
+local conflicts = validate.find_keymap_conflicts("n")
 
 if #conflicts > 0 then
-  print("KEYMAP_CONFLICTS:" .. table.concat(conflicts, ","))
+  local keys = {}
+  for _, c in ipairs(conflicts) do
+    table.insert(keys, c.key)
+  end
+  io.stdout:write("KEYMAP_CONFLICTS:" .. table.concat(keys, ",") .. "\n")
 else
-  print("KEYMAP_OK")
+  io.stdout:write("KEYMAP_OK\n")
 end
 
 vim.cmd("qa!")
