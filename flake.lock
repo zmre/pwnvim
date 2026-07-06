@@ -256,7 +256,8 @@
         "nvim-treesitter-textobjects": "nvim-treesitter-textobjects",
         "review-nvim": "review-nvim",
         "sidekick-nvim": "sidekick-nvim",
-        "todo-comments-nvim": "todo-comments-nvim"
+        "todo-comments-nvim": "todo-comments-nvim",
+        "zk-src": "zk-src"
       }
     },
     "rust-analyzer-src": {
@@ -356,6 +357,23 @@
         "owner": "belltoy",
         "ref": "main",
         "repo": "todo-comments.nvim",
+        "type": "github"
+      }
+    },
+    "zk-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783372626,
+        "narHash": "sha256-8oZWM/sx1HhUEXPAae/um5vZToHxv8uappQj0L5pjjE=",
+        "owner": "zmre",
+        "repo": "zk",
+        "rev": "e972203c94f78d30c529dfeade2ec821f2cb09db",
+        "type": "github"
+      },
+      "original": {
+        "owner": "zmre",
+        "ref": "fix/notebook-root-links",
+        "repo": "zk",
         "type": "github"
       }
     }

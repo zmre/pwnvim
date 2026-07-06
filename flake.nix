@@ -48,6 +48,11 @@
     # LSP for hledger/ledger journals (account/payee completion, diagnostics, formatting)
     hledger-lsp.url = "github:juev/hledger-lsp";
     hledger-lsp.flake = false;
+    # TODO: Remove once https://github.com/zk-org/zk/pull/745 is merged & released.
+    # Builds zk from the PR branch so absolute (leading-slash) links resolve against
+    # the notebook root instead of reporting bogus broken-link diagnostics.
+    zk-src.url = "github:zmre/zk/fix/notebook-root-links";
+    zk-src.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -77,6 +82,14 @@
                 ln -s $out/bin/mmdr $out/bin/mmdc
               '';
             };
+            # TODO: Remove once https://github.com/zk-org/zk/pull/745 is merged & released.
+            # Override zk with the PR branch (see zk-src input) so leading-slash links
+            # resolve against the notebook root and stop emitting bogus broken-link errors.
+            zk = super.zk.overrideAttrs (old: {
+              version = "0.15.5-pr745";
+              src = inputs.zk-src;
+              vendorHash = "sha256-Z5I7NaTq/t4269afgGQdVuS7lBG1bNOhudsdgtcWfTs=";
+            });
             # hledger-lsp isn't in nixpkgs (as of this writing); build from source.
             # NOTE: if `nix eval nixpkgs#hledger-lsp` resolves, delete this and just add
             # `hledger-lsp` to the dependencies list below instead.
