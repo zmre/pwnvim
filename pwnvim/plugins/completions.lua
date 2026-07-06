@@ -3,16 +3,12 @@
 
 -- Percent-encode everything outside RFC 3986 unreserved chars (plus '/') so
 -- completed markdown link destinations are valid strict CommonMark even with
--- spaces, parens, or '#' in file names. gf decodes these (markdown.resolveMdLink)
+-- spaces, parens, or '#' in file names. gf decodes these (markdown.resolveMdLink).
+-- Hand-rolled because vim.uri_encode leaves parens and '#' unencoded; decode
+-- side uses the vim.uri_decode builtin
 local function urlencode(str)
   return (str:gsub("[^%w%-%._~/]", function(c)
     return string.format("%%%02X", string.byte(c))
-  end))
-end
-
-local function urldecode(str)
-  return (str:gsub("%%(%x%x)", function(hex)
-    return string.char(tonumber(hex, 16))
   end))
 end
 
@@ -21,13 +17,16 @@ return function()
   -- candidates, so '](/my%20docs/' would scan a nonexistent dir. blink has no
   -- hook there; wrap the cached module's dirname to decode in markdown buffers
   local pathlib = require('blink.cmp.sources.path.lib')
-  local blink_dirname = pathlib.dirname
-  pathlib.dirname = function(opts, ctx)
-    local dirname = blink_dirname(opts, ctx)
-    if dirname and vim.bo[ctx.bufnr].filetype == 'markdown' then
-      return urldecode(dirname)
+  if not pathlib._pwnvim_wrapped then
+    pathlib._pwnvim_wrapped = true
+    local blink_dirname = pathlib.dirname
+    pathlib.dirname = function(opts, ctx)
+      local dirname = blink_dirname(opts, ctx)
+      if dirname and vim.bo[ctx.bufnr].filetype == 'markdown' then
+        return vim.uri_decode(dirname)
+      end
+      return dirname
     end
-    return dirname
   end
 
   require("blink.cmp").setup({
@@ -55,8 +54,14 @@ return function()
           opts = {
             ignore_root_slash = true,
             get_cwd = function(ctx)
-              return vim.fs.root(ctx.bufnr, { '.zk', '.git', '.mbr', 'flake.nix', 'Cargo.toml', 'package.json' })
-                  or vim.fn.expand(('#%d:p:h'):format(ctx.bufnr))
+              -- memoized per buffer: vim.fs.root walks the filesystem upward
+              -- and this runs on each '/' typed, which hitches on iCloud dirs
+              local root = vim.b[ctx.bufnr].pwnvim_repo_root
+              if root == nil then
+                root = vim.fs.root(ctx.bufnr, require('pwnvim.markdown').root_markers)
+                vim.b[ctx.bufnr].pwnvim_repo_root = root
+              end
+              return root or vim.fn.expand(('#%d:p:h'):format(ctx.bufnr))
             end,
           },
           -- insert url-encoded names (label stays readable for fuzzy matching)

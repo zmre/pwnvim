@@ -251,16 +251,23 @@ M.outdent = function()
   end
 end
 
+-- Project-root markers shared by gf link resolution below and the markdown
+-- repo_path completion provider (plugins/completions.lua) — the two must
+-- agree or completed root-absolute links won't resolve
+M.root_markers = { '.zk', '.git', '.mbr', 'flake.nix', 'Cargo.toml', 'package.json' }
+
 -- gf calls this (via includeexpr) when the name under the cursor isn't found
 -- as-is. Markdown renderers accept link forms the filesystem doesn't:
 -- repo-root-absolute paths, url-encoding (%20), omitted .md extensions,
 -- trailing slashes (folder/index.md), and #heading fragments.
 M.resolveMdLink = function(fname)
   fname = fname:gsub('#.*$', '')
-  fname = fname:gsub('%%(%x%x)', function(hex) return string.char(tonumber(hex, 16)) end)
+  -- fragment-only link (](#heading)): nothing to resolve on disk
+  if fname == '' then return fname end
+  fname = vim.uri_decode(fname)
   local base
   if fname:sub(1, 1) == '/' then
-    local root = vim.fs.root(0, { '.zk', '.git', '.mbr', 'flake.nix', 'Cargo.toml', 'package.json' })
+    local root = vim.fs.root(0, M.root_markers)
     if not root then return fname end
     base = root .. fname
   else
@@ -271,7 +278,7 @@ M.resolveMdLink = function(fname)
     local stat = vim.uv.fs_stat(candidate)
     if stat and stat.type == 'file' then return candidate end
   end
-  return base
+  return stripped
 end
 
 M.getTitleFor = function(url)
