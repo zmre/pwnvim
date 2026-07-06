@@ -38,6 +38,10 @@ M.setup = function(ev)
   --vim.bo.syntax = "off" -- we use treesitter exclusively on markdown now
   -- except temp off until https://github.com/MDeiml/tree-sitter-markdown/issues/114
 
+  -- Make markdown-renderer link conventions resolve for gf; includeexpr is
+  -- consulted when the name isn't found as-is (see M.resolveMdLink)
+  vim.bo[ev.buf].includeexpr = "v:lua.require'pwnvim.markdown'.resolveMdLink(v:fname)"
+
   require('pwnvim.markdown').markdownsyntax()
   require('pwnvim.markdown').setupmappings(bufnr)
 
@@ -245,6 +249,29 @@ M.outdent = function()
   if blink_ok and blink.snippet_active() then
     blink.snippet_backward()
   end
+end
+
+-- gf calls this (via includeexpr) when the name under the cursor isn't found
+-- as-is. Markdown renderers accept link forms the filesystem doesn't:
+-- repo-root-absolute paths, url-encoding (%20), omitted .md extensions,
+-- trailing slashes (folder/index.md), and #heading fragments.
+M.resolveMdLink = function(fname)
+  fname = fname:gsub('#.*$', '')
+  fname = fname:gsub('%%(%x%x)', function(hex) return string.char(tonumber(hex, 16)) end)
+  local base
+  if fname:sub(1, 1) == '/' then
+    local root = vim.fs.root(0, { '.zk', '.git', '.mbr', 'flake.nix', 'Cargo.toml', 'package.json' })
+    if not root then return fname end
+    base = root .. fname
+  else
+    base = vim.fn.expand('%:p:h') .. '/' .. fname
+  end
+  local stripped = (base:gsub('/+$', ''))
+  for _, candidate in ipairs({ stripped, stripped .. '.md', stripped .. '/index.md' }) do
+    local stat = vim.uv.fs_stat(candidate)
+    if stat and stat.type == 'file' then return candidate end
+  end
+  return base
 end
 
 M.getTitleFor = function(url)

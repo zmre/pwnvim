@@ -176,7 +176,7 @@ return function()
         },
         projects = {
           dev = { "~/src", "~/Documents", "~/Notes" },
-          patterns = { ".git", ".mbr", "flake.nix", "Cargo.toml", "package.json", ".project" },
+          patterns = { ".git", ".mbr", "flake.nix", "Cargo.toml", "package.json", ".project", ".zk" },
         },
       },
       win = {
