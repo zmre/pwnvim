@@ -461,8 +461,39 @@ M.isGuiRunning = function()
   return vim.fn.has('gui_running') > 0 or vim.g.neovide or vim.g.GuiLoaded ~= nil or vim.fn.has('gui') > 0
 end
 
+-- Terminal/tab title (wezterm shows this): "file (gitroot/rel/dir)" for
+-- files, "cmd (cwd)" for terminals, instead of the noisy full-path default
+M.title_string = function()
+  local buf = vim.api.nvim_get_current_buf()
+  local name = vim.api.nvim_buf_get_name(buf)
+  if vim.bo[buf].buftype == "terminal" then
+    local title = vim.b[buf].term_title
+    if not title or title == "" or title == name then
+      -- shell hasn't reported a title; fall back to term://cwd//pid:cmd
+      title = vim.fn.fnamemodify(name:match("term://.-//%d+:(%S+)") or "term", ":t")
+    end
+    return "nvim: " .. title
+  end
+  if name == "" then
+    return "nvim"
+  end
+  local fname = vim.fn.fnamemodify(name, ":t")
+  local dir = vim.fs.dirname(name)
+  local root = vim.fs.root(buf, ".git")
+  local label
+  if root then
+    local rel = dir:sub(#root + 2) -- path below the repo root, "" at the root
+    label = vim.fn.fnamemodify(root, ":t") .. (rel ~= "" and "/" .. rel or "")
+  else
+    label = vim.fn.fnamemodify(dir, ":~")
+  end
+  local mod = vim.bo[buf].modified and " +" or ""
+  return fname .. mod .. " (" .. label .. ")"
+end
+
 M.gui = function()
   vim.opt.title = true
+  vim.opt.titlestring = "%{v:lua.require'pwnvim.options'.title_string()}"
   vim.opt.switchbuf = "useopen,usetab,newtab"
   -- vim.opt.guifont = "Liga DejaVuSansMono Nerd Font:h16"
   -- vim.opt.guifont = "FiraCode Nerd Font:h16" -- no italics
