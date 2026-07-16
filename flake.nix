@@ -91,7 +91,7 @@
             zk = super.zk.overrideAttrs (old: {
               version = "0.15.5-pr745";
               src = inputs.zk-src;
-              vendorHash = "sha256-Z5I7NaTq/t4269afgGQdVuS7lBG1bNOhudsdgtcWfTs=";
+              vendorHash = "sha256-s22y/m09UBW5zqIIC0gWg7XX6166x/BR0Z0Tp5B74fk=";
             });
             # hledger-lsp isn't in nixpkgs (as of this writing); build from source.
             # NOTE: if `nix eval nixpkgs#hledger-lsp` resolves, delete this and just add
