@@ -6,7 +6,7 @@ return function()
   -- errors when snacks picker previews markdown files
   vim.cmd('packadd render-markdown.nvim')
   require('render-markdown').setup({
-    file_types = { 'markdown', 'codecompanion' },
+    file_types = { 'markdown', 'codecompanion', 'AgenticChat' },
     completions = { lsp = { enabled = false } },
     render_modes = { 'n', 'c', 't' },
     anti_conceal = { enabled = true },

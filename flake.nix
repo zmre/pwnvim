@@ -42,6 +42,9 @@
     review-nvim.flake = false;
     sidekick-nvim.url = "github:folke/sidekick.nvim";
     sidekick-nvim.flake = false;
+    # ACP-based AI chat sidebar (Claude/Codex/Gemini/OpenCode). Not in nixpkgs.
+    agentic-nvim.url = "github:carlos-algms/agentic.nvim";
+    agentic-nvim.flake = false;
     # which-key hints for nvim-surround targets (not in nixpkgs)
     nvim-surround-wk.url = "github:gregorias/nvim-surround-wk";
     nvim-surround-wk.flake = false;
@@ -153,6 +156,12 @@
                     super.vimPlugins.which-key-nvim
                   ];
                 };
+                # ACP AI chat sidebar; ACP connector CLIs are added to dependencies below.
+                agentic-nvim = super.vimUtils.buildVimPlugin {
+                  name = "agentic.nvim";
+                  pname = "agentic.nvim";
+                  src = inputs.agentic-nvim;
+                };
               };
           })
         ];
@@ -239,6 +248,13 @@
           ghostscript # also for image previews
 
           inputs.mbr.packages.${system}.mbr-cli
+
+          # ACP connector CLIs for agentic.nvim (matched to acp_providers in
+          # pwnvim/plugins/agentic.lua). All resolve from nixpkgs.
+          claude-agent-acp # provider "claude-agent-acp" -> `claude-agent-acp`
+          codex-acp # provider "codex-acp" -> `codex-acp` (OpenAI)
+          gemini-cli # provider "gemini-acp" -> `gemini --acp`
+          opencode # provider "opencode-acp" -> `opencode acp`
         ]
         ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
           ueberzug
@@ -327,6 +343,7 @@
         blink-cmp
         codecompanion-nvim # llm access in context; TODO 2025-06-09 find an alternative? riddled with deprecated function calls
         sidekick-nvim # AI CLI launcher (claude, iris, codex, gemini, etc.) - NES disabled
+        agentic-nvim # ACP AI chat sidebar (claude/codex/gemini/opencode)
         nvim-autopairs # balances parens as you type
         nvim-ts-autotag # balance or rename html
         vim-emoji # TODO: redundant now?

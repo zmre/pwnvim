@@ -333,3 +333,28 @@ Suggestion) is disabled — Copilot is not required. Iris is the primary tool
 
 Inside the CLI terminal: `q` hide, `<C-z>` blur, `<C-p>` insert prompt,
 `<C-b>` buffer picker, `<C-f>` file picker, `<C-h/j/k/l>` window navigation.
+
+### Plugin: Agentic (ACP AI chat sidebar)
+
+A structured in-editor agent chat that talks the Agent Client Protocol (ACP),
+as opposed to Sidekick's raw terminal CLIs. Providers and their connector CLIs
+(all supplied by the flake): **Claude** (`claude-agent-acp`), **Codex**
+(`codex-acp`), **Gemini** (`gemini --acp`), **OpenCode** (`opencode acp`).
+Claude is the default provider and is routed through the `iris` PAI wrapper
+(via `CLAUDE_CODE_EXECUTABLE`) so its settings, MCP config, plugins, and
+private-mode routing all apply. Switch providers mid-session with `,cap`.
+
+* `,cat` toggle the chat sidebar
+* `,cao` open the chat sidebar (stay open if already visible)
+* `,caq` close the chat sidebar
+* `,can` new session
+* `,car` restore a previous session from the provider
+* `,cap` switch ACP provider (claude/codex/gemini/opencode)
+* `,caf` add current file to context
+* `,cav` add visual selection to context
+* `,cax` stop the current generation
+* `,caL` rotate window layout
+
+Inside the chat widget: `<CR>` or `<C-s>` submit, `<S-Tab>` switch agent mode,
+`<localLeader>s` switch provider, `<localLeader>m` switch model,
+`<localLeader>p` paste image, `q` close.

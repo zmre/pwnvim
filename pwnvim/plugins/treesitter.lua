@@ -34,11 +34,18 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   callback = function(ev)
     -- local ft = vim.bo[ev.buf].filetype -- this works, but below is more direct
     local ft = ev.match
-    if vim.list_contains(require("nvim-treesitter").get_installed(), ft) then
-      if ft ~= "markdown" then
+    -- Resolve the filetype to its treesitter parser language so aliased
+    -- filetypes still start treesitter. e.g. agentic.nvim's "AgenticChat" buffer
+    -- is registered as markdown (vim.treesitter.language.register), so
+    -- get_installed() (which lists parser languages, not filetypes) never
+    -- contains the raw "AgenticChat". get_lang falls back to the filetype when
+    -- nothing is registered, so plain filetypes behave as before.
+    local lang = vim.treesitter.language.get_lang(ft) or ft
+    if vim.list_contains(require("nvim-treesitter").get_installed(), lang) then
+      if lang ~= "markdown" then
         vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
       end
-      vim.treesitter.start(ev.buf)
+      vim.treesitter.start(ev.buf, lang)
       -- vim.wo.foldmethod = "expr" -- zi toggles this
     end
   end,

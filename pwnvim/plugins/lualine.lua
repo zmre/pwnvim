@@ -19,7 +19,7 @@ local paper = {
     theme = 'papercolor_light',
     icons_enabled = not SimpleUI,
     component_separators = { left = SimpleUI and '>' or '', right = SimpleUI and '<' or '' },
-    disabled_filetypes = { 'pager' },
+    disabled_filetypes = { 'pager', 'AgenticChat', 'AgenticInput', 'AgenticCode', 'AgenticFiles', 'AgenticDiagnostics' },
     section_separators = { left = SimpleUI and '>' or '', right = SimpleUI and '<' or '' },
     globalstatus = true
   },
@@ -86,6 +86,7 @@ local conditions = {
 local evil = {
   options = {
     -- Disable sections and component separators
+    disabled_filetypes = { 'pager', 'AgenticChat', 'AgenticInput', 'AgenticCode', 'AgenticFiles', 'AgenticDiagnostics' },
     component_separators = '',
     section_separators = '',
     theme = {

@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "agentic-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783619135,
+        "narHash": "sha256-rRw8NFUU2BrM1kk3Kdw8wJqb5sCtaVSPX60+0QEppx0=",
+        "owner": "carlos-algms",
+        "repo": "agentic.nvim",
+        "rev": "a37f19f1d7eda70267c73c65dd7c1c1d4f47c971",
+        "type": "github"
+      },
+      "original": {
+        "owner": "carlos-algms",
+        "repo": "agentic.nvim",
+        "type": "github"
+      }
+    },
     "clipboard-image": {
       "flake": false,
       "locked": {
@@ -244,6 +260,7 @@
     },
     "root": {
       "inputs": {
+        "agentic-nvim": "agentic-nvim",
         "clipboard-image": "clipboard-image",
         "fenix": "fenix",
         "flake-compat": "flake-compat",

@@ -126,6 +126,7 @@ M.config = function()
     { "<leader>lc", group = "change" },
     { "<leader>n",  group = "notes" },
     { "<leader>t",  group = "tasks" },
+    { "<leader>ca", group = "agentic (acp ai)" },
     { "<leader>cc", group = "codecompanion ai" },
     { "<leader>cs", group = "sidekick (ai cli)" },
   })
@@ -454,6 +455,19 @@ M.config = function()
   M.mapleaderv("csv", function() sk().send({ msg = "selection" }) end, "Sidekick: send selection")
   M.mapleadernv("csp", function() sk().prompt() end, "Sidekick: prompt picker")
   M.mapleadern("csd", function() sk().send({ msg = "diagnostics" }) end, "Sidekick: send diagnostics")
+
+  -- Agentic (ACP AI chat sidebar — claude/codex/gemini/opencode)
+  local ag = function() return require("agentic") end
+  M.mapleadernv("cat", function() ag().toggle() end, "Agentic: toggle chat")
+  M.mapleadernv("cao", function() ag().open() end, "Agentic: open chat")
+  M.mapleadern("caq", function() ag().close() end, "Agentic: close chat")
+  M.mapleadern("can", function() ag().new_session() end, "Agentic: new session")
+  M.mapleadern("car", function() ag().restore_session() end, "Agentic: restore session")
+  M.mapleadern("cap", function() ag().switch_provider() end, "Agentic: switch provider")
+  M.mapleadern("caf", function() ag().add_file() end, "Agentic: add file to context")
+  M.mapleaderv("cav", function() ag().add_selection() end, "Agentic: add selection to context")
+  M.mapleadern("cax", function() ag().stop_generation() end, "Agentic: stop generation")
+  M.mapleadern("caL", function() ag().rotate_layout() end, "Agentic: rotate layout")
 
   -- Moved here in case of conflict with sidekick stuff
   M.mapnvict("<C-\\>", function() Snacks.terminal(nil, { win = { position = "right" } }) end, "Toggle terminal right")
