@@ -30,6 +30,7 @@ return function()
         filetypes = { "markdown", "vimwiki", "md" }
       },
       config = {
+        cmd = { zk_path, "lsp" },
         on_attach = function(_, bufnr)
           -- print("ZK attached")
           local mapleadernvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadernv)

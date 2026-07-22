@@ -275,6 +275,7 @@
           lua << EOF
             package.path = "${self}/?.lua;" .. package.path
             prettier_path = "${pkgs.prettier}/bin/prettier"
+            zk_path = "${pkgs.zk}/bin/zk"
             lldb_path_base = "${pkgs.vscode-extensions.vadimcn.vscode-lldb}"
             treesitter_grammars_path = "${grammarsPath}"
             rustanalyzer_path = "${pkgs.rust-analyzer}/bin/rust-analyzer"

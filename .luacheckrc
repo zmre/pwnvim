@@ -13,6 +13,7 @@ read_globals = {
   "vim",
   "treesitter_grammars_path",
   "prettier_path",
+  "zk_path",
   "lldb_path_base",
   "rustanalyzer_path",
   -- Plugins that expose globals
