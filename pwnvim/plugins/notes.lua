@@ -31,7 +31,7 @@ return function()
       },
       config = {
         cmd = { zk_path, "lsp" },
-        on_attach = function(_, bufnr)
+        on_attach = function(client, bufnr)
           -- print("ZK attached")
           local mapleadernvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadernv)
           local mapleadernlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapleadern)
@@ -54,6 +54,15 @@ return function()
             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled(), { bufnr = 0, scope = "line" })
             vim.diagnostic.config({ virtual_text = vim.lsp.inlay_hint.is_enabled() })
           end, "Toggle virtual text lines")
+          if client.server_capabilities.implementationProvider then
+            mapleadernlocal("lD", function() Snacks.picker.lsp_implementations() end, "Implementation")
+          end
+          if client.server_capabilities.definitionProvider or client.server_capabilities.typeDefinitionProvider then
+            mapleadernlocal("ld", function() Snacks.picker.lsp_definitions() end, "Go to definition")
+            -- override standard tag jump c-] for go to definition
+            mapnlocal("<c-]>", function() Snacks.picker.lsp_definitions() end, "Go to definition")
+          end
+
           mapleadervlocal("np",
             function() require('zk.commands').get("ZkNewFromTitleSelection")({ dir = vim.fn.expand('%:p:h') }) end,
             "New peer note (same dir) selection for title")
