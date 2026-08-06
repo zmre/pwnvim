@@ -294,6 +294,7 @@ M.colors_cat = function()
         ["@markup.link.url.markdown_inline"] = { fg = colors.blue },
         ["@markup.list.unchecked"] = { fg = "#ffffff", bg = "", style = { "bold" } },
         ["@markup.list.checked"] = { fg = colors.green, style = { "bold" } },
+        ["@text.todo.checked"] = { fg = colors.surface2, },
 
         -- Trouble windows
         TroubleNormalNC = { bg = "#221133" },
