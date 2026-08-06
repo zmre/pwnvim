@@ -100,7 +100,7 @@
               pname = "hledger-lsp";
               version = "unstable";
               src = inputs.hledger-lsp;
-              vendorHash = "sha256-Oo/8LCX6svcH/0vCowzOiAhlif9LJfNrU3OgNiZDupo=";
+              vendorHash = "sha256-imF6wCMC+5J94TQjZU0SXOwlw5SR/EB60GeYVS3O/iA=";
               subPackages = ["cmd/hledger-lsp"];
             };
           })
