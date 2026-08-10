@@ -213,7 +213,10 @@ M.markdownsyntax = function()
     let m = matchadd("markdownTag", '#\w\+')
     let m = matchadd("markdownStrikethrough", "\\~\\~[^~]*\\~\\~")
     let m = matchadd("doneTag", '@done(20[^)]*)')
-    let m = matchadd("highPrioTask", "[*-] \\[ \\] .\\+!!!")
+    let m = matchadd("highPrioTask", "[*-] \\[ \\] .\\+ !!! ")
+    let m = matchadd("highPrioTask", "[*-] \\[ \\] .\\+ !!!$")
+    let m = matchadd("medPrioTask", "[*-] \\[ \\] .\\+ !! ")
+    let m = matchadd("medPrioTask", "[*-] \\[ \\] .\\+ !!$")
   ]], { output = false })
 end
 

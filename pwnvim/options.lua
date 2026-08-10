@@ -235,6 +235,7 @@ M.colors_cat = function()
         markdownTag = { fg = colors.surface2 },
         doneTag = { fg = colors.surface2, style = { "italic" } },
         highPrioTask = { fg = colors.red, style = { "bold" } },
+        medPrioTask = { fg = colors.yellow, style = { "bold" } },
         TSURI = { fg = colors.blue, style = { "underline" } },
         TSPunctSpecial = { fg = colors.red },
         markdownTSTitle = { fg = colors.teal, style = { "bold" } },
@@ -347,6 +348,7 @@ M.colors_onedark = function()
         markdownTag = { fg = "${comment}" },
         doneTag = { fg = "${comment}", italic = true },
         highPrioTask = { fg = "${red}", bold = true },
+        medPrioTask = { fg = "${yellow}", bold = true },
         TSPunctSpecial = { fg = "${red}" },
         markdownTSTitle = { fg = "${cyan}", bold = true },
 
