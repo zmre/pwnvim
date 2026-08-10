@@ -51,6 +51,11 @@ M.setup = function(ev)
   -- vim.api.nvim_buf_add_user_command(0, 'PasteUrl', function(opts) require('pwnvim.markdown').pasteUrl() end, {})
   vim.cmd("command! PasteUrl lua require('pwnvim.markdown').pasteUrl()")
 
+  -- Mail.app links only make sense where Mail.app and osascript exist
+  if vim.fn.has('mac') == 1 then
+    vim.cmd("command! PasteMailLinks lua require('pwnvim.markdown').pasteMailLinks()")
+  end
+
   -- render-markdown setup is in plugins.lua M.notes(); just enable for this buffer
   if pcall(require, 'render-markdown') then
     require('render-markdown').buf_enable()
@@ -141,6 +146,9 @@ M.setupmappings = function(bufnr)
   mapnlocal("gt", require('pwnvim.markdown').transformUrlUnderCursorToMdLink, "Convert URL to link")
   mapnlocal("<leader>P", require('pwnvim.markdown').pasteUrl, "Paste URL as link")
   mapnlocal("<C-M-v>", require('pwnvim.markdown').pasteUrl, "Paste URL as link")
+  if vim.fn.has('mac') == 1 then
+    mapnlocal("<leader>nim", require('pwnvim.markdown').pasteMailLinks, "Insert links to selected Mail messages")
+  end
   mapnlocal("<D-b>", 'ysiwe', "Bold")
   mapnlocal("<leader>b", 'ysiwe', "Bold")
   mapnlocal("<D-i>", 'ysiw_', "Italic")
@@ -317,6 +325,41 @@ M.pasteUrl = function()
   -- cursor ends up one to the left, so move over right one if possible
   local right = vim.api.nvim_replace_termcodes("<right>", true, false, true)
   vim.api.nvim_feedkeys(right, "n", false)
+end
+
+-- macOS only: ask Mail.app for the messages the user has selected and turn each
+-- into a message:// URL. Message ids are angle-bracketed, so they're escaped
+-- (%3C/%3E) to survive being pasted into markdown. Returns a list of urls or
+-- nil if Mail errored out (nothing selected, no automation permission, etc).
+M.getSelectedMailLinks = function()
+  local result = vim.system({
+    'osascript',
+    '-e', 'tell application "Mail"',
+    '-e', 'set s to selection',
+    '-e', 'if (count s) = 0 then error "No messages selected in Mail."',
+    '-e', 'set r to ""',
+    '-e', 'repeat with m in s',
+    '-e', 'if r is not "" then set r to r & linefeed',
+    '-e', 'set r to r & "message://%3C" & (message id of m) & "%3E"',
+    '-e', 'end repeat',
+    '-e', 'end tell',
+    '-e', 'return r'
+  }, { text = true }):wait(30000) -- generous: first run pops a permission dialog
+
+  if result.code ~= 0 then
+    local err = vim.trim(result.stderr or "")
+    if err == "" then err = "osascript failed (code " .. tostring(result.code) .. ")" end
+    vim.notify(err, vim.log.levels.ERROR, { title = "Mail links" })
+    return nil
+  end
+  return vim.split(vim.trim(result.stdout or ""), "\n", { trimempty = true })
+end
+
+M.pasteMailLinks = function()
+  local links = require("pwnvim.markdown").getSelectedMailLinks()
+  if not links or #links == 0 then return end
+  -- charwise put after the cursor, same landing spot as pasteUrl's `a`
+  vim.api.nvim_put(links, "c", true, true)
 end
 
 M.newMeetingNote = function()
