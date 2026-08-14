@@ -93,7 +93,7 @@ M.datePromptThen = function(myfunc)
     end
     table.insert(days, day)
   end
-  -- These will pop up in telescope for quick filtering
+  -- These will pop up in the snacks picker (vim.ui.select) for quick filtering
   vim.ui.select(days, { prompt = 'Pick a date:' }, function(choice)
     if choice then
       local t = {}

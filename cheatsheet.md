@@ -103,7 +103,7 @@ _This is a combination of built-in universal keys and things that are specific t
 * When available
   * `,lR` rename symbol
   * `,l=` format current line or selection
-  * `,lI` telescope implementations
+  * `,lI` find implementations
 
 * For rust
   * `,rr` run menu of options (tests, etc)

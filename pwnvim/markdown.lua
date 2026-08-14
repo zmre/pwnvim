@@ -119,9 +119,12 @@ M.setup = function(ev)
     require('pwnvim.options').twospaceindent()
     -- require('pwnvim.options').retab() -- turn tabs to spaces when markdown file is opened
   end
-  -- Temporary workaround for https://github.com/nvim-telescope/telescope.nvim/issues/559
-  -- which prevents folds from being calculated initially when launching from telescope
-  -- Has the lousy side-effect of calculating them twice if not launched from telescope
+  -- Force folds to be recalculated now. Our foldexpr is set just above, but when a buffer is
+  -- opened by a picker/preview path rather than a plain :edit, the expr folds don't always get
+  -- computed, leaving the file unfolded. This was originally a telescope bug workaround
+  -- (nvim-telescope/telescope.nvim#559); telescope is gone but the failure mode is not
+  -- telescope-specific -- snacks carries its own fold fixup for the same reason.
+  -- Lousy side-effect: folds get calculated twice when opened normally.
   vim.cmd("normal zx")
 end
 

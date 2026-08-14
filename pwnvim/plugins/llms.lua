@@ -14,7 +14,7 @@ return function()
   require("codecompanion").setup({
     ignore_warnings = true, -- they have some warning about breaking changes soon to suppress 2025-12-14
     -- action_palette = {
-    --   provider = "telescope"
+    --   provider = "snacks"
     -- },
     display = {
       chat = {

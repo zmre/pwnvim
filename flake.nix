@@ -173,7 +173,7 @@
           ripgrep
           fzy
           zoxide
-          bat # previewer for telescope for now
+          bat # syntax-highlighting pager; no plugin uses it now (snacks previews in-editor)
           gh
           zk # lsp for markdown notes in zk folders
           #markdown-oxide # lsp for any markdown
