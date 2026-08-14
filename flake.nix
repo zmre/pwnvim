@@ -356,7 +356,6 @@
         # Misc
         vim-fugitive # git management
         codediff-nvim # diff renderer used by review.nvim
-        review-nvim # PR-style code review with inline comments
         vim-tmux-navigator # navigate vim and tmux panes together
         impatient-nvim # speeds startup times by caching lua bytecode
         which-key-nvim
@@ -375,6 +374,7 @@
         crates-nvim # inline intelligence for Cargo.toml
         todo-comments-nvim # highlight comments like NOTE
         render-markdown-nvim # prettier markdown files
+        review-nvim # PR-style code review; lazy-loaded on :Review (see pwnvim/plugins/review.lua)
       ];
     in rec {
       # Validation checks for the configuration
