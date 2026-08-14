@@ -274,10 +274,11 @@ return function()
       require("nvim-navbuddy").attach(client, bufnr) -- setup popup for browsing symbols
       -- mapleadernlocal("lsd", builtin.lsp_document_symbols, "Find symbol in document")
       mapleadernlocal("lsd", require("nvim-navbuddy").open, "Find symbol in document")
-      -- if vim.bo[bufnr].filetype ~= "markdown" then
-      -- Sometimes other LSPs attach to markdown (like tailwindcss) and so we have a race to see which F7 will win...
-      mapnviclocal("<F7>", require("nvim-navbuddy").open, "Browse document symbols")
-      -- end
+      if vim.bo[bufnr].filetype ~= "markdown" then
+        -- Sometimes other LSPs attach to markdown (like tailwindcss) and so we have a race to see which F7 will win...
+        -- Markdown gets its own <F7> from pwnvim.markdown (outline.nvim), which works without an LSP, so leave it alone.
+        mapnviclocal("<F7>", require("nvim-navbuddy").open, "Browse document symbols")
+      end
     end
 
     if client.server_capabilities.workspaceSymbolProvider then

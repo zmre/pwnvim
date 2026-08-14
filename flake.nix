@@ -320,6 +320,7 @@
         lualine-nvim # nice status bar at bottom ; TODO 2025-06-09 time to find an alternative? tons of undealt with deprecations
         dropbar-nvim # replacing the now archived barbecue (sad!)
         nvim-navbuddy # use same lsp symbols to navigate in popup
+        outline-nvim # symbol/TOC drawer; has a native markdown provider so it gives an outline without an LSP
         nvim-ufo # allow use of lsp as source for folding
         promise-async # required by nvim-ufo
         nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)

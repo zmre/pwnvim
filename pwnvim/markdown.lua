@@ -131,6 +131,7 @@ M.setupmappings = function(bufnr)
   local mapilocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapi)
   local mapvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapv)
   local mapnvlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapnv)
+  local mapnviclocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapnvic)
 
   mapnlocal("<leader>M", ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview")
   mapnlocal("<leader>m", function()
@@ -166,10 +167,9 @@ M.setupmappings = function(bufnr)
   mapilocal("<Tab>", require('pwnvim.markdown').indent, "Indent")
   mapilocal("<S-Tab>", require('pwnvim.markdown').outdent, "Outdent")
 
-  -- mapnviclocal("<F7>", function()
-  --   vim.cmd("lvimgrep /^#/ %")
-  --   require("trouble").toggle({ mode = "loclist", position = "right" })
-  -- end, "Show doc outline")
+  -- The zk LSP has no textDocument/documentSymbol, so navbuddy can't outline notes.
+  -- outline.nvim's built-in markdown provider walks the headings without any LSP.
+  mapnviclocal("<F7>", function() require("outline").toggle() end, "Show doc outline")
 
   -- visual mode mappings
   mapvlocal("gl*", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],

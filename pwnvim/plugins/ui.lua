@@ -3,6 +3,7 @@
 
 return function()
   require("pwnvim.plugins.oil")
+  require("pwnvim.plugins.outline")
 
   local surround_defaults = require("nvim-surround.config").default_opts
   require("nvim-surround").setup({
