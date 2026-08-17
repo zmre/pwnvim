@@ -128,6 +128,11 @@ M.config = function()
     { "<leader>t",  group = "tasks" },
     { "<leader>ca", group = "agentic (acp ai)" },
     { "<leader>cc", group = "codecompanion ai" },
+    -- Registered globally rather than buffer-locally because ,crl, ,crm and ,crS
+    -- are themselves global in BOTH modes -- the group is never empty, so it
+    -- never advertises keys that don't exist. Inside a review tab which-key picks
+    -- up the eleven buffer-local ,cr* keys automatically from their `desc`.
+    { "<leader>cr", group = "review (code review)" },
     { "<leader>cs", group = "sidekick (ai cli)" },
   })
 
@@ -422,7 +427,6 @@ M.config = function()
   M.mapleadernv("gi", function() Snacks.picker.gh_issue() end, "GitHub Issues")
   M.mapleadernv("gP", function() Snacks.picker.gh_pr() end, "GitHub PRs")
   M.mapleadernv("gl", function() Snacks.lazygit() end, "Lazygit")
-  M.mapleadernv("gr", "Review", "Review (open code review)")
   -- Bunch more will be mapped locally with gitsigns when it loads. See ./gitsigns.lua
 
   -- Codecompanion bindings
@@ -455,6 +459,19 @@ M.config = function()
   M.mapleaderv("csv", function() sk().send({ msg = "selection" }) end, "Sidekick: send selection")
   M.mapleadernv("csp", function() sk().prompt() end, "Sidekick: prompt picker")
   M.mapleadern("csd", function() sk().send({ msg = "diagnostics" }) end, "Sidekick: send diagnostics")
+  -- Review lives at ,cr* -- its own room in the ,c AI/tooling family. The keys
+  -- that add comments are buffer-local to a review tab (see plugins/review.lua);
+  -- these four are global on purpose: `,crr` is how a review starts, and
+  -- comments outlive the review tab, so listing and exporting them has to work
+  -- from anywhere. They are also what makes the ,cr which-key group honest
+  -- everywhere -- which is why the three that read the whole review, and so care
+  -- nothing for the cursor, are mapped in visual mode too. Only `,crr` is
+  -- normal-only.
+  local review = function() return require("pwnvim.plugins.review") end
+  M.mapleadern("crr", function() review().open() end, "Review: start a code review")
+  M.mapleadernv("crl", function() review().open_list() end, "Review: list all comments (Trouble)")
+  M.mapleadernv("crm", function() review().to_clipboard() end, "Review: copy markdown to clipboard")
+  M.mapleadernv("crS", function() review().to_sidekick() end, "Review: send comments to sidekick")
 
   -- Agentic (ACP AI chat sidebar — claude/codex/gemini/opencode)
   local ag = function() return require("agentic") end

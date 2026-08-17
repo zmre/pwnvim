@@ -39,8 +39,7 @@ return function()
   require("nvim-surround-wk").setup()
 
   require("pwnvim.plugins.gitsigns")
-  -- require("diffview").setup({}) -- replaced by review.nvim 2026-05-08
-  require("pwnvim.plugins.review") -- defines :Review; loads review.nvim lazily
+  require("pwnvim.plugins.review").init() -- defines :Review / :ReviewSidekick
   vim.g.git_worktree = {
     change_directory_command = "lcd",
     update_on_change = true,

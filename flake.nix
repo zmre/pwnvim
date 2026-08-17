@@ -38,8 +38,6 @@
     nvim-treesitter-textobjects.flake = false;
     mermaid-rust-cli.url = "github:1jehuang/mermaid-rs-renderer/v0.2.1";
     mermaid-rust-cli.flake = false;
-    review-nvim.url = "github:georgeguimaraes/review.nvim";
-    review-nvim.flake = false;
     sidekick-nvim.url = "github:folke/sidekick.nvim";
     sidekick-nvim.flake = false;
     # ACP-based AI chat sidebar (Claude/Codex/Gemini/OpenCode). Not in nixpkgs.
@@ -129,15 +127,6 @@
                   name = "nvim-treesitter-textobjects";
                   pname = "nvim-treesitter-textobjects";
                   src = inputs.nvim-treesitter-textobjects;
-                };
-                review-nvim = super.vimUtils.buildVimPlugin {
-                  name = "review.nvim";
-                  pname = "review.nvim";
-                  src = inputs.review-nvim;
-                  dependencies = [
-                    super.vimPlugins.codediff-nvim
-                    super.vimPlugins.nui-nvim
-                  ];
                 };
                 sidekick-nvim = super.vimUtils.buildVimPlugin {
                   name = "sidekick.nvim";
@@ -355,7 +344,7 @@
 
         # Misc
         vim-fugitive # git management
-        codediff-nvim # diff renderer used by review.nvim
+        codediff-nvim # side-by-side diff renderer; also the review flow's UI (:CodeDiff, see pwnvim/plugins/review.lua)
         vim-tmux-navigator # navigate vim and tmux panes together
         impatient-nvim # speeds startup times by caching lua bytecode
         which-key-nvim
@@ -374,7 +363,6 @@
         crates-nvim # inline intelligence for Cargo.toml
         todo-comments-nvim # highlight comments like NOTE
         render-markdown-nvim # prettier markdown files
-        review-nvim # PR-style code review; lazy-loaded on :Review (see pwnvim/plugins/review.lua)
       ];
     in rec {
       # Validation checks for the configuration
