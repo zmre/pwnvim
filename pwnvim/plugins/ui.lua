@@ -3,6 +3,7 @@
 
 return function()
   require("pwnvim.plugins.oil")
+  require("pwnvim.plugins.outline")
 
   local surround_defaults = require("nvim-surround.config").default_opts
   require("nvim-surround").setup({
@@ -38,22 +39,7 @@ return function()
   require("nvim-surround-wk").setup()
 
   require("pwnvim.plugins.gitsigns")
-  -- require("diffview").setup({}) -- replaced by review.nvim 2026-05-08
-  require("review").setup({
-    keymaps = {
-      add_comment      = ",cc",
-      add_note         = ",cn",
-      add_suggestion   = ",cs",
-      add_issue        = ",ci",
-      add_praise       = ",cp",
-      add_file_comment = ",cf",
-      delete_comment   = ",cd",
-      edit_comment     = ",ce",
-    },
-    codediff = {
-      readonly = true,
-    },
-  })
+  require("pwnvim.plugins.review").init() -- defines :Review / :ReviewSidekick
   vim.g.git_worktree = {
     change_directory_command = "lcd",
     update_on_change = true,

@@ -61,3 +61,55 @@ require("todo-comments").setup {
     pattern = [[\b(KEYWORDS)]], -- match without the extra colon. You'll likely get false positives
   },
 }
+
+-- todo-comments ships `:TodoTelescope` (see its plugin/todo.vim), which shells out to
+-- `Telescope todo-comments todo`. We dropped telescope in favor of snacks, so that command is
+-- dead on arrival (E492: Not an editor command: Telescope). Override it here to use the picker.
+--
+-- Two gotchas that dictate the implementation below:
+--  1. todo-comments registers its snacks source as `Snacks.picker.sources.todo_comments`
+--     (todo-comments/config.lua), but its own `todo-comments.snacks`.pick() asks for a source
+--     named `todo`, which nothing ever registers. So we call the registered name directly
+--     instead of using that helper.
+--  2. The source's `search` expects `keywords` as a LIST, while the plugin's own `-nargs=*`
+--     convention (`keywords=TODO,FIX`) is a comma separated STRING, so we split it.
+--
+-- This runs after `packadd todo-comments.nvim` at both call sites (pwnvim/options.lua and
+-- pwnvim/markdown.lua), so plugin/todo.vim has already defined its version and ours replaces it.
+local function todo_picker(args)
+  -- todo-comments defers the guts of setup() to a timer when we're still starting up
+  -- (config.lua checks v:vim_did_enter), and the picker source is only registered at the
+  -- end of that deferred work. Without this, `nvim file.lua -c TodoTelescope` opens a
+  -- picker with no finder and silently reports "No results found".
+  local Config = require("todo-comments.config")
+  if not Config.loaded then
+    Config._setup()
+  end
+
+  local opts = {}
+  local keywords = args and args:match("keywords=(%S*)")
+  if keywords and keywords ~= "" then
+    opts.keywords = vim.split(keywords, ",", { trimempty = true })
+  end
+  local cwd = args and args:match("cwd=(%S*)")
+  if cwd and cwd ~= "" then
+    opts.cwd = cwd
+  end
+  if Snacks and Snacks.picker then
+    Snacks.picker.pick("todo_comments", opts)
+  else
+    -- Should not happen (snacks is a required plugin), but degrade to the quickfix list
+    -- rather than throwing if the picker ever goes missing.
+    vim.notify("snacks.picker unavailable; falling back to TodoQuickFix", vim.log.levels.WARN)
+    require("todo-comments.search").setqflist(args)
+  end
+end
+
+for _, name in ipairs({ "TodoTelescope", "TodoSnacks" }) do
+  vim.api.nvim_create_user_command(name, function(o)
+    todo_picker(o.args)
+  end, {
+    nargs = "*",
+    desc = "Find todo comments with snacks picker (e.g. keywords=TODO,FIX)",
+  })
+end

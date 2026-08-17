@@ -103,7 +103,7 @@ _This is a combination of built-in universal keys and things that are specific t
 * When available
   * `,lR` rename symbol
   * `,l=` format current line or selection
-  * `,lI` telescope implementations
+  * `,lI` find implementations
 
 * For rust
   * `,rr` run menu of options (tests, etc)
@@ -257,57 +257,99 @@ _This is a combination of built-in universal keys and things that are specific t
 * `,gf` to auto fix an issue
 * `,gx` to ignore an issue
 
-### Plugin: Review (code review with inline comments)
+### Review (code review with inline comments)
 
-Replaces diffview. Opens a side-by-side codediff view of your changes, lets
-you attach typed comments per line/range, and exports them as Markdown to
-the clipboard for pasting into an AI chat (e.g. CodeCompanion).
+Replaces diffview. `,crr` opens codediff side-by-side over your changes and
+turns that tab into a review; `,cr*` adds typed comments. Every comment shows
+up **twice**: as a sign in the gutter and as virtual text at the end of the
+line (`⚠ ISSUE: don't swallow this error`). Copy the review as Markdown with
+`,crm`, or hand it to an AI CLI with `,crS`.
+
+The comments are ours, not a plugin's: a list of
+`{ file, lnum, end_lnum, type, text }` in `pwnvim/plugins/review.lua`, saved as
+JSON per branch. The quickfix list is a *rendered view* of that list, so a
+`:grep` can no longer throw a review away — `,crl` just rebuilds it.
+
+You comment on the **right-hand pane**, which is the real working-tree file, so
+LSP is fully live there: `,ld` into a file that isn't part of the diff works,
+and `<C-o>` brings you back. While that buffer is open, comments follow the
+edits made around them — including edits *inside* a range, which grows it.
+
+The left pane is the file at the git revision (a `codediff://` buffer). Its line
+numbers are that revision's, not the file's, so it carries no signs and its
+`,cr*` keys tell you to switch panes rather than file a comment against the
+wrong line. codediff also keeps LSP off it, so navigate from the right.
 
 #### Opening a review
-* `,gr` or `:Review` — review staged + unstaged changes
-* `:Review commits` — pick commits via modal picker
-* `:Review commits SHA` — review a single commit
-* `:Review commits REV1 REV2` — review a revision range
-* `:Review close` — close and export comments to clipboard
-* `:Review export` — export comments without closing
-* `:Review preview` — preview the exported markdown
-* `:Review list` — list all comments
-* `:Review clear` — clear all comments
-* `:Review toggle` — toggle readonly / edit mode
+* `,crr` or `:Review` — review working-tree changes vs HEAD
+* `:Review file HEAD~3` — any `:CodeDiff` arguments are forwarded
+* `:CodeDiff` on its own still works and does *not* enable review comments
 
-#### Inside the review buffer (readonly mode — default)
-* `i` add comment on current line (visual mode for ranges)
-* `d` delete comment under cursor
-* `e` edit comment under cursor
-* `c` list all comments (jump-to)
-* `f` toggle file panel
-* `R` toggle readonly ↔ edit mode
-* `<Tab>` / `<S-Tab>` next / previous file
-* `]n` / `[n` next / previous comment
-* `t` toggle side-by-side ↔ inline diff layout
-* `C` export and preview
-* `<C-r>` clear all comments
-* `q` close review (auto-copies markdown to clipboard)
+#### Adding comments (`,cr*`, buffer-local inside the review tab)
+Review has its own room in the `,c` family, next to `,ca` agentic, `,cc`
+codecompanion and `,cs` sidekick. Press `,cr` and wait for which-key.
+* `,crc` add comment — prompts for the type
+* `,cri` add Issue ⚠
+* `,crs` add Suggestion 💭
+* `,crn` add Note 📝
+* `,crp` add Praise ✨
+* `,crq` add Question ?
+* `,crk` add Insight 💡
+* `,crf` add file-level comment (a Note 📝, anchored at line 1)
+* `,crd` delete comment on the line / selection
+* `,cre` edit comment on the line
+* `,crv` view the comment(s) on this line in full
+* `]r` / `[r` next / previous comment in this file
 
-#### Edit mode (after pressing `R`) — typed shortcuts
-Buffer-local; do not affect global `,c*` bindings outside review buffers.
-* `,cc` add comment (no type)
-* `,cn` add Note 📝
-* `,cs` add Suggestion 💡
-* `,ci` add Issue ⚠️
-* `,cp` add Praise ✨
-* `,cf` add file-level comment
-* `,cd` delete comment
-* `,ce` edit comment
+The six typed bindings are listed in the order `,crc` offers them. They and
+`,crc` and `,crd` work from visual mode too and record the line range; `,crf` is
+normal-mode only, since it always means line 1.
 
-#### Comment popup
-* `Enter` newline inside comment text
-* `<C-s>` submit
-* `Tab` cycle comment type
-* `Esc` / `q` cancel
+Comment text is typed in a small floating window, so it can be **as long as you
+like and span multiple lines**:
+* `<C-s>` (normal or insert) or `<CR>` in normal mode — save
+* `q` in normal mode, `<C-c>`, or just closing the window — cancel
+* saving an empty buffer adds nothing, and on an edit leaves the comment as it
+  was — deleting is `,crd`, so a stray `<C-s>` can't blank a comment
 
-Comments persist per-branch in `~/.local/share/nvim/review/` and
-auto-expire after 7 days.
+#### Seeing and exporting
+These four are global — comments outlive the review tab.
+* `,crr` start a review
+* `,crl` list every comment in **Trouble**; `q` closes it
+* `,crm` copy the whole review to the clipboard as Markdown
+* `,crS` send the review to the sidekick AI CLI
+* `:ReviewList` / `:ReviewMarkdown` / `:ReviewSidekick` — same three
+* `:ReviewRefresh` re-read the current branch's comments, redraw signs and virtual text
+* `:ReviewClear` delete every comment on this branch
+
+The Trouble list opens on its own (without stealing the cursor) as soon as
+there is something to show — when you add a comment, and when you reopen a
+review that already has some.
+
+Comments are saved automatically, per branch, in
+`<repo>/.git/pwnvim-review/<branch>.json`, and come back the next time you open
+a review on that branch. There is no save/load step. Living inside `.git/` makes
+them local by construction — git never tracks its own directory, so there is
+nothing to gitignore, nothing in `git status`, and no way to commit them by
+accident. Linked worktrees get their own; if `.git` isn't writable, or you're
+outside a repo entirely, it falls back to `~/.local/share/nvim/review/`.
+
+A branch whose name isn't filename-safe gets a digest so it can't collide with a
+lookalike: `main` → `main.json`, but `feat/login` → `feat-login-<hash>.json`,
+which is a different file from branch `feat-login`.
+
+Switching branches in another terminal doesn't repaint the signs on its own —
+any review command (or `:ReviewRefresh`) picks up the new branch.
+
+#### Tuning
+* `vim.g.pwnvim_review_autolist = false` — don't open the comment list
+  automatically (it opens by default)
+* `vim.g.pwnvim_review_virt_text = false` — signs only, no virtual text
+* `vim.g.pwnvim_review_virt_width = 60` — truncate virtual text at N columns
+* `vim.g.pwnvim_review_signcolumn = "yes:3"` (or `false` to leave it alone) —
+  review panes widen to `yes:2` so a review sign and a git hunk sign both fit
+* `vim.g.pwnvim_review_sign_priority = 100` — review signs sit above gitsigns
+  (6) and marks (8); lower it to let those win the gutter instead
 
 ### Plugin: Sidekick (AI agent CLI launcher)
 

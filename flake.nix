@@ -38,8 +38,6 @@
     nvim-treesitter-textobjects.flake = false;
     mermaid-rust-cli.url = "github:1jehuang/mermaid-rs-renderer/v0.2.1";
     mermaid-rust-cli.flake = false;
-    review-nvim.url = "github:georgeguimaraes/review.nvim";
-    review-nvim.flake = false;
     sidekick-nvim.url = "github:folke/sidekick.nvim";
     sidekick-nvim.flake = false;
     # ACP-based AI chat sidebar (Claude/Codex/Gemini/OpenCode). Not in nixpkgs.
@@ -130,15 +128,6 @@
                   pname = "nvim-treesitter-textobjects";
                   src = inputs.nvim-treesitter-textobjects;
                 };
-                review-nvim = super.vimUtils.buildVimPlugin {
-                  name = "review.nvim";
-                  pname = "review.nvim";
-                  src = inputs.review-nvim;
-                  dependencies = [
-                    super.vimPlugins.codediff-nvim
-                    super.vimPlugins.nui-nvim
-                  ];
-                };
                 sidekick-nvim = super.vimUtils.buildVimPlugin {
                   name = "sidekick.nvim";
                   pname = "sidekick.nvim";
@@ -173,7 +162,7 @@
           ripgrep
           fzy
           zoxide
-          bat # previewer for telescope for now
+          bat # syntax-highlighting pager; no plugin uses it now (snacks previews in-editor)
           gh
           zk # lsp for markdown notes in zk folders
           #markdown-oxide # lsp for any markdown
@@ -320,6 +309,7 @@
         lualine-nvim # nice status bar at bottom ; TODO 2025-06-09 time to find an alternative? tons of undealt with deprecations
         dropbar-nvim # replacing the now archived barbecue (sad!)
         nvim-navbuddy # use same lsp symbols to navigate in popup
+        outline-nvim # symbol/TOC drawer; has a native markdown provider so it gives an outline without an LSP
         nvim-ufo # allow use of lsp as source for folding
         promise-async # required by nvim-ufo
         nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
@@ -354,8 +344,7 @@
 
         # Misc
         vim-fugitive # git management
-        codediff-nvim # diff renderer used by review.nvim
-        review-nvim # PR-style code review with inline comments
+        codediff-nvim # side-by-side diff renderer; also the review flow's UI (:CodeDiff, see pwnvim/plugins/review.lua)
         vim-tmux-navigator # navigate vim and tmux panes together
         impatient-nvim # speeds startup times by caching lua bytecode
         which-key-nvim
