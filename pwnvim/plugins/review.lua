@@ -121,7 +121,7 @@ end
 --- anchor to the explorer buffer's name.
 local function is_explorer(buf)
   return vim.bo[buf or 0].filetype == "codediff-explorer"
-    or vim.api.nvim_buf_get_name(buf or 0):match("CodeDiff Explorer") ~= nil
+      or vim.api.nvim_buf_get_name(buf or 0):match("CodeDiff Explorer") ~= nil
 end
 
 --- The working-tree file this buffer is, or "" if it is not one. The only
@@ -803,9 +803,9 @@ local KEYS = {
     at.lnum, at.end_lnum = 1, 1
     add("NOTE", at)
   end },
-  { "crd", "delete comment", function() del(target(false)) end, function() del(target(true)) end },
-  { "cre", "edit comment", function() edit(target(false)) end },
-  { "crv", "view comment on line", function() view(target(false)) end },
+  { "crd", "delete comment",          function() del(target(false)) end,       function() del(target(true)) end },
+  { "cre", "edit comment",            function() edit(target(false)) end },
+  { "crv", "view comment on line",    function() view(target(false)) end },
 }
 for _, t in ipairs(TYPES) do -- ,cri ISSUE, ,crs SUGGESTION, ,crn NOTE, ...
   local kind = t:upper()
