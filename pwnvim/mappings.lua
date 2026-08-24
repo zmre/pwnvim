@@ -448,7 +448,7 @@ M.config = function()
   M.mapleadern("csi", function() sk().toggle({ name = "iris" }) end, "Sidekick: Iris (AI CLI)")
   M.mapleadern("css", function() sk().select() end, "Sidekick: pick tool")
   M.mapleadern("csl", function() sk().toggle({ name = "claude" }) end, "Sidekick: Claude")
-  M.mapleadern("csg", function() sk().toggle({ name = "gemini" }) end, "Sidekick: Gemini")
+  --M.mapleadern("csg", function() sk().toggle({ name = "gemini" }) end, "Sidekick: Gemini")
   M.mapleadern("csx", function() sk().toggle({ name = "codex" }) end, "Sidekick: Codex")
   M.mapleadern("csa", function() sk().toggle() end, "Sidekick: toggle last")
   M.mapnvict("<C-M-\\>", function() sk().toggle() end, "Sidekick: toggle last") -- ctrl-shift-backslash won't work in all terminals and could overwrite ctrl-backslash
