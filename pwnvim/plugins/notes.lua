@@ -7,6 +7,7 @@ return function()
   vim.cmd('packadd render-markdown.nvim')
   require('render-markdown').setup({
     file_types = { 'markdown', 'codecompanion', 'AgenticChat' },
+    latex = { enabled = false }, -- because we aren't including latex2text in our nvim closure
     completions = { lsp = { enabled = false } },
     render_modes = { 'n', 'c', 't' },
     anti_conceal = { enabled = true },

@@ -242,15 +242,15 @@
           # pwnvim/plugins/agentic.lua). All resolve from nixpkgs.
           claude-agent-acp # provider "claude-agent-acp" -> `claude-agent-acp`
           codex-acp # provider "codex-acp" -> `codex-acp` (OpenAI)
-          gemini-cli # provider "gemini-acp" -> `gemini --acp`
+          #gemini-cli # provider "gemini-acp" -> `gemini --acp` ... TODO: they've replaced gemini with antigravity-cli which isn't yet supported here; revisit
           opencode # provider "opencode-acp" -> `opencode acp`
         ]
-        ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+        ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
           ueberzug
           xclip # needed by vim clipboard-image plugin
           wl-clipboard # needed by vim clipboard-image plugin
         ]
-        ++ pkgs.lib.optionals pkgs.stdenv.isDarwin
+        ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin
         [pngpaste]; # needed by vim clipboard-image plugin
 
       # 2026-03-02 need to add path to vim to see ts grammars
