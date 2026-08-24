@@ -55,7 +55,9 @@ return function()
       },
     },
     image = {
-      enabled = not SimpleUI,
+      -- Neovide can't render kitty graphics protocol, so the popup would
+      -- show up empty/pointless; only enable in terminal UIs.
+      enabled = not SimpleUI and not vim.g.neovide,
       doc = {
         enabled = true,
         inline = false, -- disable inline rendering
