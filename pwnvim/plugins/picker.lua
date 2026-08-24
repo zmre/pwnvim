@@ -69,8 +69,8 @@ return function()
         notify = false,
         mermaid = function()
           -- local theme = vim.o.background == "light" and "neutral" or "dark"
-          -- we're using https://github.com/1jehuang/mermaid-rs-renderer
-          -- which doesn't yet support options like theme and scale
+          -- we're using merman-cli's mmdc-compatible mode (https://github.com/Latias94/merman)
+          -- which does support -t/theme and -s/scale, just not wired up here yet
           return { "-i", "{src}", "-o", "{file}", "-e", "png" } -- , "-t", theme, "-s", "{scale}" }
         end,
       },

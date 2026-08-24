@@ -36,8 +36,9 @@
     # nvim-treesitter-textobjects main branch for treesitter 1.0 compatibility
     nvim-treesitter-textobjects.url = "github:nvim-treesitter/nvim-treesitter-textobjects/main";
     nvim-treesitter-textobjects.flake = false;
-    mermaid-rust-cli.url = "github:1jehuang/mermaid-rs-renderer/v0.2.1";
-    mermaid-rust-cli.flake = false;
+    # headless Rust Mermaid renderer with an mmdc-compatible CLI mode; ships its own flake
+    merman.url = "github:Latias94/merman/v0.8.0-alpha.5";
+    merman.inputs.nixpkgs.follows = "nixpkgs";
     sidekick-nvim.url = "github:folke/sidekick.nvim";
     sidekick-nvim.flake = false;
     # ACP-based AI chat sidebar (Claude/Codex/Gemini/OpenCode). Not in nixpkgs.
@@ -74,15 +75,12 @@
                 sha256 = "sha256-x4xGgYeMi7KbD2WGHOd/ixmZ+5EY5g6CLd7/CBYldNQ=";
               };
             });
-            mermaid-cli = super.rustPlatform.buildRustPackage {
-              pname = "mermaid-cli";
-              name = "mermaid-cli";
-              src = inputs.mermaid-rust-cli;
-              cargoLock = {lockFile = "${inputs.mermaid-rust-cli}/Cargo.lock";};
-              postInstall = ''
-                ln -s $out/bin/mmdr $out/bin/mmdc
-              '';
-            };
+            # wraps merman-cli's mmdc-compatible subcommand as a plain `mmdc` binary,
+            # since snacks.nvim shells out to a binary literally named `mmdc`
+            mermaid-cli = super.runCommand "mermaid-cli" {nativeBuildInputs = [super.makeWrapper];} ''
+              mkdir -p $out/bin
+              makeWrapper ${inputs.merman.packages.${system}.merman-cli}/bin/merman-cli $out/bin/mmdc --add-flags mmdc
+            '';
             # TODO: Remove once https://github.com/zk-org/zk/pull/745 is merged & released.
             # Override zk with the PR branch (see zk-src input) so leading-slash links
             # resolve against the notebook root and stop emitting bogus broken-link errors.
@@ -194,7 +192,7 @@
           pyright # python lsp (written in node? so weird)
           vscode-langservers-extracted # lsp servers for json, html, css, eslint
           lazygit
-          mermaid-cli # when mmdc is in the path, snacks previews mermaid diagrams. WARN: we aren't using standard mmdc (which needs chrome) but a rust alternative, mermaid-rs-renderer
+          mermaid-cli # when mmdc is in the path, snacks previews mermaid diagrams. WARN: not the real mmdc (needs chrome) -- a wrapper around merman-cli's mmdc-compatible mode
           tectonic # when tectonic is installed, snacks will inline preview math
           eslint_d # js/ts code formatter and linter
           prettier # ditto
