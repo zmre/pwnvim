@@ -460,18 +460,20 @@ M.config = function()
   M.mapleadernv("csp", function() sk().prompt() end, "Sidekick: prompt picker")
   M.mapleadern("csd", function() sk().send({ msg = "diagnostics" }) end, "Sidekick: send diagnostics")
   -- Review lives at ,cr* -- its own room in the ,c AI/tooling family. The keys
-  -- that add comments are buffer-local to a review tab (see plugins/review.lua);
-  -- these four are global on purpose: `,crr` is how a review starts, and
-  -- comments outlive the review tab, so listing and exporting them has to work
-  -- from anywhere. They are also what makes the ,cr which-key group honest
-  -- everywhere -- which is why the three that read the whole review, and so care
-  -- nothing for the cursor, are mapped in visual mode too. Only `,crr` is
-  -- normal-only.
+  -- that add comments are buffer-local (see plugins/review.lua) but attach to
+  -- every normal file buffer, not just a review tab -- commenting on a line
+  -- doesn't require a formal review pass. These four are global on purpose:
+  -- `,crr` is how a review starts, and comments outlive the review tab, so
+  -- listing and exporting them has to work from anywhere. They are also what
+  -- makes the ,cr which-key group honest everywhere -- which is why the three
+  -- that read the whole review, and so care nothing for the cursor, are mapped
+  -- in visual mode too. Only `,crr` is normal-only.
   local review = function() return require("pwnvim.plugins.review") end
   M.mapleadern("crr", function() review().open() end, "Review: start a code review")
   M.mapleadernv("crl", function() review().open_list() end, "Review: list all comments (Trouble)")
   M.mapleadernv("crm", function() review().to_clipboard() end, "Review: copy markdown to clipboard")
   M.mapleadernv("crS", function() review().to_sidekick() end, "Review: send comments to sidekick")
+  M.mapleadernv("crG", function() review().import_gh() end, "Review: import comments from GitHub PR")
 
   -- Agentic (ACP AI chat sidebar — claude/codex/gemini/opencode)
   local ag = function() return require("agentic") end

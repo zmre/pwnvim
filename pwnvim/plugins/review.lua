@@ -1,6 +1,9 @@
 ----------------------- CODE REVIEW ------------------------
--- Typed, persistent review comments drawn over codediff.nvim's side-by-side
--- diff. `,crr` opens a review, `,cr*` adds comments, `,crl` lists them.
+-- Typed, persistent review comments. `,cr*` adds/edits/deletes a comment on
+-- the line (or visual range) under the cursor in ANY normal file buffer --
+-- reading through a file is reason enough to leave a note, not just a formal
+-- review pass. `,crr` additionally opens codediff's side-by-side diff for a
+-- focused review of one set of changes; `,crl` lists every comment either way.
 --
 -- We own the comments. This used to wrap review.nvim (georgeguimaraes/review.nvim,
 -- removed 2026-08-14): its path parser, file matching, sign priority, storage
@@ -131,6 +134,15 @@ local function review_file(buf)
     return ""
   end
   return buf_file(buf)
+end
+
+--- Worth attaching review keys/signs to: the revision pane (so it can explain
+--- itself) or an ordinary file buffer. Everything else -- terminals, quickfix,
+--- help, oil, snacks dashboards -- has no working-tree line to comment on and
+--- is skipped, since this runs on every buffer entered, not just inside a
+--- review tab.
+local function reviewable(buf)
+  return not is_explorer(buf) and (is_revision(buf) or vim.bo[buf].buftype == "")
 end
 
 ----------------------------------------------------------------------
@@ -299,7 +311,11 @@ local function save()
   end
   local out = {}
   for _, c in ipairs(list) do
-    out[#out + 1] = { file = c.file, lnum = c.lnum, end_lnum = c.end_lnum, type = c.type, text = c.text }
+    -- `gh_id` is only set on comments pulled in by import_gh() -- it survives
+    -- the round trip so a later import can tell "already have this one" apart
+    -- from "new since last time" without re-fetching to compare text.
+    out[#out + 1] = { file = c.file, lnum = c.lnum, end_lnum = c.end_lnum, type = c.type, text = c.text,
+      gh_id = c.gh_id }
   end
   local tmp = state.file .. ".tmp"
   local f, open_err = io.open(tmp, "w")
@@ -789,6 +805,133 @@ function M.to_sidekick()
 end
 
 ----------------------------------------------------------------------
+-- Import: GitHub PR review comments
+----------------------------------------------------------------------
+
+--- The working tree root, however this checkout got here -- ordinary clone,
+--- linked worktree, or submodule. `gh api`'s comment `path`s are relative to
+--- this, not to cwd.
+local function repo_root()
+  local out = vim.system({ "git", "rev-parse", "--show-toplevel" }, { text = true }):wait()
+  if out.code ~= 0 then
+    return nil, vim.trim((out.stderr ~= "" and out.stderr) or "not a git repository")
+  end
+  return vim.trim(out.stdout)
+end
+
+--- The PR for the CURRENT BRANCH, found the same way a bare `gh pr view`
+--- finds one -- by branch, so there is nothing here to look up ourselves.
+local function gh_pr_number()
+  local out = vim.system({ "gh", "pr", "view", "--json", "number" }, { text = true }):wait()
+  if out.code ~= 0 then
+    return nil, vim.trim(((out.stderr ~= "" and out.stderr) or out.stdout) or "gh pr view failed")
+  end
+  local ok, data = pcall(vim.json.decode, out.stdout)
+  if not ok or type(data) ~= "table" or type(data.number) ~= "number" then
+    return nil, "unexpected response from gh pr view"
+  end
+  return data.number
+end
+
+--- Every inline review comment on the PR. `--jq '.[]'` flattens each page to
+--- one JSON object per output line, so a PR with more than one page of
+--- comments doesn't need a second `gh` call or an external `jq` binary --
+--- `gh api` carries its own.
+local function gh_pr_comments(pr)
+  local endpoint = string.format("repos/{owner}/{repo}/pulls/%d/comments", pr)
+  local out = vim.system({ "gh", "api", "--paginate", "--jq", ".[]", endpoint }, { text = true }):wait()
+  if out.code ~= 0 then
+    return nil, vim.trim(((out.stderr ~= "" and out.stderr) or out.stdout) or "gh api failed")
+  end
+  local items = {}
+  for line in vim.gsplit(out.stdout, "\n", { plain = true, trimempty = true }) do
+    local ok, item = pcall(vim.json.decode, line)
+    if ok and type(item) == "table" then
+      items[#items + 1] = item
+    end
+  end
+  return items
+end
+
+--- `vim.json.decode` turns a JSON `null` into the sentinel `vim.NIL`, not Lua
+--- `nil` -- a table can't hold a real nil at a key, so it needs a stand-in.
+--- `vim.NIL` is truthy, so `item.field or fallback` and `not item.field` both
+--- silently do the wrong thing on a null field unless it is filtered first.
+--- GitHub sends `start_line: null` on every single-line comment and
+--- `line: null` on any comment whose diff position has gone stale -- both the
+--- common case, not the edge case.
+local function present(v)
+  if v == nil or v == vim.NIL then
+    return nil
+  end
+  return v
+end
+
+--- `,crG` / `:ReviewImportGH`: pull the current branch's PR review comments
+--- in and add whatever isn't here yet. Keyed off GitHub's own comment `id`
+--- (persisted as `gh_id`, see save()) rather than file+line+text, so editing
+--- a comment on GitHub or reviewing the same line twice locally can't be
+--- mistaken for "already imported". `LEFT`-side comments (on deleted code)
+--- and outdated ones (no current `line`) have no working-tree line to anchor
+--- to, so they are skipped rather than guessed at.
+function M.import_gh()
+  rescope()
+  local pr, pr_err = gh_pr_number()
+  if not pr then
+    notify("No PR for this branch: " .. pr_err, vim.log.levels.ERROR)
+    return
+  end
+  local root, root_err = repo_root()
+  if not root then
+    notify("Not in a git repo: " .. root_err, vim.log.levels.ERROR)
+    return
+  end
+  local items, fetch_err = gh_pr_comments(pr)
+  if not items then
+    notify(string.format("Failed to fetch PR #%d comments: %s", pr, fetch_err), vim.log.levels.ERROR)
+    return
+  end
+
+  local list = comments()
+  local seen = {}
+  for _, c in ipairs(list) do
+    if c.gh_id then
+      seen[c.gh_id] = true
+    end
+  end
+
+  local added, outdated = 0, 0
+  for _, item in ipairs(items) do
+    if not seen[item.id] then
+      local line = present(item.line)
+      if item.side == "LEFT" or not line then
+        outdated = outdated + 1
+      else
+        local body = present(item.body) or ""
+        local user = present(item.user)
+        local kind = body:find("```suggestion", 1, true) and "SUGGESTION" or "NOTE"
+        table.insert(list, {
+          file = canonical(root .. "/" .. item.path),
+          lnum = present(item.start_line) or line,
+          end_lnum = line,
+          type = kind,
+          text = string.format("@%s: %s", (user and present(user.login)) or "unknown", body),
+          gh_id = item.id,
+        })
+        seen[item.id] = true
+        added = added + 1
+      end
+    end
+  end
+
+  if added > 0 then
+    commit()
+  end
+  notify(string.format("PR #%d: imported %d comment%s%s", pr, added, added == 1 and "" or "s",
+    outdated > 0 and string.format(" (%d outdated, skipped)", outdated) or ""))
+end
+
+----------------------------------------------------------------------
 -- Keymaps
 ----------------------------------------------------------------------
 
@@ -815,7 +958,7 @@ for _, t in ipairs(TYPES) do -- ,cri ISSUE, ,crs SUGGESTION, ,crn NOTE, ...
 end
 
 local function attach(buf)
-  if not vim.api.nvim_buf_is_valid(buf) or vim.b[buf].pwnvim_review_maps or is_explorer(buf) then
+  if not vim.api.nvim_buf_is_valid(buf) or vim.b[buf].pwnvim_review_maps or not reviewable(buf) then
     return
   end
   vim.b[buf].pwnvim_review_maps = true
@@ -873,8 +1016,12 @@ local function widen_signcolumn(win)
   end)
 end
 
---- Everything one window of a review tab needs. Idempotent, so it is safe to
---- call from every window/buffer event.
+--- Everything one window needs: review keys attached and signs/virtual text
+--- up to date. Idempotent, so it is safe to call from every window/buffer
+--- event, and NOT limited to a review tab -- comments are addable and visible
+--- from ordinary editing too, so this runs for every buffer you enter. The
+--- signcolumn widening is the one part that is specific to codediff's
+--- side-by-side panes, so it stays gated on actually being in a review tab.
 ---
 --- `sync()` first, and not optionally: `render_buf` destroys the extmarks and
 --- rebuilds them from `c.lnum`, so any drift not yet read back out of the marks
@@ -888,9 +1035,13 @@ local function outfit(win)
   end
   sync()
   local buf = vim.api.nvim_win_get_buf(win)
-  attach(buf)
-  widen_signcolumn(win)
-  render_buf(buf)
+  if reviewable(buf) then
+    attach(buf)
+    render_buf(buf)
+  end
+  if vim.t.pwnvim_review == 1 then
+    widen_signcolumn(win)
+  end
 end
 
 --- codediff builds the explorer first and loads the file panes afterwards, and
@@ -941,14 +1092,15 @@ local function ensure_autocmds()
   -- already-displayed window (which is also when signcolumn gets restored), and
   -- opening a fresh file inside a review tab -- `,ld` into a file outside the
   -- diff -- was observed to reach FileType/BufReadPost but not Buf*Enter.
-  -- Between them the tab repairs itself whenever the cursor lands in a window,
-  -- necessarily before the user can type a review key.
+  -- Between them every window repairs itself whenever the cursor lands in it,
+  -- necessarily before the user can type a review key. Unconditional -- not
+  -- just inside a review tab -- so ,cr* and existing comments are live in any
+  -- normal file buffer, review tab or not; `outfit` itself keeps the
+  -- diff-pane-only parts (signcolumn widening) behind the tab check.
   vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter", "BufEnter", "BufReadPost", "FileType" }, {
     group = grp,
     callback = function()
-      if vim.t.pwnvim_review == 1 then
-        outfit(vim.api.nvim_get_current_win())
-      end
+      outfit(vim.api.nvim_get_current_win())
     end,
   })
 
@@ -989,7 +1141,6 @@ end
 --- @param args string|nil extra arguments forwarded to :CodeDiff
 function M.open(args)
   rescope()
-  ensure_autocmds()
   arm_review = true
   local ok, err = pcall(vim.cmd, args and args ~= "" and ("CodeDiff " .. args) or "CodeDiff")
   if not ok then
@@ -1007,6 +1158,11 @@ function M.open(args)
 end
 
 function M.init()
+  -- Set up now, not lazily on first `:Review`: the buffer-local ,cr* keys and
+  -- sign rendering they attach need to be live from the start of the session,
+  -- since adding a comment while just reading a file no longer requires ever
+  -- opening a review.
+  ensure_autocmds()
   vim.api.nvim_create_user_command("Review", function(o) M.open(o.args) end, {
     nargs = "*",
     desc = "Open code review (codediff + review comments)",
@@ -1014,6 +1170,7 @@ function M.init()
   local cmds = {
     ReviewList = { function() M.open_list() end, "Show all review comments in Trouble" },
     ReviewSidekick = { function() M.to_sidekick() end, "Send review comments to the sidekick AI CLI" },
+    ReviewImportGH = { function() M.import_gh() end, "Import review comments from the current branch's PR (gh)" },
     ReviewMarkdown = { function() M.to_clipboard() end, "Copy the review to the clipboard as markdown" },
     ReviewRefresh = { function()
       -- Genuinely re-read, which `rescope` alone does not do: it only reloads

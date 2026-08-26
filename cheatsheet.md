@@ -259,35 +259,40 @@ _This is a combination of built-in universal keys and things that are specific t
 
 ### Review (code review with inline comments)
 
-Replaces diffview. `,crr` opens codediff side-by-side over your changes and
-turns that tab into a review; `,cr*` adds typed comments. Every comment shows
-up **twice**: as a sign in the gutter and as virtual text at the end of the
-line (`⚠ ISSUE: don't swallow this error`). Copy the review as Markdown with
-`,crm`, or hand it to an AI CLI with `,crS`.
+`,cr*` adds a typed comment to the line (or visual range) under the cursor in
+**any normal file buffer** -- no diff or formal review needed, just open a
+file and comment. `,crr` additionally opens codediff side-by-side over your
+changes for a focused review pass; it is not required to use `,cr*`. Every
+comment shows up **twice**: as a sign in the gutter and as virtual text at the
+end of the line (`⚠ ISSUE: don't swallow this error`). Copy the review as
+Markdown with `,crm`, or hand it to an AI CLI with `,crS`.
 
 The comments are ours, not a plugin's: a list of
 `{ file, lnum, end_lnum, type, text }` in `pwnvim/plugins/review.lua`, saved as
 JSON per branch. The quickfix list is a *rendered view* of that list, so a
 `:grep` can no longer throw a review away — `,crl` just rebuilds it.
 
-You comment on the **right-hand pane**, which is the real working-tree file, so
-LSP is fully live there: `,ld` into a file that isn't part of the diff works,
-and `<C-o>` brings you back. While that buffer is open, comments follow the
-edits made around them — including edits *inside* a range, which grows it.
+Comments follow the edits made around them — including edits *inside* a range,
+which grows it — for as long as the buffer stays open, review tab or not.
 
-The left pane is the file at the git revision (a `codediff://` buffer). Its line
-numbers are that revision's, not the file's, so it carries no signs and its
-`,cr*` keys tell you to switch panes rather than file a comment against the
-wrong line. codediff also keeps LSP off it, so navigate from the right.
+Inside a `,crr` diff, you comment on the **right-hand pane**, which is the real
+working-tree file, so LSP is fully live there: `,ld` into a file that isn't
+part of the diff works, and `<C-o>` brings you back. The left pane is the file
+at the git revision (a `codediff://` buffer); its line numbers are that
+revision's, not the file's, so it carries no signs and its `,cr*` keys tell you
+to switch panes rather than file a comment against the wrong line. codediff
+also keeps LSP off it, so navigate from the right.
 
-#### Opening a review
-* `,crr` or `:Review` — review working-tree changes vs HEAD
+#### Opening a review (optional — see below)
+* `,crr` or `:Review` — review working-tree changes vs HEAD, side-by-side
 * `:Review file HEAD~3` — any `:CodeDiff` arguments are forwarded
 * `:CodeDiff` on its own still works and does *not* enable review comments
 
-#### Adding comments (`,cr*`, buffer-local inside the review tab)
+#### Adding comments (`,cr*`, buffer-local in every normal file buffer)
 Review has its own room in the `,c` family, next to `,ca` agentic, `,cc`
-codecompanion and `,cs` sidekick. Press `,cr` and wait for which-key.
+codecompanion and `,cs` sidekick. Press `,cr` and wait for which-key. These
+keys are live the moment you open a file for editing — you don't need `,crr`
+or a diff open first.
 * `,crc` add comment — prompts for the type
 * `,cri` add Issue ⚠
 * `,crs` add Suggestion 💭
@@ -318,9 +323,18 @@ These four are global — comments outlive the review tab.
 * `,crl` list every comment in **Trouble**; `q` closes it
 * `,crm` copy the whole review to the clipboard as Markdown
 * `,crS` send the review to the sidekick AI CLI
-* `:ReviewList` / `:ReviewMarkdown` / `:ReviewSidekick` — same three
+* `,crG` import inline review comments from the current branch's PR on GitHub
+* `:ReviewList` / `:ReviewMarkdown` / `:ReviewSidekick` / `:ReviewImportGH` — same four
 * `:ReviewRefresh` re-read the current branch's comments, redraw signs and virtual text
 * `:ReviewClear` delete every comment on this branch
+
+`,crG` finds the PR the same way `gh pr view` does — by matching the current
+branch — fetches its inline review comments via `gh api`, and adds any not
+already here, keyed off GitHub's own comment id so running it again after
+someone else comments only adds what's new. Comments still open on GitHub
+(nothing pushed since) come in as a Note, or a Suggestion if the body has a
+` ```suggestion ` block; comments anchored to deleted code or an outdated diff
+are skipped since there's no current working-tree line to put them on.
 
 The Trouble list opens on its own (without stealing the cursor) as soon as
 there is something to show — when you add a comment, and when you reopen a
