@@ -514,7 +514,6 @@ M.config = function()
   M.mapleadernv("nic",
     "r!/opt/homebrew/bin/icalBuddy --bullet '* ' --timeFormat '\\%H:\\%M' --dateFormat '' --noPropNames --noCalendarNames --excludeAllDayEvents --includeCals 'IC - Work' --includeEventProps datetime,title,attendees,location --propertyOrder datetime,title,attendees,location --propertySeparators '| |\\n    * |\\n    * | |' eventsToday",
     "Insert today's calendar")
-  M.mapleadernv("nio", "r!gtm-okr goals", "Insert OKRs")
   M.mapleadernv("nij",
     "r!( (curl -s https://icanhazdadjoke.com/ | grep '\\\"subtitle\\\"') || curl -s https://icanhazdadjoke.com/ ) | sed 's/<[^>]*>//g' | sed -z 's/\\n/ /'",
     "Insert joke")
