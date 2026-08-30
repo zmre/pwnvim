@@ -128,6 +128,68 @@ M.setup = function(ev)
   vim.cmd("normal zx")
 end
 
+-- mbr (https://github.com/zmre/mbr-markdown-browser) is not a pwnvim dependency:
+-- bundling it pinned a second copy at whatever version this flake locked, which
+-- then shadowed whatever the machine already had. Use the system one instead --
+-- on macOS that also gets us the real MBR icon and Dock entry, since the system
+-- build's `mbr` execs the binary inside MBR.app while a bare CLI build doesn't.
+--
+-- PATH alone isn't enough: launched from a GUI (pwneovide, Finder, Dock) macOS
+-- gives us a stub PATH with none of the shell's additions, so probe the usual
+-- install roots too.
+local function mbrCandidates()
+  local home = vim.env.HOME or vim.fn.expand("~")
+  local candidates = {}
+  local function add(path) candidates[#candidates + 1] = path end
+
+  if vim.fn.has('mac') == 1 then
+    add("/Applications/MBR.app/Contents/MacOS/mbr")           -- dmg / manual install
+    add(home .. "/Applications/MBR.app/Contents/MacOS/mbr")   -- ditto, per-user
+    add("/Applications/Nix Apps/MBR.app/Contents/MacOS/mbr")  -- nix-darwin
+    add(home .. "/Applications/Home Manager Apps/MBR.app/Contents/MacOS/mbr")
+  end
+  if vim.fn.isdirectory("/nix") == 1 then
+    add("/run/current-system/sw/bin/mbr") -- NixOS / nix-darwin system profile
+    add("/etc/profiles/per-user/" .. (vim.env.USER or "") .. "/bin/mbr") -- home-manager as a system module
+    add(home .. "/.nix-profile/bin/mbr")
+    add("/nix/var/nix/profiles/default/bin/mbr")
+  end
+  add(home .. "/.cargo/bin/mbr") -- cargo install --git https://github.com/zmre/mbr-markdown-browser
+  add(home .. "/.local/bin/mbr")
+  add("/opt/homebrew/bin/mbr")
+  add("/usr/local/bin/mbr")
+  add("/usr/bin/mbr")
+  return candidates
+end
+
+-- Only successful lookups are cached, so installing mbr mid-session works.
+local mbr_path = nil
+M.findMbr = function()
+  if mbr_path then return mbr_path end
+  local found = vim.fn.exepath("mbr")
+  if found == "" then
+    for _, path in ipairs(mbrCandidates()) do
+      if vim.fn.executable(path) == 1 then
+        found = path
+        break
+      end
+    end
+  end
+  if found == "" then return nil end
+  mbr_path = found
+  return found
+end
+
+M.openInMbr = function(path)
+  local mbr = M.findMbr()
+  if not mbr then
+    vim.notify("mbr not found on PATH or in the usual install locations. See " ..
+      "https://github.com/zmre/mbr-markdown-browser", vim.log.levels.WARN, { title = "MBR preview" })
+    return
+  end
+  vim.fn.jobstart({ mbr, path or vim.fn.expand('%:p') }, { detach = true })
+end
+
 M.setupmappings = function(bufnr)
   -- normal mode mappings
   local mapnlocal = require("pwnvim.mappings").makelocalmap(bufnr, require("pwnvim.mappings").mapn)
@@ -138,7 +200,7 @@ M.setupmappings = function(bufnr)
 
   mapnlocal("<leader>M", ':silent !open -a Marked\\ 2.app "%:p"<cr>', "Open Marked preview")
   mapnlocal("<leader>m", function()
-    vim.fn.jobstart({ 'mbr', vim.fn.expand('%:p') }, { detach = true })
+    require('pwnvim.markdown').openInMbr()
   end, "Open MBR preview")
 
   mapnlocal("gl*", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>2l]],

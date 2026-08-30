@@ -29,10 +29,10 @@
     # TODO: Remove after https://github.com/folke/todo-comments.nvim/pull/381 is merged
     todo-comments-nvim.url = "github:belltoy/todo-comments.nvim/main";
     todo-comments-nvim.flake = false;
-    mbr.url = "github:zmre/mbr-markdown-browser";
-    mbr.inputs.nixpkgs.follows = "nixpkgs";
-    # keep mbr's rust-overlay from dragging a second, stale nixpkgs into the closure
-    mbr.inputs.rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    # NOTE: mbr (github:zmre/mbr-markdown-browser) is deliberately NOT an input.
+    # Bundling it pinned a second copy at whatever version this flake locked,
+    # duplicating (and usually shadowing) the one already installed on the
+    # machine. `,m` now resolves mbr at runtime -- see pwnvim/markdown.lua.
     # nvim-treesitter-textobjects main branch for treesitter 1.0 compatibility
     nvim-treesitter-textobjects.url = "github:nvim-treesitter/nvim-treesitter-textobjects/main";
     nvim-treesitter-textobjects.flake = false;
@@ -233,8 +233,6 @@
           yazi # my alt file manager triggered with ,-
           imagemagick # for image previews
           ghostscript # also for image previews
-
-          inputs.mbr.packages.${system}.mbr-cli
 
           # ACP connector CLIs for agentic.nvim (matched to acp_providers in
           # pwnvim/plugins/agentic.lua). All resolve from nixpkgs.
