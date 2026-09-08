@@ -342,7 +342,6 @@
         vim-fugitive # git management
         codediff-nvim # side-by-side diff renderer; also the review flow's UI (:CodeDiff, see pwnvim/plugins/review.lua)
         vim-tmux-navigator # navigate vim and tmux panes together
-        impatient-nvim # speeds startup times by caching lua bytecode
         which-key-nvim
         vim-startuptime
 
@@ -392,7 +391,6 @@
           extraLuaPackages = ps: [ps.lua-curl];
 
           extraMakeWrapperArgs = ''--prefix PATH : "${pkgs.lib.makeBinPath dependencies}" --prefix RA_LOG : "info,salsa::derived::slot=warn,chalk_recursive=warn,hir_ty::traits=warn,flycheck=trace,rust_analyzer::main_loop=warn,ide_db::apply_change=warn,project_model=debug,proc_macro_api=debug,hir_expand::db=error,ide_assists=debug,ide=debug" --set CLICOLOR_FORCE 0 --prefix RUST_SRC_PATH : "${pkgs.rustPlatform.rustLibSrc}"'';
-          # make sure impatient is loaded before everything else to speed things up
           configure = {
             inherit customRC;
             packages.myPlugins = {

@@ -278,4 +278,12 @@ ins_right {
 }
 
 -- Now don't forget to initialize lualine
-lualine.setup(evil)
+-- Deferred to UIEnter so lualine's own setup/highlight/redraw work doesn't
+-- block the startup critical path; it's one of the biggest self-time costs
+-- in --startuptime traces otherwise.
+vim.api.nvim_create_autocmd('UIEnter', {
+  once = true,
+  callback = function()
+    lualine.setup(evil)
+  end,
+})
