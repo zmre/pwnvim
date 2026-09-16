@@ -40,11 +40,11 @@
         "rust-analyzer-src": "rust-analyzer-src"
       },
       "locked": {
-        "lastModified": 1788346739,
-        "narHash": "sha256-HpGm7QcCFlSXTC4Ezq2t5MGs/KuGzI8vfWR3+vmnv5c=",
+        "lastModified": 1789471622,
+        "narHash": "sha256-0Zd4uniuWmAECxgh/VqU8/BRDYXwQn+n0gDxpgitGP8=",
         "owner": "nix-community",
         "repo": "fenix",
-        "rev": "4194c79cbcd869d4640cde8933811559f108c298",
+        "rev": "164c596ab50b2354f1dc0e8ee3a16b50420a17c4",
         "type": "github"
       },
       "original": {
@@ -90,11 +90,11 @@
     "hledger-lsp": {
       "flake": false,
       "locked": {
-        "lastModified": 1786717922,
-        "narHash": "sha256-BkvZKCUtI+HOSkWS5jua48LIGD9goda50F3b8HP3y7s=",
+        "lastModified": 1789289595,
+        "narHash": "sha256-t//jP8t1M3Cx94QDO6MaaeVZGyDelHPZt3uTEG2WJE4=",
         "owner": "juev",
         "repo": "hledger-lsp",
-        "rev": "77df4302585c2436d0dff694d008acc617704580",
+        "rev": "14c89709fb95f00876256f529c035f35c96c8748",
         "type": "github"
       },
       "original": {
@@ -126,11 +126,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1787964612,
-        "narHash": "sha256-0N9nghg3nwzX6b6qc77EzjR9cu/Z+UR66FlfsCqiURs=",
+        "lastModified": 1789370336,
+        "narHash": "sha256-6RSEDHIWQtesQKWSu5qRai8L2h4KgCgMEfJHstW99G4=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "e8be7818e19ada32105a8af937a6a473b38167ca",
+        "rev": "c7def046b9a883d46974757852106483d741586f",
         "type": "github"
       },
       "original": {
@@ -159,11 +159,11 @@
     "nvim-treesitter-textobjects": {
       "flake": false,
       "locked": {
-        "lastModified": 1784459145,
-        "narHash": "sha256-naZ+p5RrC+uUyFRaksmozDfNgJRifff+9TDWx79DCPk=",
+        "lastModified": 1788416986,
+        "narHash": "sha256-5f2oiz/c/7/cIj+AUaFuB+sm7ZAfwoQeY4r3+XfUDrI=",
         "owner": "nvim-treesitter",
         "repo": "nvim-treesitter-textobjects",
-        "rev": "898ee307df58f854d11cd7edd06472574d48014e",
+        "rev": "5c7b0263797dfd1bd6202f2b219f3b53a80b2187",
         "type": "github"
       },
       "original": {
@@ -186,18 +186,17 @@
         "nvim-surround-wk": "nvim-surround-wk",
         "nvim-treesitter-textobjects": "nvim-treesitter-textobjects",
         "sidekick-nvim": "sidekick-nvim",
-        "todo-comments-nvim": "todo-comments-nvim",
-        "zk-src": "zk-src"
+        "todo-comments-nvim": "todo-comments-nvim"
       }
     },
     "rust-analyzer-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1788279011,
-        "narHash": "sha256-i4N7A1zHd5w0vpdvknGUZNe6emNprT6H8GZS7cHKwcw=",
+        "lastModified": 1789370475,
+        "narHash": "sha256-CX1c2BBTNbo6Y3Xm5V32ubOl2wH/vsdPUmZf/cnURik=",
         "owner": "rust-lang",
         "repo": "rust-analyzer",
-        "rev": "4dd3ff6c8c6a8cbb1cce44513cbc86f9f02e43b6",
+        "rev": "83449b2f18064a94f6fea5af041534f516cbb2a7",
         "type": "github"
       },
       "original": {
@@ -210,11 +209,11 @@
     "sidekick-nvim": {
       "flake": false,
       "locked": {
-        "lastModified": 1776888531,
-        "narHash": "sha256-I1YuIXJHP7JfETwOer6B7QDLMZGG/X59zXopb4nPel4=",
+        "lastModified": 1788867619,
+        "narHash": "sha256-YV4QMU2I+6PwTVdjsh/1Z+WTeLW9spgpugccmsqpxRY=",
         "owner": "folke",
         "repo": "sidekick.nvim",
-        "rev": "208e1c5b8170c01fd1d07df0139322a76479b235",
+        "rev": "3d80a47e6375f6d647c9695d3afea6fa1b3275df",
         "type": "github"
       },
       "original": {
@@ -252,23 +251,6 @@
         "owner": "belltoy",
         "ref": "main",
         "repo": "todo-comments.nvim",
-        "type": "github"
-      }
-    },
-    "zk-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1783789635,
-        "narHash": "sha256-/AcODtzBlwKNqy2P/oWGc4w1ihEbDfGUTxuxo3iqs8s=",
-        "owner": "zmre",
-        "repo": "zk",
-        "rev": "f72c853acd3c80d5b201e6c0b3dde36075a0122a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "zmre",
-        "ref": "fix/notebook-root-links",
-        "repo": "zk",
         "type": "github"
       }
     }

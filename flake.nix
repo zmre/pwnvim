@@ -53,8 +53,8 @@
     # TODO: Remove once https://github.com/zk-org/zk/pull/745 is merged & released.
     # Builds zk from the PR branch so absolute (leading-slash) links resolve against
     # the notebook root instead of reporting bogus broken-link diagnostics.
-    zk-src.url = "github:zmre/zk/fix/notebook-root-links";
-    zk-src.flake = false;
+    #zk-src.url = "github:zmre/zk/fix/notebook-root-links";
+    #zk-src.flake = false;
   };
   outputs = inputs @ {
     self,
@@ -84,11 +84,11 @@
             # TODO: Remove once https://github.com/zk-org/zk/pull/745 is merged & released.
             # Override zk with the PR branch (see zk-src input) so leading-slash links
             # resolve against the notebook root and stop emitting bogus broken-link errors.
-            zk = super.zk.overrideAttrs (old: {
-              version = "0.15.5-pr745";
-              src = inputs.zk-src;
-              vendorHash = "sha256-s22y/m09UBW5zqIIC0gWg7XX6166x/BR0Z0Tp5B74fk=";
-            });
+            # zk = super.zk.overrideAttrs (old: {
+            #   version = "0.15.5-pr745";
+            #   src = inputs.zk-src;
+            #   vendorHash = "sha256-s22y/m09UBW5zqIIC0gWg7XX6166x/BR0Z0Tp5B74fk=";
+            # });
             # hledger-lsp isn't in nixpkgs (as of this writing); build from source.
             # NOTE: if `nix eval nixpkgs#hledger-lsp` resolves, delete this and just add
             # `hledger-lsp` to the dependencies list below instead.
