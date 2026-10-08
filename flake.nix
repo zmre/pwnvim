@@ -92,7 +92,8 @@
             # hledger-lsp isn't in nixpkgs (as of this writing); build from source.
             # NOTE: if `nix eval nixpkgs#hledger-lsp` resolves, delete this and just add
             # `hledger-lsp` to the dependencies list below instead.
-            hledger-lsp = super.buildGoModule {
+            # Upstream go.mod requires go >= 1.27; nixpkgs default is still older.
+            hledger-lsp = (super.buildGoModule.override {go = super.go_1_27;}) {
               pname = "hledger-lsp";
               version = "unstable";
               src = inputs.hledger-lsp;

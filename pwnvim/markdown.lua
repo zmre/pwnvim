@@ -143,13 +143,13 @@ local function mbrCandidates()
   local function add(path) candidates[#candidates + 1] = path end
 
   if vim.fn.has('mac') == 1 then
-    add("/Applications/MBR.app/Contents/MacOS/mbr")           -- dmg / manual install
-    add(home .. "/Applications/MBR.app/Contents/MacOS/mbr")   -- ditto, per-user
-    add("/Applications/Nix Apps/MBR.app/Contents/MacOS/mbr")  -- nix-darwin
+    add("/Applications/MBR.app/Contents/MacOS/mbr")          -- dmg / manual install
+    add(home .. "/Applications/MBR.app/Contents/MacOS/mbr")  -- ditto, per-user
+    add("/Applications/Nix Apps/MBR.app/Contents/MacOS/mbr") -- nix-darwin
     add(home .. "/Applications/Home Manager Apps/MBR.app/Contents/MacOS/mbr")
   end
   if vim.fn.isdirectory("/nix") == 1 then
-    add("/run/current-system/sw/bin/mbr") -- NixOS / nix-darwin system profile
+    add("/run/current-system/sw/bin/mbr")                                -- NixOS / nix-darwin system profile
     add("/etc/profiles/per-user/" .. (vim.env.USER or "") .. "/bin/mbr") -- home-manager as a system module
     add(home .. "/.nix-profile/bin/mbr")
     add("/nix/var/nix/profiles/default/bin/mbr")
