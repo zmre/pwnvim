@@ -60,6 +60,13 @@ M.mapox("ac", function() select("@class.outer", "textobjects") end, "Select oute
 M.mapox("ic", function() select("@class.inner", "textobjects") end, "Select inner class")
 M.mapox("am", function() select("@block.outer", "textobjects") end, "Select outer block")
 M.mapox("im", function() select("@block.inner", "textobjects") end, "Select inner block")
+M.mapox("as", function() select("@statement.outer", "textobjects") end, "Select outer statement")
+M.mapox("is", function() select("@statement.inner", "textobjects") end, "Select inner statement")
+-- Markdown captures come from after/queries/markdown/textobjects.scm
+M.mapox("al", function() select("@item.outer", "textobjects") end, "Select list item")
+M.mapox("il", function() select("@item.inner", "textobjects") end, "Select list item text")
+M.mapox("aL", function() select("@list.outer", "textobjects") end, "Select whole list")
+M.mapox("aS", function() select("@section.outer", "textobjects") end, "Select heading section")
 
 -- Textobjects keymaps - move (normal + visual + operator-pending)
 local move = require("nvim-treesitter-textobjects.move")

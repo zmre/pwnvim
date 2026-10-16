@@ -105,20 +105,8 @@ M.setup = function(ev)
     end
   })
 
-  -- I have historically always used spaces for indents wherever possible including markdown
-  -- Changing now to use tabs because NotePlan 3 can't figure out nested lists that are space
-  -- indented and I go back and forth between that and nvim (mainly for iOS access to notes).
-  -- So, for now, this is the compatibility compromise. 2022-09-27
-  -- UPDATE 2023-08-18: going to do ugly stateful things and check the CWD and only
-  --         use tabs when in a Notes directory so I stop screwing up READMEs.
-  if (string.find(vim.fn.getcwd(), "Notes") or
-        string.find(vim.fn.getcwd(), "noteplan")) then
-    require('pwnvim.options').tabindent()
-    --require('pwnvim.options').retab() -- turn spaces to tabs when markdown file is opened
-  else
-    require('pwnvim.options').twospaceindent()
-    -- require('pwnvim.options').retab() -- turn tabs to spaces when markdown file is opened
-  end
+  require('pwnvim.options').twospaceindent()
+
   -- Force folds to be recalculated now. Our foldexpr is set just above, but when a buffer is
   -- opened by a picker/preview path rather than a plain :edit, the expr folds don't always get
   -- computed, leaving the file unfolded. This was originally a telescope bug workaround

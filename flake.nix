@@ -260,6 +260,7 @@
         ''
           lua << EOF
             package.path = "${self}/?.lua;" .. package.path
+            vim.opt.rtp:append("${self}/after") -- custom treesitter queries (after/queries)
             prettier_path = "${pkgs.prettier}/bin/prettier"
             zk_path = "${pkgs.zk}/bin/zk"
             lldb_path_base = "${pkgs.vscode-extensions.vadimcn.vscode-lldb}"

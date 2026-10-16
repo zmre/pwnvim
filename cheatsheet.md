@@ -117,6 +117,24 @@ _This is a combination of built-in universal keys and things that are specific t
   * `,i4` use four spaces for indent
   * `,ir` retab to current setting
 
+## Text Objects (treesitter)
+Use after an operator (`d`, `c`, `y`) or in visual mode. `a` = around, `i` = inside.
+* `af` / `if` function
+* `ac` / `ic` class (markdown: heading line)
+* `am` / `im` block (markdown: code fence, paragraph, list)
+* `as` / `is` statement
+* `]m` / `[m` next/prev function start (`]M` / `[M` end)
+* `]]` / `[[` next/prev class start (`][` / `[]` end)
+* Built-in incremental selection (visual mode)
+  * `an` grow selection to parent node; `in` shrink back to child
+  * `]n` / `[n` select next/prev sibling node (e.g., next bullet)
+  * Some markdown steps are invisible (adding a newline), so use a count: `v3an`
+* Markdown only
+  * `al` list item, including nested children
+  * `il` list item text, without the marker
+  * `aL` whole list (block of bullets)
+  * `aS` heading section, through to the next heading at the same level
+
 ## Git
 * `,gs` browse git status and jump to selected file
 * `,gb` browse git branches and switch to selected
