@@ -219,4 +219,32 @@ return function()
       },
     },
   })
+
+  -- Image hover tweaks. Upstream at_cursor ignores the row for single-line
+  -- images and scans the next line too, so popups appear when the cursor is
+  -- merely near an image. Require the cursor to be inside the link itself, and
+  -- honor vim.g.pwnvim_image_hover so previews can be toggled off (,nI).
+  local doc = require("snacks.image.doc")
+  vim.g.pwnvim_image_hover = true
+  doc.at_cursor = function(cb)
+    if not vim.g.pwnvim_image_hover then return cb() end
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local row, col = cursor[1], cursor[2]
+    doc.find(vim.api.nvim_get_current_buf(), function(imgs)
+      for _, img in ipairs(imgs) do
+        local r = img.range -- {start_row, start_col, end_row, end_col}; rows 1-based, end col exclusive
+        if r
+            and (row > r[1] or (row == r[1] and col >= r[2]))
+            and (row < r[3] or (row == r[3] and col < r[4])) then
+          return cb(img.src, img.pos)
+        end
+      end
+      cb()
+    end, { from = row, to = row })
+  end
+  vim.api.nvim_create_user_command("ImageHoverToggle", function()
+    vim.g.pwnvim_image_hover = not vim.g.pwnvim_image_hover
+    doc.hover() -- closes an open popup when turning off
+    vim.notify("Image previews " .. (vim.g.pwnvim_image_hover and "on" or "off"))
+  end, { desc = "Toggle snacks image hover previews" })
 end -- picker

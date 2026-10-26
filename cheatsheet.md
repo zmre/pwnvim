@@ -211,6 +211,8 @@ Use after an operator (`d`, `c`, `y`) or in visual mode. `a` = around, `i` = ins
 * `,nm` use zk to make new meeting note in $ZK_NOTEBOOK_DIR/meetings
 * `,nd` use zk to make new diary note in $ZK_NOTEBOOK_DIR/daily
 * `,nh` open hotsheet note
+* `,nI` (or `:ImageHoverToggle`) toggle image preview popups on/off for the session
+  * Popups only appear when the cursor is on the image link itself, not just the same/adjacent line
 * `gt` turn url under cursor into titled link
 * in open markdown note only
   * `,np` new peer note in same folder as this one

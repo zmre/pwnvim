@@ -506,6 +506,7 @@ M.config = function()
 
   M.mapleadernv("ng", require('pwnvim.plugins').grammar_check, "Check Grammar")
   M.mapleadernv("nh", "edit ~/Notes/Notes/HotSheet.md", "Open HotSheet")
+  M.mapleadern("nI", "ImageHoverToggle", "Toggle image previews")
   M.mapleadernv("nm", require("pwnvim.markdown").newMeetingNote, "New meeting")
   M.mapleadernv("nn", require("pwnvim.markdown").newGeneralNote, "New")
   M.mapleadernv("nt", "ZkTags", "Open by tag")
