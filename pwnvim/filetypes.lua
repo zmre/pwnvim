@@ -184,6 +184,9 @@ end
 
 M.ledger = function(ev)
   local bufnr = ev.buf
+  -- Comment.nvim (g/, ,c<space>) falls back to commentstring; no ledger
+  -- ftplugin ships one, so set it here.
+  vim.bo[bufnr].commentstring = "; %s"
   -- :HledgerSort sorts transaction blocks by date. With a range (e.g. a visual
   -- selection -> :'<,'>HledgerSort) it sorts just that range; with no range it
   -- defaults to the whole file (the "%" below).
