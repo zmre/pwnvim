@@ -235,6 +235,7 @@ Use after an operator (`d`, `c`, `y`) or in visual mode. `a` = around, `i` = ins
 * `,fk` fuzzy browse keymaps
 * `,fd` fuzzy browse document symbols
 * `,ft` fuzzy find todos in markdown files
+* `,tf` find open tasks (fixed task regex, type to fuzzy-filter results)
 * `ctrl + p` open file picker
 
 ## Terminal (snacks.terminal)

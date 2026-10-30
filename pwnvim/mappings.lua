@@ -397,6 +397,10 @@ M.config = function()
   M.mapleadernv("ft", function()
     Snacks.picker.grep({ search = "^\\s*[*-] \\[ \\]", glob = "*.md" })
   end, "Todos")
+  -- Fixed regex for open tasks; live=false makes the input fuzzy-filter results instead of editing the regex
+  M.mapleadernv("tf", function()
+    Snacks.picker.grep({ title = "Open Tasks", search = "^\\s*[*-] \\[ \\]", glob = "*.md", live = false })
+  end, "Find open tasks")
   M.mapleadernv("fz", function()
     require("pwnvim.plugins").pick_folder({
       ".config", "src/sideprojects", "src/icl", "src/icl/website.worktree", "src/personal", "src/gh",
