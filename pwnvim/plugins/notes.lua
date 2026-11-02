@@ -86,7 +86,7 @@ return function()
           --   opts)
           -- Preview a linked note.
 
-          require("pwnvim.options").tabindent()
+          require("pwnvim.options").twospaceindent()
         end
       }
     }
