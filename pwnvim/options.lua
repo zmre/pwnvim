@@ -166,6 +166,31 @@ M.defaults = function()
         autocmd TextYankPost * silent! lua vim.hl.on_yank()
     augroup end
     ]], { output = false })
+
+  -- Window-local cd to the project root of whatever file is entered, so
+  -- pickers (<c-p>, ,ff, grep) search the project instead of wherever nvim
+  -- was launched. Replaces project_nvim's scope_chdir. Markers are grouped by
+  -- priority: repo/notebook roots win over nested manifests, so a crate inside
+  -- a cargo workspace still roots at the repo. Files outside any project
+  -- leave the cwd alone.
+  local root_markers = { { '.git', '.zk', '.mbr' }, { 'flake.nix', 'Cargo.toml', 'package.json' } }
+  vim.api.nvim_create_autocmd("BufEnter", {
+    group = vim.api.nvim_create_augroup("ProjectRoot", { clear = true }),
+    callback = function(ev)
+      if vim.bo[ev.buf].buftype ~= "" then return end
+      local name = vim.api.nvim_buf_get_name(ev.buf)
+      -- skip unnamed and plugin-scheme buffers (oil://, fugitive://, ...)
+      if name == "" or name:match("^%a[%w+.-]*://") then return end
+      local root = vim.b[ev.buf].pwnvim_project_root
+      if root == nil then
+        root = vim.fs.root(ev.buf, root_markers) or false
+        vim.b[ev.buf].pwnvim_project_root = root
+      end
+      if root and root ~= vim.fn.getcwd(0) then
+        vim.cmd.lcd(vim.fn.fnameescape(root))
+      end
+    end,
+  })
 end
 
 M.colors_cat = function()
