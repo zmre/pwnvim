@@ -23,8 +23,8 @@
     };
     fenix.url = "github:nix-community/fenix";
     fenix.inputs.nixpkgs.follows = "nixpkgs";
-    # ekickx doesn't seem to be maintaing. postfen's fork worth using for now. TODO: revisit
-    clipboard-image.url = "github:postfen/clipboard-image.nvim";
+    # ekickx original is unmaintained; using the dfendr (formerly postfen) fork
+    clipboard-image.url = "github:dfendr/clipboard-image.nvim";
     clipboard-image.flake = false;
     # TODO: Remove after https://github.com/folke/todo-comments.nvim/pull/381 is merged
     todo-comments-nvim.url = "github:belltoy/todo-comments.nvim/main";
@@ -68,13 +68,6 @@
         config = {allowUnfree = true;};
         overlays = [
           (self: super: {
-            languagetool = super.languagetool.overrideAttrs (old: rec {
-              version = "5.9"; # grammarous doesn't support 6+
-              src = super.fetchzip {
-                url = "https://www.languagetool.org/download/${old.pname}-${version}.zip";
-                sha256 = "sha256-x4xGgYeMi7KbD2WGHOd/ixmZ+5EY5g6CLd7/CBYldNQ=";
-              };
-            });
             # wraps merman-cli's mmdc-compatible subcommand as a plain `mmdc` binary,
             # since snacks.nvim shells out to a binary literally named `mmdc`
             mermaid-cli = super.runCommand "mermaid-cli" {nativeBuildInputs = [super.makeWrapper];} ''
@@ -167,7 +160,6 @@
           proselint # ditto
           luaformatter # ditto for lua
           luajitPackages.luacheck # linter for lua
-          #prisma-engines # ditto for schema.prisma files # TODO: bring back when rust compile issues are fixed 2024-08-26
           # Nix language servers summary 2023-11-23
           # rnix-lsp -- seems abandoned
           # nil -- way better than rnix and generally great, but
@@ -179,7 +171,6 @@
           alejandra # better nix formatter alternative
           statix # linter for nix
           shellcheck
-          languagetool # needed by grammarous, but must be v5.9 (see overlay)
           # luajitPackages.lua-lsp
           lua-language-server
           pyright # python lsp (written in node? so weird)
@@ -189,7 +180,6 @@
           tectonic # when tectonic is installed, snacks will inline preview math
           eslint_d # js/ts code formatter and linter
           prettier # ditto
-          #prisma # dependency prisma-engines not compiling right now 2024-08-26
           svelte-language-server
           diagnostic-languageserver
           typescript-language-server
@@ -267,7 +257,6 @@
 
       requiredPlugins = with pkgs.vimPlugins; [
         # Common dependencies of other plugins
-        popup-nvim # dependency of some other plugins
         plenary-nvim # Library for lua plugins; used by many plugins here
 
         # Syntax / Language Support ##########################
@@ -280,9 +269,7 @@
         nvim-dap-ui # ui for debugging
         nvim-dap-python
         nvim-nio # needed by dap-ui
-        neotest
-        neotest-rust
-        neodev-nvim # help for neovim lua api
+        lazydev-nvim # help for neovim lua api (successor to archived neodev)
         SchemaStore-nvim # json schemas
         vim-matchup # replaces built-in matchit and matchparen with better matching and faster
 
@@ -291,19 +278,16 @@
         catppuccin-nvim # colorscheme
         ir_black # colorscheme for basic terminals
         snacks-nvim # folke's swiss army knife - using for picker (replaces telescope)
-        dressing-nvim # dresses up vim.ui.input (snacks handles vim.ui.select)
         nvim-colorizer-lua # color over CSS like #00ff00
         nvim-web-devicons # makes things pretty; used by many plugins below
         oil-nvim # file navigator
         gitsigns-nvim # git status in gutter
-        lualine-nvim # nice status bar at bottom ; TODO 2025-06-09 time to find an alternative? tons of undealt with deprecations
+        lualine-nvim # nice status bar at bottom; maintenance mode but alive (checked 2026-11-04) -- watch line.nvim if deprecations pile up
         dropbar-nvim # replacing the now archived barbecue (sad!)
-        nvim-navbuddy # use same lsp symbols to navigate in popup
         outline-nvim # symbol/TOC drawer; has a native markdown provider so it gives an outline without an LSP
         nvim-ufo # allow use of lsp as source for folding
         promise-async # required by nvim-ufo
         nvim-treesitter-textobjects # jump around and select based on syntax (class, function, etc.)
-        lf-vim
         nui-nvim # needed by noice
         nvim-notify # needed by noice
         noice-nvim # show progress and add other UI improvements
@@ -322,12 +306,11 @@
 
         # Autocompletion
         blink-cmp
-        codecompanion-nvim # llm access in context; TODO 2025-06-09 find an alternative? riddled with deprecated function calls
+        codecompanion-nvim # llm access in context; very active upstream (checked 2026-11-04) -- keep lock fresh rather than replace
         sidekick-nvim # AI CLI launcher (claude, iris, codex, gemini, etc.) - NES disabled
         agentic-nvim # ACP AI chat sidebar (claude/codex/gemini/opencode)
         nvim-autopairs # balances parens as you type
         nvim-ts-autotag # balance or rename html
-        vim-emoji # TODO: redundant now?
 
         # writing
         zk-nvim # lsp for a folder of notes for searching/linking/etc.
@@ -344,8 +327,6 @@
         nvim-treesitter.withAllGrammars
       ];
       optionalPlugins = with pkgs.vimPlugins; [
-        # grammar check
-        vim-grammarous
         direnv-vim # auto-execute nix direnv setups -- currently my slowest plugin; enabled by programming filetype
         clipboard-image # only loaded in markdown files
         comment-nvim # code commenter

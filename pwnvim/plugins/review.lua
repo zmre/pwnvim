@@ -546,8 +546,8 @@ end
 -- Multi-line comment input
 ----------------------------------------------------------------------
 
---- A scratch float, used by both add and edit. `vim.ui.input` (dressing) and
---- snacks.input are single-line prompts; review comments are prose and are
+--- A scratch float, used by both add and edit. `vim.ui.input` (snacks.input)
+--- is a single-line prompt; review comments are prose and are
 --- routinely longer than a cmdline.
 local function input(title, default, on_submit)
   local lines = vim.split(default or "", "\n", { plain = true })

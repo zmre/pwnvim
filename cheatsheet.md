@@ -203,7 +203,6 @@ Use after an operator (`d`, `c`, `y`) or in visual mode. `a` = around, `i` = ins
       * After commit, use `rr` in the status screen or `:G rebase --contine` and hope you don't get a fresh set of conflicts, but if you do, repeat from the top.
 
 ## Notes
-* `,ng` spawn grammar checker
 * `,nn` use zk to add new note under $ZK_NOTEBOOK_DIR (prompt for dir)
 * `,no` use zk to open note by heading or filename
 * `,nt` use zk to find notes by tag
@@ -272,11 +271,6 @@ Use after an operator (`d`, `c`, `y`) or in visual mode. `a` = around, `i` = ins
 	* `]p`, `[p`, `[P`, and `]P` have also been remapped to force linewise pasting,
 	* `pkJ` or `vp` will take a yanked line with newlines and put it in the current line while preserving their usual indent matching behavior. So will insert mode `ctrl-r "`
 
-### Plugin: Grammarous
-* `,ng` will kick off the grammar checker
-* `]g` and `[g` to navigate grammar issues
-* `,gf` to auto fix an issue
-* `,gx` to ignore an issue
 
 ### Review (code review with inline comments)
 

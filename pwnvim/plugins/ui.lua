@@ -52,21 +52,6 @@ return function()
 
   if not SimpleUI then
     require("colorizer").setup({})
-    require("dressing").setup({
-      input = {
-        enabled = true, -- Set to false to disable the vim.ui.input implementation
-        default_prompt = "Input:",
-        prefer_width = 50,
-        relative = "win",
-        insert_only = true,     -- When true, <Esc> will close the modal
-        start_in_insert = true, -- ready for input immediately
-      },
-      select = {
-        -- Set to false to disable - snacks handles vim.ui.select now
-        enabled = false,
-      }
-
-    })
     require('marks').setup {
       -- whether to map keybinds or not. default true
       default_mappings = false,

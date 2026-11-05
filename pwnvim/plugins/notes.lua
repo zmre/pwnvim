@@ -1,5 +1,5 @@
 ----------------------- NOTES --------------------------------
--- zk (zettelkasten lsp), render-markdown, grammar settings
+-- zk (zettelkasten lsp), render-markdown
 
 return function()
   -- render-markdown: one-time setup (not per-buffer) to avoid nil config
@@ -91,25 +91,4 @@ return function()
       }
     }
   })
-
-  -- Grammar
-  vim.g["grammarous#disabled_rules"] = {
-    ["*"] = {
-      "WHITESPACE_RULE", "EN_QUOTES", "ARROWS", "SENTENCE_WHITESPACE",
-      "WORD_CONTAINS_UNDERSCORE", "COMMA_PARENTHESIS_WHITESPACE",
-      "EN_UNPAIRED_BRACKETS", "UPPERCASE_SENTENCE_START",
-      "ENGLISH_WORD_REPEAT_BEGINNING_RULE", "DASH_RULE", "PLUS_MINUS",
-      "PUNCTUATION_PARAGRAPH_END", "MULTIPLICATION_SIGN", "PRP_CHECKOUT",
-      "CAN_CHECKOUT", "SOME_OF_THE", "DOUBLE_PUNCTUATION", "HELL",
-      "CURRENCY", "POSSESSIVE_APOSTROPHE", --"ENGLISH_WORD_REPEAT_RULE",
-      "NON_STANDARD_WORD"
-    }
-  }
-  vim.g["grammarous#languagetool_cmd"] = 'languagetool-commandline'
-  vim.g["grammarous#use_location_list"] = 1
-  vim.g["grammarous#enable_spell_check"] = 0
-  vim.g["grammarous#show_first_error"] = 0
-  -- Below is to make mapping easier for ,ng
-  vim.cmd(
-    [[command StartGrammar2 lua require('pwnvim.plugins').grammar_check()]])
 end -- notes

@@ -220,7 +220,7 @@ M.setupmappings = function(bufnr)
   mapilocal("<Tab>", require('pwnvim.markdown').indent, "Indent")
   mapilocal("<S-Tab>", require('pwnvim.markdown').outdent, "Outdent")
 
-  -- The zk LSP has no textDocument/documentSymbol, so navbuddy can't outline notes.
+  -- The zk LSP has no textDocument/documentSymbol, so this can't rely on LSP symbols.
   -- outline.nvim's built-in markdown provider walks the headings without any LSP.
   mapnviclocal("<F7>", function() require("outline").toggle() end, "Show doc outline")
 

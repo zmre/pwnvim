@@ -4,20 +4,13 @@
 local signs = require("pwnvim.signs")
 
 return function()
-  -- IMPORTANT: make sure to setup neodev BEFORE lspconfig
-  require("neodev").setup({
-    -- help for neovim lua api
-    override = function(root_dir, library)
-      if string.match(root_dir, "neovim") or
-          string.match(root_dir, "pwnvim") or
-          string.match(root_dir, "lua") then
-        library.enabled = true
-        library.plugins = true
-        library.types = true
-        library.runtime = true
-      end
+  -- help for neovim lua api; adds runtime + required plugins to lua_ls on demand
+  require("lazydev").setup({
+    enabled = function(root_dir)
+      return string.match(root_dir, "neovim") ~= nil or
+          string.match(root_dir, "pwnvim") ~= nil or
+          string.match(root_dir, "lua") ~= nil
     end,
-    lspconfig = true
   })
 
   if not SimpleUI then
@@ -270,15 +263,8 @@ return function()
     end
 
     if client.server_capabilities.documentSymbolProvider then
-      require("nvim-navic").attach(client, bufnr)    -- setup context showing header line
-      require("nvim-navbuddy").attach(client, bufnr) -- setup popup for browsing symbols
-      -- mapleadernlocal("lsd", builtin.lsp_document_symbols, "Find symbol in document")
-      mapleadernlocal("lsd", require("nvim-navbuddy").open, "Find symbol in document")
-      if vim.bo[bufnr].filetype ~= "markdown" then
-        -- Sometimes other LSPs attach to markdown (like tailwindcss) and so we have a race to see which F7 will win...
-        -- Markdown gets its own <F7> from pwnvim.markdown (outline.nvim), which works without an LSP, so leave it alone.
-        mapnviclocal("<F7>", require("nvim-navbuddy").open, "Browse document symbols")
-      end
+      mapleadernlocal("lsd", function() require("outline").open() end, "Find symbol in document")
+      mapnviclocal("<F7>", function() require("outline").toggle() end, "Browse document symbols")
     end
 
     if client.server_capabilities.workspaceSymbolProvider then

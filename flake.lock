@@ -21,13 +21,13 @@
       "locked": {
         "lastModified": 1754286081,
         "narHash": "sha256-4grne/LEBHoJNHtM3xb+mtu5Abr6Lj1nft0ccowZASU=",
-        "owner": "postfen",
+        "owner": "dfendr",
         "repo": "clipboard-image.nvim",
         "rev": "5ccecdf27a02b1bf0a2602cf143bcf69f1ca4465",
         "type": "github"
       },
       "original": {
-        "owner": "postfen",
+        "owner": "dfendr",
         "repo": "clipboard-image.nvim",
         "type": "github"
       }

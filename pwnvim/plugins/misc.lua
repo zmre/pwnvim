@@ -1,8 +1,7 @@
 ----------------------- MISC --------------------------------
--- autopairs, matchup, yazi, tmux-navigator, lf
+-- autopairs, matchup, yazi, tmux-navigator
 
 return function()
-  vim.g.lf_map_keys = 0              -- lf.vim disable default keymapping
   vim.g.matchup_surround_enabled = 0 -- disallows ds type selections
   vim.g.matchup_matchparen_offscreen = { method = 'popup' }
   vim.g.matchup_matchparen_deferred = 1

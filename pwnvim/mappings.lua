@@ -508,7 +508,6 @@ M.config = function()
   M.mapleadern("nf", "ZkNotes { sort = { 'modified' }}", "Find")
   M.map({ "v" }, "<leader>nf", ":'<,'>ZkMatch<CR>", "Find Selected")
 
-  M.mapleadernv("ng", require('pwnvim.plugins').grammar_check, "Check Grammar")
   M.mapleadernv("nh", "edit ~/Notes/Notes/HotSheet.md", "Open HotSheet")
   M.mapleadern("nI", "ImageHoverToggle", "Toggle image previews")
   M.mapleadernv("nm", require("pwnvim.markdown").newMeetingNote, "New meeting")

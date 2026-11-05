@@ -49,7 +49,7 @@ GitHub Actions runs on push/PR to main:
    - `completions.lua` - blink.cmp completion engine
    - `llms.lua` - CodeCompanion AI integration; `llmcli.lua` - sidekick.nvim AI CLI launcher; `agentic.lua` - ACP AI chat sidebar
    - `review.lua` - Code review: typed, per-branch comments over codediff (`:Review`, `,cr*`). Self-contained, no plugin behind it
-   - `notes.lua` - Zettelkasten/zk, render-markdown, grammar settings; `grammar.lua` - grammarous runner
+   - `notes.lua` - Zettelkasten/zk, render-markdown
    - `misc.lua` - Autopairs, matchup, yazi file manager; `pick_folder.lua` - custom folder picker
    - Per-plugin helpers: `lualine.lua`, `treesitter.lua`, `gitsigns.lua`, `oil.lua`, `todo-comments.lua`, `outline.lua`
 

@@ -43,6 +43,7 @@ return function()
 
     -- Buffer/window management
     bufdelete = { enabled = true }, -- delete buffers without messing layout
+    input = { enabled = not SimpleUI }, -- vim.ui.input prompt (replaces dressing)
 
     -- UI features
     indent = {

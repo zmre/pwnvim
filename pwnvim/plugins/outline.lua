@@ -1,11 +1,10 @@
 ----------------------- OUTLINE ----------------------------
--- Symbol / table-of-contents drawer bound to <F7>.
+-- Symbol / table-of-contents drawer bound to <F7> and ,lsd.
 --
--- The main reason this exists alongside nvim-navbuddy: the zk LSP used for
--- markdown does not implement textDocument/documentSymbol, so navbuddy has
--- nothing to show in notes. outline.nvim ships its own non-LSP markdown
--- provider that walks the headings directly, so markdown gets a real outline
--- while code files keep using LSP symbols.
+-- The zk LSP used for markdown does not implement textDocument/documentSymbol,
+-- so LSP-only symbol browsers have nothing to show in notes. outline.nvim ships
+-- its own non-LSP markdown provider that walks the headings directly, so
+-- markdown gets a real outline while code files keep using LSP symbols.
 
 require("outline").setup({
   outline_window = {
