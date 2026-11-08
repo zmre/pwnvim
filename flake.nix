@@ -154,7 +154,8 @@
           #marksman # lsp for any markdown
           zsh # terminal requires it
           git
-          curl # needed to fetch titles from urls
+          curl # needed to fetch titles from urls and jokes (,nij)
+          coreutils # GNU tr etc. for shell one-liners in mappings, same on macOS and linux
           # todo: research https://github.com/artempyanykh/marksman
           vale # linter for prose
           proselint # ditto
