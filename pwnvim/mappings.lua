@@ -515,9 +515,8 @@ M.config = function()
   M.mapleadernv("nt", "ZkTags", "Open by tag")
 
   -- note insert shortcuts
-  M.mapleadernv("nic",
-    "r!/opt/homebrew/bin/icalBuddy --bullet '* ' --timeFormat '\\%H:\\%M' --dateFormat '' --noPropNames --noCalendarNames --excludeAllDayEvents --includeCals 'IC - Work' --includeEventProps datetime,title,attendees,location --propertyOrder datetime,title,attendees,location --propertySeparators '| |\\n    * |\\n    * | |' eventsToday",
-    "Insert today's calendar")
+  M.mapleadernv("nic", require("pwnvim.icalguy").insertCalendar, "Insert today's calendar")
+  M.mapleadernv("nir", require("pwnvim.icalguy").insertReminders, "Insert reminders (due this week, done today)")
   M.mapleadernv("nij",
     "r!curl -sf -H 'Accept: text/plain' https://icanhazdadjoke.com/ 2>/dev/null | tr '\\n' ' '",
     "Insert joke")

@@ -82,6 +82,7 @@ Key LSP configs in `plugins.lua` under `M.diagnostics()`:
 - `pwnvim/markdown.lua` - Custom markdown features: fold expressions, URL title fetching, daily/meeting notes, zk integration
 - `pwnvim/signs.lua` - Diagnostic sign configuration
 - `pwnvim/tasks.lua` - Markdown task/checkbox helpers (toggle done, schedule, etc.)
+- `pwnvim/icalguy.lua` - Insert today's calendar (`,nic`) and reminders (`,nir`) via ical-guy JSON (macOS, Homebrew-installed)
 - `pwnvim/hledger.lua` - hledger journal editing support
 - `pwnvim/plugins/` - Per-concern and per-plugin config modules (see Entry Point Flow)
 - `test/validate.lua` - Shared validation helpers used by `check.sh`
