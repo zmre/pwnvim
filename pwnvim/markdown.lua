@@ -466,7 +466,7 @@ M.pick_folder = function(base, subdir, callback)
     add_dirs = true,
     only_dirs = true,
     respect_gitignore = true,
-    depth = 3,
+    depth = 5,
   })
   table.insert(full_path_folders, 1, base .. '/' .. subdir)
 
