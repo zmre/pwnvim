@@ -18,7 +18,7 @@ return function()
       stages = "static",
       timeout = 5000,
     })
-    require("noice").setup({
+    local noice_opts = {
       lsp = {
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
         override = {
@@ -108,7 +108,31 @@ return function()
         -- suppress "semantic_tokens.lua" error
         { filter = { event = "msg_show", find = "semantic_tokens.lua" }, opts = { skip = true } }
       },
-    })
+    }
+
+    if vim.g.neovide then
+      -- Neovide briefly reports ext_cmdline/ext_messages = true during startup,
+      -- which makes noice refuse to run. Wait until the UI settles before setup.
+      -- See https://github.com/folke/noice.nvim/discussions/1221
+      local function ui_has_ext()
+        for _, ui in ipairs(vim.api.nvim_list_uis()) do
+          if ui.ext_cmdline or ui.ext_messages then return true end
+        end
+        return false
+      end
+      local interval, max_wait, waited = 25, 2000, 0
+      local function try_setup()
+        if ui_has_ext() and waited < max_wait then
+          waited = waited + interval
+          vim.defer_fn(try_setup, interval)
+        else
+          require("noice").setup(noice_opts)
+        end
+      end
+      try_setup()
+    else
+      require("noice").setup(noice_opts)
+    end
   end
 
   vim.diagnostic.config({
