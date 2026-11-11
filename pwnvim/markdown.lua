@@ -216,6 +216,11 @@ M.setupmappings = function(bufnr)
   mapilocal("<D-b>", "****<C-O>h", "Bold")
   mapilocal("<D-i>", [[__<C-O>h]], "Italic")
   mapilocal("<D-1>", [[``<C-O>h]], "Code block")
+  -- override vim's builtin file completion, which completes from the (repo
+  -- root) cwd; blink's repo_path does ./ from the file's dir and / from root
+  mapilocal("<C-x><C-f>", function()
+    require('blink.cmp').show({ providers = { 'repo_path' } })
+  end, "Path completion (file dir / repo root)")
 
   mapilocal("<Tab>", require('pwnvim.markdown').indent, "Indent")
   mapilocal("<S-Tab>", require('pwnvim.markdown').outdent, "Outdent")

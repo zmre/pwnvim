@@ -12,20 +12,46 @@ local function urlencode(str)
   end))
 end
 
+-- Repo root for a buffer, falling back to the buffer's dir. Memoized per
+-- buffer: vim.fs.root walks the filesystem upward and this runs on each '/'
+-- typed, which hitches on iCloud dirs
+local function repo_root(ctx)
+  local root = vim.b[ctx.bufnr].pwnvim_repo_root
+  if root == nil then
+    root = vim.fs.root(ctx.bufnr, require('pwnvim.markdown').root_markers) or false
+    vim.b[ctx.bufnr].pwnvim_repo_root = root
+  end
+  return root or vim.fn.expand(('#%d:p:h'):format(ctx.bufnr))
+end
+
 return function()
-  -- blink resolves the typed path portion literally when scanning for
-  -- candidates, so '](/my%20docs/' would scan a nonexistent dir. blink has no
-  -- hook there; wrap the cached module's dirname to decode in markdown buffers
+  -- Markdown path completion (repo_path provider) wraps blink's cached
+  -- path lib dirname for two reasons blink has no hooks for:
+  --  * './' and '../' resolve from the buffer's dir (blink default get_cwd)
+  --    while a root-anchored '/' resolves from the repo root rather than the
+  --    filesystem root. blink uses a single get_cwd for both, so swap it here
+  --  * blink resolves the typed path literally, so '](/my%20docs/' would scan
+  --    a nonexistent dir; uri-decode the result
   local pathlib = require('blink.cmp.sources.path.lib')
   if not pathlib._pwnvim_wrapped then
     pathlib._pwnvim_wrapped = true
     local blink_dirname = pathlib.dirname
+    local regex = require('blink.cmp.sources.path.regex')
     pathlib.dirname = function(opts, ctx)
-      local dirname = blink_dirname(opts, ctx)
-      if dirname and vim.bo[ctx.bufnr].filetype == 'markdown' then
-        return vim.uri_decode(dirname)
+      if vim.bo[ctx.bufnr].filetype ~= 'markdown' then
+        return blink_dirname(opts, ctx)
       end
-      return dirname
+      if opts.ignore_root_slash then
+        -- same prefix computation as blink's lib.dirname
+        local line = ctx.line:sub(1, ctx.bounds.start_col - (ctx.bounds.length == 0 and 1 or 0))
+        local s = regex.PATH:match_str(line)
+        local prefix = s and line:sub(1, s + 1) or ''
+        if prefix:match('/$') and not prefix:match('%./$') and not prefix:match('~/$') then
+          opts = vim.tbl_extend('force', opts, { get_cwd = repo_root })
+        end
+      end
+      local dirname = blink_dirname(opts, ctx)
+      return dirname and vim.uri_decode(dirname)
     end
   end
 
@@ -42,8 +68,8 @@ return function()
     sources = {
       default = { 'lsp', 'path', 'snippets', 'buffer' },
       per_filetype = {
-        -- markdown swaps 'path' for 'repo_path' so typing /folder completes
-        -- from the repo root rather than the filesystem root
+        -- markdown swaps 'path' for 'repo_path': ./ completes from the file's
+        -- dir, /folder from the repo root rather than the filesystem root
         markdown = { inherit_defaults = false, 'lsp', 'repo_path', 'snippets', 'buffer' },
       },
       providers = {
@@ -53,16 +79,8 @@ return function()
           score_offset = 3, -- same as the stock path provider
           opts = {
             ignore_root_slash = true,
-            get_cwd = function(ctx)
-              -- memoized per buffer: vim.fs.root walks the filesystem upward
-              -- and this runs on each '/' typed, which hitches on iCloud dirs
-              local root = vim.b[ctx.bufnr].pwnvim_repo_root
-              if root == nil then
-                root = vim.fs.root(ctx.bufnr, require('pwnvim.markdown').root_markers)
-                vim.b[ctx.bufnr].pwnvim_repo_root = root
-              end
-              return root or vim.fn.expand(('#%d:p:h'):format(ctx.bufnr))
-            end,
+            -- get_cwd left at blink's default (buffer dir) for './'; the
+            -- dirname wrapper above swaps in repo_root for root-anchored '/'
           },
           -- insert url-encoded names (label stays readable for fuzzy matching)
           transform_items = function(_, items)
