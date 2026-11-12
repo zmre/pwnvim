@@ -105,7 +105,7 @@ M.setup = function(ev)
     end
   })
 
-  require('pwnvim.options').twospaceindent()
+  require('pwnvim.options').fourspaceindent()
 
   -- Force folds to be recalculated now. Our foldexpr is set just above, but when a buffer is
   -- opened by a picker/preview path rather than a plain :edit, the expr folds don't always get
