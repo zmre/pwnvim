@@ -197,6 +197,8 @@ M.setupmappings = function(bufnr)
     "Add block quote")
   mapnlocal("gl[", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*\)/\1* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>5l]],
     "Add task")
+  -- zk-aware gf: resolves [[wikilinks]], falls back to builtin gf
+  mapnlocal("gf", require('pwnvim.markdown').followLink, "Go to link/file under cursor")
   mapnlocal("gt", require('pwnvim.markdown').transformUrlUnderCursorToMdLink, "Convert URL to link")
   mapnlocal("<leader>P", require('pwnvim.markdown').pasteUrl, "Paste URL as link")
   mapnlocal("<C-M-v>", require('pwnvim.markdown').pasteUrl, "Paste URL as link")
@@ -318,6 +320,41 @@ M.outdent = function()
   if blink_ok and blink.snippet_active() then
     blink.snippet_backward()
   end
+end
+
+-- Markdown gf override: follow the link under the cursor. Asks attached LSPs
+-- (zk) for a definition first, which resolves [[wikilinks]] by title/id; if
+-- none answer (no zk outside a notebook, or an unresolved link), falls back to
+-- builtin gf (normal! so it can't recurse into this mapping).
+M.followLink = function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local function fallback()
+    local ok, err = pcall(vim.cmd, "normal! gf")
+    if not ok then
+      vim.notify(tostring(err):gsub("^Vim%(normal%):", ""), vim.log.levels.WARN)
+    end
+  end
+  local clients = vim.lsp.get_clients({ bufnr = bufnr, method = "textDocument/definition" })
+  if #clients == 0 then return fallback() end
+  local win = vim.api.nvim_get_current_win()
+  local params = function(client)
+    return vim.lsp.util.make_position_params(win, client.offset_encoding)
+  end
+  vim.lsp.buf_request_all(bufnr, "textDocument/definition", params, function(results)
+    for client_id, res in pairs(results) do
+      local loc = res.result
+      -- result may be a single Location or a list of Location/LocationLink
+      if loc and not loc.uri and not loc.targetUri then loc = loc[1] end
+      if loc then
+        local client = vim.lsp.get_client_by_id(client_id)
+        vim.schedule(function()
+          vim.lsp.util.show_document(loc, client and client.offset_encoding or "utf-16", { focus = true })
+        end)
+        return
+      end
+    end
+    vim.schedule(fallback)
+  end)
 end
 
 -- Project-root markers shared by gf link resolution below and the markdown

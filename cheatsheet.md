@@ -213,6 +213,7 @@ Use after an operator (`d`, `c`, `y`) or in visual mode. `a` = around, `i` = ins
 * `,nI` (or `:ImageHoverToggle`) toggle image preview popups on/off for the session
   * Popups only appear when the cursor is on the image link itself, not just the same/adjacent line
 * `gt` turn url under cursor into titled link
+* `gf` (markdown) go to link under cursor: follows `[[wikilinks]]` via zk, falls back to classic `gf`
 * in open markdown note only
   * `,np` new peer note in same folder as this one
   * `,nl` show outbound links
