@@ -172,11 +172,17 @@ M.config = function()
   -- Make F10 quicklook. Not sure how to do this best in linux so mac only for now
   M.mapnvic("<F10>", 'silent !qlmanage -p "%"', "Quicklook (mac)")
   M.mapnvic("<F12>", 'syntax sync fromstart', "Restart highlighting")
-  -- Pane navigation integrated with tmux
-  M.mapnvic("<c-h>", "TmuxNavigateLeft", "Pane left")
-  M.mapnvic("<c-j>", "TmuxNavigateDown", "Pane down")
-  M.mapnvic("<c-k>", "TmuxNavigateUp", "Pane up")
-  M.mapnvic("<c-l>", "TmuxNavigateRight", "Pane right")
+  -- Pane navigation integrated with tmux (normal, visual, and command modes)
+  M.map({ "n", "v", "c" }, "<c-h>", "<cmd>TmuxNavigateLeft<cr>", "Pane left")
+  M.map({ "n", "v", "c" }, "<c-j>", "<cmd>TmuxNavigateDown<cr>", "Pane down")
+  M.map({ "n", "v", "c" }, "<c-k>", "<cmd>TmuxNavigateUp<cr>", "Pane up")
+  M.map({ "n", "v", "c" }, "<c-l>", "<cmd>TmuxNavigateRight<cr>", "Pane right")
+  -- In insert mode, ctrl-hjkl moves the cursor like hjkl in normal mode.
+  -- Note: blink.cmp's <c-k> is disabled in completions.lua so it can't shadow this.
+  M.mapi("<c-h>", "<Left>", "Cursor left")
+  M.mapi("<c-j>", "<Down>", "Cursor down")
+  M.mapi("<c-k>", "<Up>", "Cursor up")
+  M.mapi("<c-l>", "<Right>", "Cursor right")
   M.mapnvic("<D-w>", function() Snacks.bufdelete() end, "Close buffer")
   M.mapnvic("<A-w>", function() Snacks.bufdelete() end, "Close buffer")
   M.mapnvic("<M-w>", function() Snacks.bufdelete() end, "Close buffer")

@@ -58,6 +58,7 @@ return function()
   require("blink.cmp").setup({
     keymap = {
       preset = 'super-tab',
+      ['<C-k>'] = false, -- preset binds signature help here; insert-mode <c-k> is cursor up (see mappings.lua)
       --['<CR>'] = { 'accept', 'fallback' }, -- i have muscle memory for accepting with enter, but on second thought, that sometimes annoys
     },
     cmdline = { enabled = true },
