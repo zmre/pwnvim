@@ -269,7 +269,10 @@
         plenary-nvim # Library for lua plugins; used by many plugins here
 
         # Syntax / Language Support ##########################
-        rustaceanvim # lsp stuff and more for rust; replaces rust-tools-nvim which is now archived
+        # lsp stuff and more for rust; replaces rust-tools-nvim which is now archived
+        # Checks disabled: upstream busted spec/integration/lsp_spec.lua is flaky
+        # on macOS CI runners (E95 buffer name collisions), failing the whole build.
+        (rustaceanvim.overrideAttrs {doCheck = false;})
         nvim-lspconfig # setup LSP for intelligent coding
         nvim-lint # replace null-ls for linting bits
         conform-nvim # replace null-ls and lsp-format-nvim for formatting
