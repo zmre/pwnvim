@@ -30,18 +30,21 @@ jobs:
             os: macos-latest
             target: aarch64-apple-darwin
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: cachix/install-nix-action@v31
         with:
           nix_path: nixpkgs=channel:nixos-unstable
           extra_nix_config: |
             substituters = https://nix-community.cachix.org https://cache.nixos.org https://numtide.cachix.org
             trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE=
-      - uses: cachix/cachix-action@v15
+      - uses: cachix/cachix-action@v17
         with:
           name: zmre
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
           extraPullNames: nix-community
+          # Daemon push on macOS runners intermittently dies with ENOBUFS on the
+          # nix socket ("No buffer space available"), failing otherwise green builds.
+          useDaemon: false
       - name: Run checks
         run: nix build .#checks.${{ matrix.target == 'aarch64-apple-darwin' && 'aarch64-darwin' || 'x86_64-linux' }}.default
       - name: Build package
