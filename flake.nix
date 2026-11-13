@@ -70,9 +70,17 @@
           (self: super: {
             # wraps merman-cli's mmdc-compatible subcommand as a plain `mmdc` binary,
             # since snacks.nvim shells out to a binary literally named `mmdc`
-            mermaid-cli = super.runCommand "mermaid-cli" {nativeBuildInputs = [super.makeWrapper];} ''
+            mermaid-cli = let
+              # nixpkgs' cargo-setup-hook now exports AWS_LC_SYS_USE_SYSTEM=1 for every
+              # Rust build, so aws-lc-sys refuses to build its vendored copy. merman's
+              # flake doesn't provide aws-lc, so hand it the system one (found via pkg-config).
+              merman-cli = inputs.merman.packages.${system}.merman-cli.overrideAttrs (old: {
+                nativeBuildInputs = (old.nativeBuildInputs or []) ++ [super.pkg-config];
+                buildInputs = (old.buildInputs or []) ++ [super.aws-lc];
+              });
+            in super.runCommand "mermaid-cli" {nativeBuildInputs = [super.makeWrapper];} ''
               mkdir -p $out/bin
-              makeWrapper ${inputs.merman.packages.${system}.merman-cli}/bin/merman-cli $out/bin/mmdc --add-flags mmdc
+              makeWrapper ${merman-cli}/bin/merman-cli $out/bin/mmdc --add-flags mmdc
             '';
             # hledger-lsp isn't in nixpkgs (as of this writing); build from source.
             # NOTE: if `nix eval nixpkgs#hledger-lsp` resolves, delete this and just add
