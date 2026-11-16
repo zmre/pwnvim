@@ -215,6 +215,16 @@ M.setupmappings = function(bufnr)
 
   -- insert mode mappings
   mapilocal("<C-M-v>", require('pwnvim.markdown').pasteUrl, "Paste URL as link")
+  -- Replaces vim's builtin i_CTRL-P (keyword completion; blink covers that).
+  -- If blink's menu is open, keep <C-p> as select-previous instead.
+  mapilocal("<C-p>", function()
+    local ok, blink = pcall(require, 'blink.cmp')
+    if ok and blink.is_menu_visible() then
+      blink.select_prev()
+    else
+      require('pwnvim.markdown').pasteUrl()
+    end
+  end, "Paste URL as link")
   mapilocal("<D-b>", "****<C-O>h", "Bold")
   mapilocal("<D-i>", [[__<C-O>h]], "Italic")
   mapilocal("<D-1>", [[``<C-O>h]], "Code block")
@@ -239,7 +249,7 @@ M.setupmappings = function(bufnr)
   mapvlocal("gl>", [[<cmd>let p=getcurpos('.')<cr>:s/^/> /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]], "Add quotes")
   mapvlocal("gl[", [[<cmd>let p=getcurpos('.')<cr>:s/^\([ \t]*)/\1* [ ] /<cr>:nohlsearch<cr>:call setpos('.', p)<cr>gv]],
     "Add task")
-  mapvlocal("gt", "<cmd>lua require('pwnvim.markdown').transformUrlUnderCursorToMdLink()<cr>", "Convert URL to link")
+  mapvlocal("gt", require('pwnvim.markdown').selectionToMdLink, "Convert URL to link")
   mapvlocal("<D-b>", "<Plug>(nvim-surround-visual)e", "Bold")
   mapvlocal("<leader>b", "<Plug>(nvim-surround-visual)e", "Bold")
   mapvlocal("<D-i>", "<Plug>(nvim-surround-visual)_", "Italic")
@@ -387,42 +397,164 @@ M.resolveMdLink = function(fname)
   return stripped
 end
 
-M.getTitleFor = function(url)
-  local curl = require "plenary.curl"
-  if not string.match(url, "^https?:[^%s]*$") then
-    return "" -- doesn't look like a URL -- avoid curl sadness
-  end
-  local res = curl.request {
-    url = url,
-    method = "get",
-    accept = "text/html",
-    raw = { "-L" } -- follow redirects
-  }
-  local title = ""
-  if res then
-    title = string.match(res.body, "<title[^>]*>([^<]+)</title>")
-    if not title then title = string.match(res.body, "<h1[^>]*>([^<]+)</h1>") end
-  end
-  if not title then
-    title = "could not get title" -- TODO: put domain here
+local html_entities = { amp = "&", lt = "<", gt = ">", quot = '"', apos = "'", nbsp = " " }
+
+-- Turn raw <title> contents into safe markdown link text: decode common
+-- entities, collapse whitespace/newlines, and escape brackets so the link
+-- syntax can't be broken by the page's title
+M.cleanTitle = function(raw)
+  local t = raw:gsub("&#[xX](%x+);", function(h)
+    local ok, ch = pcall(vim.fn.nr2char, tonumber(h, 16))
+    return ok and ch or ""
+  end)
+  t = t:gsub("&#(%d+);", function(d)
+    local ok, ch = pcall(vim.fn.nr2char, tonumber(d))
+    return ok and ch or ""
+  end)
+  t = t:gsub("&(%a+);", function(name) return html_entities[name] end)
+  t = vim.trim((t:gsub("%s+", " ")))
+  t = t:gsub("([%[%]])", "\\%1")
+  return t
+end
+
+local title_placeholder = "fetching title…"
+local title_ns = vim.api.nvim_create_namespace("pwnvim_url_title")
+
+local function title_from_html(url, body)
+  local raw = body:match("<[Tt][Ii][Tt][Ll][Ee][^>]*>([^<]+)</[Tt][Ii][Tt][Ll][Ee]>")
+      or body:match("<[Hh]1[^>]*>([^<]+)</[Hh]1>")
+  local title = raw and M.cleanTitle(raw) or ""
+  if title == "" then
+    title = url:match("^https?://([^/?#:]+)") or "untitled"
   end
   return title
 end
 
-M.transformUrlUnderCursorToMdLink = function()
-  -- local url = vim.fn.expand("<cfile>")
-  local url = vim.fn.expand("<cWORD>")
-  local title = require("pwnvim.markdown").getTitleFor(url)
-  vim.cmd("normal! ciW[" .. title .. "](" .. url .. ")")
+-- Fetch a page title for a markdown link without blocking; cb(title) runs on
+-- the main loop. Never throws: any failure (DNS, timeout, TLS, HTTP 4xx/5xx,
+-- curl missing) yields "fetch error" so callers always produce a usable link.
+-- A fetched page with no title falls back to the host name; a non-URL gets "".
+M.fetchTitle = function(url, cb)
+  if not url:match("^https?://[^%s]+$") then
+    return cb("") -- doesn't look like a URL -- avoid curl sadness
+  end
+  local function fail(why)
+    vim.notify("Title fetch failed for " .. url .. ": " .. why, vim.log.levels.WARN, { title = "PasteUrl" })
+    cb("fetch error")
+  end
+  local ok, err = pcall(vim.system, {
+    "curl", "--silent", "--show-error", "--location", "--fail",
+    "--compressed", "--connect-timeout", "5", "--max-time", "10",
+    "--user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)",
+    "--header", "Accept: text/html,application/xhtml+xml",
+    url,
+  }, { text = true, timeout = 12000 }, vim.schedule_wrap(function(res)
+    if res.code ~= 0 or not res.stdout then
+      local why = vim.split(vim.trim(res.stderr or ""), "\n")[1]
+      return fail(why ~= "" and why or ("curl exited " .. tostring(res.code)))
+    end
+    local tok, title = pcall(title_from_html, url, res.stdout)
+    if not tok then return fail(tostring(title)) end
+    cb(title)
+  end))
+  if not ok then fail(tostring(err)) end
 end
 
+-- Replace [scol, ecol) on 0-based row with "[<placeholder>](url)" right away,
+-- then swap the real title in when the fetch finishes. An extmark tracks the
+-- placeholder so typing/edits elsewhere don't matter; if the user edited the
+-- placeholder itself it's left alone. Returns the inserted link's byte length.
+M.insertLinkAsync = function(bufnr, row, scol, ecol, url)
+  local link = "[" .. title_placeholder .. "](" .. url .. ")"
+  vim.api.nvim_buf_set_text(bufnr, row, scol, row, ecol, { link })
+  local mark = vim.api.nvim_buf_set_extmark(bufnr, title_ns, row, scol + 1, {
+    end_row = row,
+    end_col = scol + 1 + #title_placeholder,
+    hl_group = "Comment",
+    right_gravity = false,
+    end_right_gravity = true,
+  })
+  M.fetchTitle(url, function(title)
+    if not vim.api.nvim_buf_is_valid(bufnr) then return end
+    local pos = vim.api.nvim_buf_get_extmark_by_id(bufnr, title_ns, mark, { details = true })
+    vim.api.nvim_buf_del_extmark(bufnr, title_ns, mark)
+    if #pos == 0 then return end
+    local r, c, d = pos[1], pos[2], pos[3]
+    if d.end_row ~= r then return end
+    local current = vim.api.nvim_buf_get_text(bufnr, r, c, r, d.end_col, {})[1]
+    if current ~= title_placeholder then return end
+    vim.api.nvim_buf_set_text(bufnr, r, c, r, d.end_col, { title })
+  end)
+  return #link
+end
+
+-- Turn the WORD under the cursor (a bare URL) into a titled link in place
+M.transformUrlUnderCursorToMdLink = function()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+  if not line:sub(col + 1, col + 1):match("%S") then
+    vim.notify("No URL under cursor", vim.log.levels.WARN, { title = "PasteUrl" })
+    return
+  end
+  local s = col + 1
+  while s > 1 and line:sub(s - 1, s - 1):match("%S") do s = s - 1 end
+  local e = line:find("%s", col + 1) or (#line + 1)
+  local url = line:sub(s, e - 1)
+  M.insertLinkAsync(0, row - 1, s - 1, e - 1, url)
+  vim.api.nvim_win_set_cursor(0, { row, s - 1 })
+end
+
+-- Turn a (single-line, charwise) visual selection holding a URL into a
+-- titled link in place
+M.selectionToMdLink = function()
+  local vpos, cpos = vim.fn.getpos("v"), vim.fn.getpos(".")
+  local mode = vim.api.nvim_get_mode().mode
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "nx", false)
+  if vpos[2] ~= cpos[2] then
+    vim.notify("Select a URL on a single line", vim.log.levels.WARN, { title = "PasteUrl" })
+    return
+  end
+  local row = vpos[2]
+  local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+  local s, e = math.min(vpos[3], cpos[3]), math.max(vpos[3], cpos[3])
+  if mode == "V" then
+    s, e = 1, #line
+  else
+    -- extend end over a multibyte char under the cursor
+    e = e + #vim.fn.matchstr(line:sub(e), ".") - 1
+  end
+  local text = line:sub(s, e)
+  local lead = #text:match("^%s*")
+  local url = vim.trim(text)
+  if url == "" then return end
+  M.insertLinkAsync(0, row - 1, s - 1 + lead, s - 1 + lead + #url, url)
+  vim.api.nvim_win_set_cursor(0, { row, s - 1 + lead })
+end
+
+-- Insert the clipboard URL as [title](url). In normal mode the link goes
+-- after the cursor (like `a`); in insert mode it goes at the insertion point
+-- and the cursor lands right after it so typing can continue. The title fills
+-- in asynchronously.
 M.pasteUrl = function()
-  local url = vim.fn.getreg('*')
-  local title = require("pwnvim.markdown").getTitleFor(url)
-  vim.cmd("normal! a[" .. title .. "](" .. url .. ")")
-  -- cursor ends up one to the left, so move over right one if possible
-  local right = vim.api.nvim_replace_termcodes("<right>", true, false, true)
-  vim.api.nvim_feedkeys(right, "n", false)
+  local url = vim.trim(vim.fn.getreg('*'))
+  if url == "" then
+    vim.notify("Clipboard is empty", vim.log.levels.WARN, { title = "PasteUrl" })
+    return
+  end
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+  local insert_mode = vim.api.nvim_get_mode().mode:sub(1, 1) == "i"
+  if not insert_mode and #line > 0 then
+    -- normal mode: after the char under the cursor (which may be multibyte)
+    col = col + #vim.fn.matchstr(line:sub(col + 1), ".")
+  end
+  local len = M.insertLinkAsync(0, row - 1, col, col, url)
+  if insert_mode then
+    vim.api.nvim_win_set_cursor(0, { row, col + len })
+  else
+    -- one past the link like before (clamped to the last char at EOL)
+    vim.api.nvim_win_set_cursor(0, { row, math.min(col + len, #line + len - 1) })
+  end
 end
 
 -- macOS only: ask Mail.app for the messages the user has selected and turn each

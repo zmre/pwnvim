@@ -67,14 +67,10 @@ return function()
           mapleadervlocal("np",
             function() require('zk.commands').get("ZkNewFromTitleSelection")({ dir = vim.fn.expand('%:p:h') }) end,
             "New peer note (same dir) selection for title")
-          mapleadernlocal("nu", function()
-            vim.cmd("normal yiW")
-            require("pwnvim.markdown").pasteUrl()
-          end, "Turn bare URL into link")
-          mapleadervlocal("nu", function()
-            vim.cmd("normal y")
-            require("pwnvim.markdown").pasteUrl()
-          end, "Turn bare URL into link")
+          mapleadernlocal("nu", function() require("pwnvim.markdown").transformUrlUnderCursorToMdLink() end,
+            "Turn bare URL into link")
+          mapleadervlocal("nu", function() require("pwnvim.markdown").selectionToMdLink() end,
+            "Turn bare URL into link")
 
 
           -- TODO: Make <CR> magic...
