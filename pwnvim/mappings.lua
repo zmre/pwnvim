@@ -518,7 +518,8 @@ M.config = function()
   M.mapleadern("nI", "ImageHoverToggle", "Toggle image previews")
   M.mapleadernv("nm", require("pwnvim.markdown").newMeetingNote, "New meeting")
   M.mapleadernv("nn", require("pwnvim.markdown").newGeneralNote, "New")
-  M.mapleadernv("nt", "ZkTags", "Open by tag")
+  M.mapleadernv("nt", require("pwnvim.markdown").openLatestDailyNote, "Open latest diary")
+  M.mapleadernv("nT", "ZkTags", "Open by tag")
 
   -- note insert shortcuts
   M.mapleadernv("nic", require("pwnvim.icalguy").insertCalendar, "Insert today's calendar")

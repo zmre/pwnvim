@@ -206,7 +206,8 @@ Use after an operator (`d`, `c`, `y`) or in visual mode. `a` = around, `i` = ins
 ## Notes
 * `,nn` use zk to add new note under $ZK_NOTEBOOK_DIR (prompt for dir)
 * `,no` use zk to open note by heading or filename
-* `,nt` use zk to find notes by tag
+* `,nt` open the most recent diary note in $ZK_NOTEBOOK_DIR/Calendar/Daily
+* `,nT` use zk to find notes by tag
 * `,nf` use zk to find notes
 * `,nm` use zk to make new meeting note in $ZK_NOTEBOOK_DIR/meetings
 * `,nd` use zk to make new diary note in $ZK_NOTEBOOK_DIR/daily

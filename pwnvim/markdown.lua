@@ -624,6 +624,19 @@ M.newDailyNote = function()
   zk.get("ZkNew")({ dir = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar/Daily', title = os.date("%Y%m%d") })
 end
 
+-- Open the most recent daily note. Filenames are YYYYMMDD.md, so a lexical
+-- sort is a chronological sort; the newest is often a few days old.
+M.openLatestDailyNote = function()
+  local dir = vim.env.ZK_NOTEBOOK_DIR .. '/Calendar/Daily'
+  local files = vim.fn.glob(dir .. '/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].md', false, true)
+  if #files == 0 then
+    vim.notify("No daily notes found in " .. dir, vim.log.levels.WARN)
+    return
+  end
+  table.sort(files)
+  vim.cmd.edit(vim.fn.fnameescape(files[#files]))
+end
+
 M.pick_folder_and_title = function(base, subdir, callback)
   M.pick_folder(base, subdir, function(folder)
     vim.ui.input({ prompt = 'Title: ', default = '' }, function(input)
