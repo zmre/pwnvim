@@ -84,6 +84,7 @@ Key LSP configs in `plugins.lua` under `M.diagnostics()`:
 - `pwnvim/tasks.lua` - Markdown task/checkbox helpers (toggle done, schedule, etc.)
 - `pwnvim/icalguy.lua` - Insert today's calendar (`,nic`) and reminders (`,nir`) via ical-guy JSON (macOS, Homebrew-installed)
 - `pwnvim/hledger.lua` - hledger journal editing support
+- `pwnvim/filemerge.lua` - Buffer-vs-disk conflict resolution: 3-way `git merge-file` against a snapshot taken at load/save, shown as a YOURS | RESULT | DISK diff tab (`:FileMerge`, `,fm`); `:FileDiff` for a plain 2-way. Works around two nvim 0.12 diff bugs (render-markdown segfault on close, `linematch` breaking 3-way `:diffget`); see comments there. Auto-reload itself lives in `M.autoreload()` in `options.lua`
 - `pwnvim/plugins/` - Per-concern and per-plugin config modules (see Entry Point Flow)
 - `test/validate.lua` - Shared validation helpers used by `check.sh`
 - `cheatsheet.md` - Comprehensive keybinding reference

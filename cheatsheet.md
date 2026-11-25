@@ -240,6 +240,37 @@ Use after an operator (`d`, `c`, `y`) or in visual mode. `a` = around, `i` = ins
 * `,tf` find open tasks (fixed task regex, type to fuzzy-filter results)
 * `ctrl + p` open file picker
 
+## File Changed on Disk
+
+Files are checked for outside changes every second, and also on focus, buffer
+enter, cursor idle, and leaving a terminal (tmux needs `set -g focus-events on`
+for the focus trigger).
+
+* No unsaved edits in the buffer: it reloads silently with a "Reloaded" notice
+* Unsaved edits (conflict): buffer is left alone, you get a warning pointing
+  at `,fm`. Nothing is ever overwritten automatically
+* File deleted on disk: one warning; `:w` recreates it
+
+Resolving a conflict:
+
+* `,fm` / `:FileMerge` 3-way merge in a new tab (works outside git repos):
+  `YOURS` (left, read-only) | `RESULT` (middle, the real buffer, editable) |
+  `DISK` (right, read-only). The result starts auto-merged; overlapping
+  regions show the original text and a `!` sign so you choose explicitly.
+  * `gh` take yours, `gl` take disk for the hunk; in visual mode only the
+    selected lines, so you can blend line by line. Or just edit the middle.
+  * `dp` in YOURS / DISK pushes that hunk (or selected lines) into RESULT
+  * `]n` / `[n` next/prev conflict, `]c` / `[c` next/prev hunk
+  * `u` in RESULT undoes; one `u` right after opening reverts the whole merge
+  * `q` closes the tab, `:w` saves
+  * The merge base is a snapshot taken when the file was opened or last
+    saved. Files over 2 MB get no snapshot: RESULT then starts as your
+    version and you pull from disk by hand
+  * Markdown rendering is off in the merge panes (raw text), back on after
+* `:FileDiff` side-by-side diff of buffer vs disk, no merge (`q` closes)
+* `:e!` discard your edits and load the disk version
+* `:w!` overwrite disk with your version
+
 ## Terminal (snacks.terminal)
 
 * `Ctrl-\` toggle terminal (vertical)

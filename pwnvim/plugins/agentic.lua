@@ -35,4 +35,12 @@ return function()
       position = "right",
     },
   })
+
+  -- agentic registers a global FileChangedShell that forces fcs_choice="reload",
+  -- which discards unsaved edits when a file changes on disk. Our AutoReload
+  -- group (pwnvim/options.lua) already reloads clean buffers, so agent edits
+  -- still appear; drop agentic's handler so conflicts don't lose work.
+  for _, au in ipairs(vim.api.nvim_get_autocmds({ group = "AgenticCleanup", event = "FileChangedShell" })) do
+    vim.api.nvim_del_autocmd(au.id)
+  end
 end

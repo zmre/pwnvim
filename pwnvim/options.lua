@@ -191,6 +191,84 @@ M.defaults = function()
       end
     end,
   })
+
+  M.autoreload()
+end
+
+-- Keep buffers in sync with files changed on disk by other programs.
+-- Neovim only checks timestamps on a few events (BufEnter, FocusGained, :!cmd),
+-- so we add more event triggers plus a cheap poll (one stat() per loaded
+-- buffer per tick). Polling instead of fs_event watchers because watchers miss
+-- atomic rename-saves and are flaky on iCloud/network mounts.
+M.autoreload_interval_ms = 1000
+M.autoreload = function()
+  local group = vim.api.nvim_create_augroup("AutoReload", { clear = true })
+  require("pwnvim.filemerge").setup() -- conflict resolution (:FileMerge / :FileDiff)
+
+  local function checktime()
+    -- checktime errors in the cmdline window and misbehaves mid-command/prompt
+    local mode = vim.api.nvim_get_mode().mode
+    if mode:match("^[cr]") or vim.fn.getcmdwintype() ~= "" then return end
+    vim.cmd("silent! checktime")
+  end
+
+  vim.api.nvim_create_autocmd(
+    { "FocusGained", "BufEnter", "CursorHold", "CursorHoldI", "TermLeave", "TermClose" },
+    { group = group, callback = checktime })
+
+  if M._autoreload_timer then
+    M._autoreload_timer:stop()
+    M._autoreload_timer:close()
+  end
+  M._autoreload_timer = vim.uv.new_timer()
+  M._autoreload_timer:start(M.autoreload_interval_ms, M.autoreload_interval_ms, vim.schedule_wrap(checktime))
+
+  -- Changing buffers or windows is forbidden inside FileChangedShell, so defer notifications.
+  local function notify(msg, level)
+    vim.schedule(function() vim.notify(msg, level, { title = "File changed on disk" }) end)
+  end
+
+  -- Defining this autocmd replaces Neovim's built-in W11/W12/E211 prompts; we decide per case.
+  vim.api.nvim_create_autocmd("FileChangedShell", {
+    group = group,
+    callback = function(ev)
+      local name = vim.fn.fnamemodify(ev.file, ":~:.")
+      local reason = vim.v.fcs_reason
+      -- a deleted file re-triggers on every check; warn once until it's back or written
+      if reason ~= "deleted" then vim.b[ev.buf].pwnvim_deleted_warned = nil end
+      if reason == "changed" then
+        -- disk changed, buffer has no unsaved edits: reload quietly
+        vim.v.fcs_choice = "reload"
+      elseif reason == "conflict" then
+        -- Both disk and buffer changed. No modal prompt: it could fire from the
+        -- timer while typing and swallow keystrokes. Leave the buffer alone.
+        vim.v.fcs_choice = ""
+        notify(name .. " changed on disk but has unsaved edits here.\n"
+          .. ",fm (:FileMerge) to merge, :e! to load disk version, :w! to keep yours", vim.log.levels.WARN)
+      elseif reason == "deleted" then
+        vim.v.fcs_choice = ""
+        if not vim.b[ev.buf].pwnvim_deleted_warned then
+          vim.b[ev.buf].pwnvim_deleted_warned = true
+          notify(name .. " was deleted on disk. :w to recreate it", vim.log.levels.WARN)
+        end
+      else
+        -- "mode" / "time" etc: metadata-only changes, nothing to reload
+        vim.v.fcs_choice = ""
+      end
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("BufWritePost", {
+    group = group,
+    callback = function(ev) vim.b[ev.buf].pwnvim_deleted_warned = nil end,
+  })
+
+  vim.api.nvim_create_autocmd("FileChangedShellPost", {
+    group = group,
+    callback = function(ev)
+      notify("Reloaded " .. vim.fn.fnamemodify(ev.file, ":~:."), vim.log.levels.INFO)
+    end,
+  })
 end
 
 M.colors_cat = function()
@@ -614,15 +692,6 @@ M.programming = function(ev)
   vim.wo.foldcolumn = "0"
 
   M.twospaceindent()
-
-  -- Could be a performance penalty on this
-  -- Will make periodic checks to see if the file changed
-  vim.api.nvim_exec2([[
-    augroup programming
-      autocmd!
-      autocmd CursorHold,CursorHoldI * silent! checktime
-    augroup END
-  ]], { output = false })
 
   -- Load direnv when we're in a programming file as we may want
   -- the nix environment provided. Run explicitly since the autocmds

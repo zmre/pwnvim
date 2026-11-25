@@ -399,6 +399,7 @@ M.config = function()
   M.mapleadernv("fp", function() Snacks.picker.projects() end, "Projects")
 
   M.mapleadernv("fq", function() Snacks.picker.qflist() end, "Quickfix")
+  M.mapleadern("fm", function() require("pwnvim.filemerge").merge() end, "Merge disk changes into buffer")
   -- ,fs mapping done inside lsp attach functions
   M.mapleadernv("ft", function()
     Snacks.picker.grep({ search = "^\\s*[*-] \\[ \\]", glob = "*.md" })
